@@ -1,0 +1,20 @@
+# Tasks
+
+- [x] Initialize LifeLink backend skeleton with JDK 17 and Spring Boot 3.3.5.
+- [x] Configure PostgreSQL, Redis, MinIO, JWT, MyBatis-Plus, Spring Security, and OpenAPI.
+- [x] Add unified result response and global exception handling.
+- [x] Add public health check endpoint.
+- [x] Implement user registration and login.
+- [x] Implement JWT authentication and current-user endpoint.
+- [x] Add frontend login, register, logout, and current-user flow.
+- [x] Implement relationship space backend APIs.
+- [x] Add frontend relationship list, create, join, detail, members, and invite flow.
+- [x] Implement text-only daily record backend APIs.
+- [x] Add frontend daily timeline, create, detail, filter, and delete flow.
+- [x] Implement relationship space todo backend APIs.
+- [x] Add frontend relationship space todo list, create, edit, toggle, and delete flow.
+- [x] Implement file upload and image publishing.
+- [x] Implement accounting.
+- [x] Implement relationship anniversaries.
+- [x] Implement relationship space activity timeline.
+- [ ] Implement statistics.

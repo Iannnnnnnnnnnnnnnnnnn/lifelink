@@ -1,0 +1,331 @@
+* {
+  box-sizing: border-box;
+}
+
+html,
+body,
+#root {
+  width: 100%;
+  min-width: 320px;
+  min-height: 100%;
+  margin: 0;
+}
+
+body {
+  font-family: Inter, "Segoe UI", Arial, sans-serif;
+  background: #f4f7fb;
+  color: #172033;
+}
+
+.app-shell {
+  min-height: 100vh;
+}
+
+.app-sider {
+  background: #ffffff;
+  border-right: 1px solid #edf0f5;
+  box-shadow: 10px 0 28px rgba(36, 48, 73, 0.04);
+}
+
+.brand {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  height: 72px;
+  padding: 0 20px;
+  border-bottom: 1px solid #edf0f5;
+}
+
+.brand-mark {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 8px;
+  background: #eaf3ff;
+}
+
+.brand-icon {
+  color: #1677ff;
+  font-size: 20px;
+}
+
+.brand-name,
+.brand-subtitle {
+  display: block;
+  line-height: 1.25;
+}
+
+.brand-subtitle {
+  font-size: 12px;
+}
+
+.app-menu {
+  padding: 12px;
+  border-inline-end: 0 !important;
+}
+
+.app-menu .ant-menu-item {
+  height: 42px;
+  margin: 4px 0;
+  border-radius: 8px;
+}
+
+.app-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 64px;
+  padding: 0 24px;
+  background: rgba(255, 255, 255, 0.94);
+  border-bottom: 1px solid #edf0f5;
+  backdrop-filter: blur(12px);
+}
+
+.app-header h4 {
+  margin: 0;
+}
+
+.header-subtitle {
+  display: block;
+  margin-top: 2px;
+  font-size: 12px;
+}
+
+.app-content {
+  display: flex;
+  justify-content: center;
+  padding: 28px;
+  background: #f4f7fb;
+}
+
+.home-page {
+  width: 100%;
+  max-width: 1120px;
+}
+
+.page-wide {
+  width: 100%;
+  max-width: 1120px;
+}
+
+.page-narrow {
+  width: 100%;
+  max-width: 680px;
+}
+
+.page-heading {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 4px 0 2px;
+}
+
+.page-heading h2 {
+  margin: 0 0 6px;
+}
+
+.relationship-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(260px, 1fr));
+  gap: 16px;
+}
+
+.relationship-card .ant-card-actions {
+  background: #fbfcff;
+}
+
+.relationship-filter {
+  width: 220px;
+}
+
+.todo-status-filter {
+  width: 120px;
+}
+
+.full-width {
+  width: 100%;
+}
+
+.daily-content {
+  white-space: pre-wrap;
+  font-size: 16px;
+  line-height: 1.8;
+  margin-bottom: 0;
+}
+
+.daily-card .ant-card-head {
+  border-bottom-color: #eef2f7;
+}
+
+.daily-meta {
+  padding-top: 4px;
+  border-top: 1px solid #f0f3f8;
+}
+
+.header-actions {
+  margin-left: auto;
+}
+
+.user-chip {
+  height: 32px;
+  padding: 4px 14px;
+  border: 1px solid #edf0f5;
+  border-radius: 6px;
+  background: #fbfcff;
+}
+
+.welcome-card {
+  overflow: hidden;
+  border: 0;
+  background: linear-gradient(135deg, #ffffff 0%, #eef7ff 52%, #f8fbff 100%);
+}
+
+.dashboard-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+}
+
+.dashboard-hero h2 {
+  margin: 6px 0;
+}
+
+.eyebrow {
+  color: #1677ff;
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 0;
+  text-transform: uppercase;
+}
+
+.clickable-list-item {
+  cursor: pointer;
+  border-radius: 8px;
+  transition: background 0.2s ease;
+}
+
+.clickable-list-item:hover {
+  background: #f7faff;
+}
+
+.list-description {
+  margin-bottom: 0 !important;
+}
+
+.content-tabs .ant-tabs-nav {
+  margin-bottom: 16px;
+}
+
+.action-card {
+  height: 100%;
+}
+
+.action-card h4 {
+  margin: 0 0 6px;
+}
+
+.action-icon {
+  margin-top: 4px;
+  color: #1677ff;
+  font-size: 22px;
+}
+
+.todo-list-card .ant-card-body {
+  padding: 4px 18px;
+}
+
+.todo-list-item {
+  align-items: flex-start !important;
+  padding: 16px 0 !important;
+}
+
+.filter-actions .ant-input-search {
+  width: 220px;
+}
+
+.ant-card {
+  border-color: #edf1f7;
+  box-shadow: 0 10px 26px rgba(45, 59, 88, 0.05);
+}
+
+.ant-btn {
+  box-shadow: none;
+}
+
+.auth-page {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 100vh;
+  padding: 24px;
+  background: #f5f7fb;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 420px;
+}
+
+.auth-link {
+  margin: 16px 0 0;
+  text-align: center;
+}
+
+@media (max-width: 720px) {
+  .app-shell {
+    display: block;
+  }
+
+  .app-sider {
+    width: 100% !important;
+    min-width: 100% !important;
+    max-width: 100% !important;
+  }
+
+  .app-content {
+    padding: 16px;
+  }
+
+  .app-header {
+    height: auto;
+    min-height: 64px;
+    flex-wrap: wrap;
+    gap: 12px;
+    padding: 12px 16px;
+  }
+
+  .header-actions {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .page-heading {
+    display: block;
+  }
+
+  .page-heading .ant-space {
+    margin-top: 12px;
+  }
+
+  .dashboard-hero {
+    display: block;
+  }
+
+  .dashboard-hero .ant-space {
+    margin-top: 16px;
+  }
+
+  .filter-actions,
+  .filter-actions .ant-input-search,
+  .relationship-filter {
+    width: 100%;
+  }
+
+  .logout-button span:not(.anticon) {
+    display: none;
+  }
+}

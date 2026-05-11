@@ -3,10 +3,6 @@ target/
 *.class
 *.jar
 *.war
-*.ear
-
-# Maven
-.mvn/wrapper/maven-wrapper.jar
 
 # Node
 node_modules/
@@ -29,3 +25,6 @@ logs/
 # OS
 .DS_Store
 Thumbs.db
+
+# Docker data
+*.pid

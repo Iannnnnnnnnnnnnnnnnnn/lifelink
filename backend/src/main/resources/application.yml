@@ -1,0 +1,40 @@
+server:
+  port: 8081
+
+spring:
+  application:
+    name: lifelink-backend
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: jdbc:postgresql://localhost:5432/lifelink
+    username: lifelink
+    password: lifelink123456
+  data:
+    redis:
+      host: localhost
+      port: 6379
+      database: 0
+  servlet:
+    multipart:
+      max-file-size: 5MB
+      max-request-size: 50MB
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    banner: false
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+lifelink:
+  jwt:
+    secret: lifelink-jwt-secret-change-me-lifelink-jwt-secret-change-me
+    expiration: 604800000
+  minio:
+    endpoint: http://localhost:9000
+    access-key: admin
+    secret-key: admin123456
+    bucket: lifelink

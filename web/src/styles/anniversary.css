@@ -1,0 +1,75 @@
+.anniversary-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+  gap: 16px;
+}
+
+.anniversary-card {
+  position: relative;
+  min-height: 220px;
+  overflow: hidden;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #1677ff 0%, #13c2c2 100%);
+  background-position: center;
+  background-size: cover;
+  color: #ffffff;
+  cursor: pointer;
+  box-shadow: 0 12px 30px rgba(28, 43, 66, 0.12);
+}
+
+.anniversary-card::before {
+  position: absolute;
+  inset: 0;
+  content: "";
+  background: linear-gradient(180deg, rgba(11, 18, 32, 0.2), rgba(11, 18, 32, 0.74));
+}
+
+.anniversary-card-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  min-height: 220px;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 18px;
+}
+
+.anniversary-card h3,
+.anniversary-card .ant-typography,
+.anniversary-card .ant-tag {
+  color: #ffffff;
+}
+
+.anniversary-card .ant-tag {
+  border-color: rgba(255, 255, 255, 0.34);
+  background: rgba(255, 255, 255, 0.18);
+}
+
+.anniversary-day-count {
+  font-size: 56px;
+  font-weight: 800;
+  line-height: 1;
+}
+
+.anniversary-display-text {
+  margin: 8px 0 0;
+  color: rgba(255, 255, 255, 0.92);
+  font-size: 15px;
+}
+
+.anniversary-detail-hero {
+  min-height: 320px;
+  border-radius: 8px;
+}
+
+.anniversary-form-upload .ant-upload-list-picture-card .ant-upload-list-item,
+.anniversary-form-upload .ant-upload-select {
+  width: 140px !important;
+  height: 96px !important;
+}
+
+@media (max-width: 720px) {
+  .anniversary-day-count {
+    font-size: 44px;
+  }
+}

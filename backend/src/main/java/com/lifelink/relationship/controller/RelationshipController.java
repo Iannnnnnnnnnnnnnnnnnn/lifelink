@@ -1,0 +1,75 @@
+package com.lifelink.relationship.controller;
+
+import com.lifelink.common.Result;
+import com.lifelink.relationship.dto.CreateInviteResponse;
+import com.lifelink.relationship.dto.CreateRelationshipRequest;
+import com.lifelink.relationship.dto.JoinRelationshipRequest;
+import com.lifelink.relationship.dto.RelationshipDetailResponse;
+import com.lifelink.relationship.dto.RelationshipMemberResponse;
+import com.lifelink.relationship.dto.RelationshipResponse;
+import com.lifelink.relationship.service.RelationshipService;
+import com.lifelink.security.LoginUser;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
+
+@RestController
+@RequestMapping("/api/relationships")
+@RequiredArgsConstructor
+public class RelationshipController {
+
+    private final RelationshipService relationshipService;
+
+    @PostMapping
+    public Result<RelationshipDetailResponse> createRelationship(
+            @Valid @RequestBody CreateRelationshipRequest request,
+            @AuthenticationPrincipal LoginUser loginUser
+    ) {
+        return Result.success(relationshipService.createRelationship(request, loginUser.getId()));
+    }
+
+    @GetMapping
+    public Result<List<RelationshipResponse>> listRelationships(@AuthenticationPrincipal LoginUser loginUser) {
+        return Result.success(relationshipService.listRelationships(loginUser.getId()));
+    }
+
+    @GetMapping("/{id}")
+    public Result<RelationshipDetailResponse> getRelationship(
+            @PathVariable Long id,
+            @AuthenticationPrincipal LoginUser loginUser
+    ) {
+        return Result.success(relationshipService.getRelationship(id, loginUser.getId()));
+    }
+
+    @GetMapping("/{id}/members")
+    public Result<List<RelationshipMemberResponse>> listMembers(
+            @PathVariable Long id,
+            @AuthenticationPrincipal LoginUser loginUser
+    ) {
+        return Result.success(relationshipService.listMembers(id, loginUser.getId()));
+    }
+
+    @PostMapping("/{id}/invite")
+    public Result<CreateInviteResponse> createInvite(
+            @PathVariable Long id,
+            @AuthenticationPrincipal LoginUser loginUser
+    ) {
+        return Result.success(relationshipService.createInvite(id, loginUser.getId()));
+    }
+
+    @PostMapping("/join")
+    public Result<RelationshipDetailResponse> joinRelationship(
+            @Valid @RequestBody JoinRelationshipRequest request,
+            @AuthenticationPrincipal LoginUser loginUser
+    ) {
+        return Result.success(relationshipService.joinRelationship(request, loginUser.getId()));
+    }
+}

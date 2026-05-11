@@ -1,0 +1,59 @@
+.theme-colorful {
+  color-scheme: light;
+}
+
+.theme-grayscale {
+  background: #f1f2f4;
+}
+
+.theme-grayscale .app-sider,
+.theme-grayscale .app-header {
+  background: #fafafa;
+  border-color: #e1e4e8;
+}
+
+.theme-grayscale .brand-mark {
+  background: #eef0f3;
+}
+
+.theme-grayscale .brand-icon,
+.theme-grayscale .action-icon,
+.theme-grayscale .eyebrow {
+  color: #667085;
+}
+
+.theme-grayscale .app-content {
+  background: #f1f2f4;
+}
+
+.theme-grayscale .app-content > * {
+  filter: grayscale(0.75) saturate(0.55);
+}
+
+.theme-grayscale .ant-card {
+  border-color: #e1e4e8;
+  box-shadow: 0 10px 24px rgba(36, 45, 57, 0.05);
+}
+
+.theme-grayscale .ant-menu-item-selected {
+  background-color: #eef0f3 !important;
+  color: #344054 !important;
+}
+
+.theme-grayscale .ant-menu-item-selected .anticon {
+  color: #344054 !important;
+}
+
+.theme-grayscale .ant-btn-primary {
+  background: #5f6b7a;
+  border-color: #5f6b7a;
+}
+
+.theme-grayscale .ant-btn-primary:not(:disabled):not(.ant-btn-disabled):hover {
+  background: #4b5565;
+  border-color: #4b5565;
+}
+
+.theme-grayscale .ant-tag {
+  border-color: #d0d5dd;
+}

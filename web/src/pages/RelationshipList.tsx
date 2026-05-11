@@ -1,0 +1,95 @@
+import { ArrowRightOutlined, PlusOutlined, UsergroupAddOutlined } from '@ant-design/icons';
+import { Button, Card, message, Skeleton, Space, Tag, Typography } from 'antd';
+import { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useNavigate } from 'react-router-dom';
+import { getRelationships, RelationshipSummary } from '../api/relationship';
+import { EmptyState } from '../components/decorations/EmptyState';
+
+export function RelationshipList() {
+  const { t } = useTranslation();
+  const navigate = useNavigate();
+  const [relationships, setRelationships] = useState<RelationshipSummary[]>([]);
+  const [loading, setLoading] = useState(false);
+  const [messageApi, contextHolder] = message.useMessage();
+
+  const loadRelationships = async () => {
+    setLoading(true);
+    try {
+      const response = await getRelationships();
+      setRelationships(response.data.data);
+    } catch (error) {
+      messageApi.error(t('relationship.loadFailed'));
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    loadRelationships();
+  }, []);
+
+  return (
+    <Space direction="vertical" size={16} className="page-wide">
+      {contextHolder}
+      <div className="page-heading">
+        <div>
+          <Typography.Title level={2}>{t('relationship.title')}</Typography.Title>
+          <Typography.Text type="secondary">{t('relationship.spacesJoined')}.</Typography.Text>
+        </div>
+        <Space>
+          <Button icon={<UsergroupAddOutlined />} onClick={() => navigate('/relationships/join')}>
+            {t('relationship.join')}
+          </Button>
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/relationships/create')}>
+            {t('relationship.create')}
+          </Button>
+        </Space>
+      </div>
+
+      {loading && relationships.length === 0 ? (
+        <div className="relationship-grid">
+          {[1, 2, 3].map((item) => (
+            <Card key={item}>
+              <Skeleton active paragraph={{ rows: 3 }} />
+            </Card>
+          ))}
+        </div>
+      ) : relationships.length === 0 ? (
+        <Card>
+          <EmptyState description={t('ui.createFirstSpace')} />
+        </Card>
+      ) : (
+        <div className="relationship-grid">
+          {relationships.map((relationship) => (
+            <Card
+              key={relationship.id}
+              hoverable
+              loading={loading}
+              title={relationship.name}
+              className="relationship-card"
+              actions={[
+                <Button type="link" icon={<ArrowRightOutlined />} onClick={() => navigate(`/relationships/${relationship.id}`)}>
+                  {t('relationship.enterDetail')}
+                </Button>,
+              ]}
+            >
+              <Space direction="vertical" size={10}>
+                <Space>
+                  <Tag color="blue">{relationship.type}</Tag>
+                  <Tag>{relationship.currentUserRole}</Tag>
+                </Space>
+                <Typography.Text type="secondary">
+                  {t('relationship.createdAt')}: {relationship.createdAt}
+                </Typography.Text>
+                <Typography.Paragraph type="secondary" ellipsis={{ rows: 2 }}>
+                  {relationship.description || t('common.noDescription')}
+                </Typography.Paragraph>
+              </Space>
+            </Card>
+          ))}
+        </div>
+      )}
+    </Space>
+  );
+}

@@ -1,0 +1,43 @@
+.activity-timeline-card {
+  border-radius: 8px;
+}
+
+.activity-toolbar {
+  justify-content: flex-end;
+}
+
+.activity-item-card {
+  border-color: #edf1f7;
+  box-shadow: 0 8px 20px rgba(45, 59, 88, 0.05);
+}
+
+.activity-item-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.activity-actor {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.activity-text {
+  margin-bottom: 6px !important;
+  font-size: 15px;
+}
+
+.activity-meta {
+  color: #667085;
+  font-size: 13px;
+}
+
+@media (max-width: 720px) {
+  .activity-item-head {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}
