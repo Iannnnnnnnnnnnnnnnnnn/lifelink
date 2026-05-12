@@ -1,15 +1,14 @@
-import { CalendarOutlined, HeartOutlined } from '@ant-design/icons';
+import { CalendarOutlined } from '@ant-design/icons';
 import { Button, Space, Tag, Typography } from 'antd';
 import { useTranslation } from 'react-i18next';
 
 interface DashboardHeroProps {
   username?: string;
-  hasCoupleRelationship: boolean;
   onCreateDaily: () => void;
   onCreateSpace: () => void;
 }
 
-export function DashboardHero({ username, hasCoupleRelationship, onCreateDaily, onCreateSpace }: DashboardHeroProps) {
+export function DashboardHero({ username, onCreateDaily, onCreateSpace }: DashboardHeroProps) {
   const { t, i18n } = useTranslation();
   const currentDate = new Intl.DateTimeFormat(i18n.resolvedLanguage === 'en-US' ? 'en-US' : 'zh-CN', {
     weekday: 'long',
@@ -22,7 +21,6 @@ export function DashboardHero({ username, hasCoupleRelationship, onCreateDaily, 
       <div className="dashboard-hero-copy">
         <Space wrap className="dashboard-hero-tags">
           <Tag icon={<CalendarOutlined />}>{currentDate}</Tag>
-          <Tag icon={<HeartOutlined />}>{hasCoupleRelationship ? t('theme.colorful') : t('theme.grayscale')}</Tag>
         </Space>
         <Typography.Title level={1}>{t('dashboard.welcomeBack', { name: username || t('home.defaultUser') })}</Typography.Title>
         <Typography.Text>{t('dashboard.slogan')}</Typography.Text>

@@ -10,7 +10,11 @@ import com.lifelink.daily.dto.DailyPostImageResponse;
 import com.lifelink.daily.dto.DailyPostResponse;
 import com.lifelink.daily.entity.DailyPostImage;
 import com.lifelink.daily.entity.DailyPost;
+import com.lifelink.daily.entity.DailyPostComment;
+import com.lifelink.daily.entity.DailyPostLike;
+import com.lifelink.daily.mapper.DailyPostCommentMapper;
 import com.lifelink.daily.mapper.DailyPostImageMapper;
+import com.lifelink.daily.mapper.DailyPostLikeMapper;
 import com.lifelink.daily.mapper.DailyPostMapper;
 import com.lifelink.daily.service.DailyPostService;
 import com.lifelink.file.entity.FileResource;
@@ -52,6 +56,8 @@ public class DailyPostServiceImpl implements DailyPostService {
     private final FileResourceMapper fileResourceMapper;
     private final DailyPostImageMapper dailyPostImageMapper;
     private final SpaceActivityService spaceActivityService;
+    private final DailyPostLikeMapper dailyPostLikeMapper;
+    private final DailyPostCommentMapper dailyPostCommentMapper;
 
     @Override
     @Transactional
@@ -82,7 +88,7 @@ public class DailyPostServiceImpl implements DailyPostService {
                 Map.of("contentPreview", buildPreview(post.getContent()), "mood", post.getMood() == null ? "" : post.getMood())
         );
 
-        return toDetail(post, relationship);
+        return toDetail(post, relationship, userId);
     }
 
     @Override
@@ -109,7 +115,7 @@ public class DailyPostServiceImpl implements DailyPostService {
         List<DailyPostResponse> responses = new ArrayList<DailyPostResponse>();
         for (DailyPost post : result.getRecords()) {
             Relationship relationship = relationshipMapper.selectById(post.getRelationshipId());
-            responses.add(toResponse(post, relationship));
+            responses.add(toResponse(post, relationship, userId));
         }
         return responses;
     }
@@ -122,7 +128,7 @@ public class DailyPostServiceImpl implements DailyPostService {
         }
         Relationship relationship = requireActiveRelationship(post.getRelationshipId());
         requireRelationshipMember(post.getRelationshipId(), userId);
-        return toDetail(post, relationship);
+        return toDetail(post, relationship, userId);
     }
 
     @Override
@@ -153,6 +159,7 @@ public class DailyPostServiceImpl implements DailyPostService {
         RelationshipMember member = relationshipMemberMapper.selectOne(new LambdaQueryWrapper<RelationshipMember>()
                 .eq(RelationshipMember::getRelationshipId, relationshipId)
                 .eq(RelationshipMember::getUserId, userId)
+                .eq(RelationshipMember::getStatus, ACTIVE_STATUS)
                 .last("LIMIT 1"));
         if (member == null) {
             throw new BusinessException(403, "You are not a member of this relationship");
@@ -161,7 +168,8 @@ public class DailyPostServiceImpl implements DailyPostService {
 
     private List<Long> listCurrentUserRelationshipIds(Long userId) {
         List<RelationshipMember> members = relationshipMemberMapper.selectList(new LambdaQueryWrapper<RelationshipMember>()
-                .eq(RelationshipMember::getUserId, userId));
+                .eq(RelationshipMember::getUserId, userId)
+                .eq(RelationshipMember::getStatus, ACTIVE_STATUS));
         List<Long> relationshipIds = new ArrayList<Long>();
         for (RelationshipMember member : members) {
             Relationship relationship = relationshipMapper.selectById(member.getRelationshipId());
@@ -172,7 +180,7 @@ public class DailyPostServiceImpl implements DailyPostService {
         return relationshipIds;
     }
 
-    private DailyPostResponse toResponse(DailyPost post, Relationship relationship) {
+    private DailyPostResponse toResponse(DailyPost post, Relationship relationship, Long currentUserId) {
         User user = userMapper.selectById(post.getUserId());
         return new DailyPostResponse(
                 post.getId(),
@@ -184,11 +192,14 @@ public class DailyPostServiceImpl implements DailyPostService {
                 post.getMood(),
                 post.getVisibility(),
                 post.getCreatedAt(),
-                listPostImages(post.getId())
+                listPostImages(post.getId()),
+                countLikes(post.getId()),
+                countComments(post.getId()),
+                isLikedByUser(post.getId(), currentUserId)
         );
     }
 
-    private DailyPostDetailResponse toDetail(DailyPost post, Relationship relationship) {
+    private DailyPostDetailResponse toDetail(DailyPost post, Relationship relationship, Long currentUserId) {
         User user = userMapper.selectById(post.getUserId());
         return new DailyPostDetailResponse(
                 post.getId(),
@@ -202,7 +213,10 @@ public class DailyPostServiceImpl implements DailyPostService {
                 post.getStatus(),
                 post.getCreatedAt(),
                 post.getUpdatedAt(),
-                listPostImages(post.getId())
+                listPostImages(post.getId()),
+                countLikes(post.getId()),
+                countComments(post.getId()),
+                isLikedByUser(post.getId(), currentUserId)
         );
     }
 
@@ -285,5 +299,22 @@ public class DailyPostServiceImpl implements DailyPostService {
             }
         }
         return result;
+    }
+
+    private Long countLikes(Long postId) {
+        return dailyPostLikeMapper.selectCount(new LambdaQueryWrapper<DailyPostLike>()
+                .eq(DailyPostLike::getDailyPostId, postId));
+    }
+
+    private Long countComments(Long postId) {
+        return dailyPostCommentMapper.selectCount(new LambdaQueryWrapper<DailyPostComment>()
+                .eq(DailyPostComment::getDailyPostId, postId)
+                .eq(DailyPostComment::getStatus, ACTIVE_STATUS));
+    }
+
+    private Boolean isLikedByUser(Long postId, Long userId) {
+        return dailyPostLikeMapper.selectCount(new LambdaQueryWrapper<DailyPostLike>()
+                .eq(DailyPostLike::getDailyPostId, postId)
+                .eq(DailyPostLike::getUserId, userId)) > 0;
     }
 }

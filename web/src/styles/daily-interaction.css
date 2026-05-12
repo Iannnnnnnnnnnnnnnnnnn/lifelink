@@ -1,0 +1,47 @@
+.daily-interaction-bar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  padding-top: 10px;
+  border-top: 1px solid rgba(240, 243, 248, 0.9);
+}
+
+.daily-interaction-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.daily-like-button.liked {
+  color: #eb5f8d;
+  border-color: #ffd6e4;
+  background: #fff3f7;
+}
+
+.daily-comment-card {
+  border-radius: 16px;
+}
+
+.daily-comment-form {
+  margin-bottom: 18px;
+}
+
+.daily-comment-item {
+  padding: 12px 0 !important;
+}
+
+.daily-comment-content {
+  white-space: pre-wrap;
+}
+
+.theme-grayscale .daily-like-button.liked {
+  filter: grayscale(0.75) saturate(0.5);
+}
+
+@media (max-width: 720px) {
+  .daily-interaction-bar {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+}

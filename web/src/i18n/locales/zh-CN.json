@@ -30,11 +30,6 @@
     "anniversaries": "纪念日",
     "finance": "记账"
   },
-  "theme": {
-    "coupleHint": "创建恋人关系空间后，将启用彩色主题。",
-    "grayscale": "当前为灰色主题。",
-    "colorful": "当前为彩色主题。"
-  },
   "ui": {
     "welcomeBack": "欢迎回来",
     "quickActions": "快捷操作",
@@ -187,6 +182,30 @@
     "inviteCodeRequired": "请输入邀请码",
     "inviteCodePlaceholder": "8 位邀请码"
   },
+  "member": {
+    "title": "成员管理",
+    "nickname": "空间昵称",
+    "editNickname": "修改昵称",
+    "role": "角色",
+    "owner": "拥有者",
+    "admin": "管理员",
+    "member": "成员",
+    "setAdmin": "设为管理员",
+    "removeAdmin": "取消管理员",
+    "removeMember": "移除成员",
+    "transferOwner": "转让拥有者",
+    "leaveSpace": "退出空间",
+    "dissolveSpace": "解散空间",
+    "confirmLeave": "确定要退出这个关系空间吗？",
+    "confirmDissolve": "确定要解散这个关系空间吗？此操作不可恢复。",
+    "confirmRemove": "确定要移除该成员吗？",
+    "confirmTransfer": "确定要将拥有者转让给该成员吗？",
+    "updateSuccess": "更新成功",
+    "leaveSuccess": "已退出空间",
+    "dissolveSuccess": "空间已解散",
+    "removeSuccess": "成员已移除",
+    "transferSuccess": "拥有者已转让"
+  },
   "daily": {
     "title": "日常时间线",
     "subtitle": "来自你关系空间的文字日常记录",
@@ -216,6 +235,21 @@
     "imageTypeLimit": "仅支持 jpg、jpeg、png、webp",
     "uploadFailed": "上传失败",
     "previewImage": "预览图片"
+  },
+  "dailyInteraction": {
+    "like": "点赞",
+    "unlike": "取消点赞",
+    "comment": "评论",
+    "comments": "评论",
+    "writeComment": "写下你的评论...",
+    "sendComment": "发送评论",
+    "deleteComment": "删除评论",
+    "confirmDeleteComment": "确定要删除这条评论吗？",
+    "commentEmpty": "暂无评论",
+    "commentSuccess": "评论成功",
+    "deleteCommentSuccess": "评论已删除",
+    "likeSuccess": "已点赞",
+    "unlikeSuccess": "已取消点赞"
   },
   "anniversary": {
     "title": "纪念日",
@@ -268,7 +302,13 @@
     "someone": "有人",
     "relationshipCreated": "{{user}} 创建了关系空间：{{name}}",
     "memberJoined": "{{user}} 加入了空间",
+    "memberLeft": "{{user}} 退出了空间",
+    "memberRemoved": "{{user}} 移除了成员：{{target}}",
+    "memberRoleUpdated": "{{user}} 更新了成员角色：{{target}}",
+    "ownerTransferred": "{{user}} 转让了拥有者给：{{target}}",
+    "relationshipDeleted": "{{user}} 解散了关系空间：{{name}}",
     "dailyPostCreated": "{{user}} 发布了一条日常",
+    "dailyPostCommented": "{{user}} 评论了一条日常",
     "todoCreated": "{{user}} 创建了代办：{{title}}",
     "todoCompleted": "{{user}} 完成了代办：{{title}}",
     "todoReopened": "{{user}} 重新打开了代办：{{title}}",
@@ -276,7 +316,13 @@
     "types": {
       "RELATIONSHIP_CREATED": "创建空间",
       "MEMBER_JOINED": "成员加入",
+      "MEMBER_LEFT": "成员退出",
+      "MEMBER_REMOVED": "移除成员",
+      "MEMBER_ROLE_UPDATED": "角色更新",
+      "OWNER_TRANSFERRED": "拥有者转让",
+      "RELATIONSHIP_DELETED": "解散空间",
       "DAILY_POST_CREATED": "发布日常",
+      "DAILY_POST_COMMENTED": "评论日常",
       "TODO_CREATED": "创建代办",
       "TODO_COMPLETED": "完成代办",
       "TODO_REOPENED": "重开代办",

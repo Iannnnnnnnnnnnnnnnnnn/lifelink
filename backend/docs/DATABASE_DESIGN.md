@@ -62,10 +62,15 @@ CREATE TABLE IF NOT EXISTS relationship_members (
     user_id BIGINT NOT NULL,
     role VARCHAR(20) NOT NULL DEFAULT 'MEMBER',
     nickname VARCHAR(50),
+    status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
     joined_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     UNIQUE (relationship_id, user_id)
 );
 ```
+
+`role` supports `OWNER`, `ADMIN`, and `MEMBER`.
+`status` supports `ACTIVE`, `REMOVED`, and `LEFT`; member removal and leaving are soft state changes.
 
 ## relationship_invites
 
@@ -179,6 +184,42 @@ Todo initialization SQL:
 
 ```text
 docs/sql/init_space_todos.sql
+```
+
+## daily_post_likes
+
+Stores daily post likes. A user can like one post only once.
+
+```sql
+CREATE TABLE IF NOT EXISTS daily_post_likes (
+    id BIGSERIAL PRIMARY KEY,
+    daily_post_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    CONSTRAINT uk_daily_post_likes_post_user UNIQUE (daily_post_id, user_id)
+);
+```
+
+## daily_post_comments
+
+Stores daily post comments. Deletion is soft by setting `status` to `DELETED`.
+
+```sql
+CREATE TABLE IF NOT EXISTS daily_post_comments (
+    id BIGSERIAL PRIMARY KEY,
+    daily_post_id BIGINT NOT NULL,
+    user_id BIGINT NOT NULL,
+    content TEXT NOT NULL,
+    status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+Daily post interaction initialization SQL:
+
+```text
+docs/sql/init_daily_post_interactions.sql
 ```
 
 ## account_books

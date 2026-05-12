@@ -5,36 +5,19 @@ import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.time.LocalDateTime;
-import java.util.List;
 
 @Data
 @NoArgsConstructor
 @AllArgsConstructor
-public class DailyPostResponse {
+public class DailyPostCommentResponse {
 
     private Long id;
-
-    private Long relationshipId;
-
-    private String relationshipName;
-
+    private Long dailyPostId;
     private Long userId;
-
     private String username;
-
+    private String avatarUrl;
     private String content;
-
-    private String mood;
-
-    private String visibility;
-
     private LocalDateTime createdAt;
-
-    private List<DailyPostImageResponse> images;
-
-    private Long likeCount;
-
-    private Long commentCount;
-
-    private Boolean likedByMe;
+    private LocalDateTime updatedAt;
+    private Boolean canDelete;
 }

@@ -14,6 +14,8 @@
 
 .theme-grayscale .brand-mark {
   background: #eef0f3;
+  box-shadow: 0 10px 22px rgba(75, 85, 99, 0.12);
+  filter: grayscale(1) saturate(0.3);
 }
 
 .theme-grayscale .brand-icon,
@@ -35,13 +37,30 @@
   box-shadow: 0 10px 24px rgba(36, 45, 57, 0.05);
 }
 
-.theme-grayscale .ant-menu-item-selected {
-  background-color: #eef0f3 !important;
-  color: #344054 !important;
+.theme-grayscale .app-menu .ant-menu-item-selected {
+  background: #e5e7eb !important;
+  color: #374151 !important;
 }
 
-.theme-grayscale .ant-menu-item-selected .anticon {
-  color: #344054 !important;
+.theme-grayscale .app-menu .ant-menu-item-selected .anticon,
+.theme-grayscale .app-menu .ant-menu-item-selected a,
+.theme-grayscale .app-menu .ant-menu-item-selected span {
+  color: #374151 !important;
+}
+
+.theme-grayscale .app-menu .ant-menu-item:hover {
+  background: #f3f4f6 !important;
+  color: #374151 !important;
+}
+
+.theme-grayscale .app-menu .ant-menu-item:hover .anticon,
+.theme-grayscale .app-menu .ant-menu-item:hover a,
+.theme-grayscale .app-menu .ant-menu-item:hover span {
+  color: #374151 !important;
+}
+
+.theme-grayscale .app-menu .ant-menu-item::after {
+  border-color: #6b7280 !important;
 }
 
 .theme-grayscale .ant-btn-primary {

@@ -164,7 +164,7 @@ Rules:
 - Method: `GET`
 - Path: `/api/relationships/{id}/members`
 - Auth: Required
-- Description: Returns members in a relationship. Current user must be a member.
+- Description: Returns active members in a relationship. Current user must be an active member.
 
 Response item:
 
@@ -178,6 +178,103 @@ Response item:
   "joinedAt": "2026-05-08T16:00:00"
 }
 ```
+
+## Update My Relationship Nickname
+
+- Method: `PATCH`
+- Path: `/api/relationships/{id}/members/me/nickname`
+- Auth: Required
+- Description: Updates current user's nickname inside the relationship space.
+
+Request:
+
+```json
+{
+  "nickname": "Alice"
+}
+```
+
+Rules:
+
+- Current user must be an active member.
+- `nickname` is optional and must be at most 50 characters.
+
+## Leave Relationship
+
+- Method: `POST`
+- Path: `/api/relationships/{id}/leave`
+- Auth: Required
+- Description: Current user leaves the relationship space by setting member status to `LEFT`.
+
+Rules:
+
+- Current user must be an active member.
+- `OWNER` cannot leave while other active members exist; owner must transfer ownership or dissolve the space first.
+- If the owner is the only member, leaving also soft-deletes the relationship.
+
+## Dissolve Relationship
+
+- Method: `DELETE`
+- Path: `/api/relationships/{id}`
+- Auth: Required
+- Description: Soft deletes the relationship by setting `relationships.status` to `DELETED`.
+
+Rules:
+
+- Only `OWNER` can dissolve the space.
+- Active members are marked `REMOVED`.
+
+## Update Member Role
+
+- Method: `PATCH`
+- Path: `/api/relationships/{id}/members/{userId}/role`
+- Auth: Required
+
+Request:
+
+```json
+{
+  "role": "ADMIN"
+}
+```
+
+Rules:
+
+- Only `OWNER` can update roles.
+- `role` can be `ADMIN` or `MEMBER`.
+- Owner role transfer must use the transfer-owner endpoint.
+
+## Remove Relationship Member
+
+- Method: `DELETE`
+- Path: `/api/relationships/{id}/members/{userId}`
+- Auth: Required
+- Description: Marks the target member as `REMOVED`.
+
+Rules:
+
+- Only `OWNER` can remove members.
+- `OWNER` cannot be removed.
+
+## Transfer Relationship Owner
+
+- Method: `POST`
+- Path: `/api/relationships/{id}/transfer-owner`
+- Auth: Required
+
+Request:
+
+```json
+{
+  "targetUserId": 2
+}
+```
+
+Rules:
+
+- Only current `OWNER` can transfer ownership.
+- Target user must be an active member.
+- Previous owner becomes `ADMIN`.
 
 ## Create Relationship Invite
 
@@ -284,6 +381,62 @@ Rules:
 
 - Current user must be a member of the relationship.
 - Only the author can delete the post.
+
+## Like Daily Post
+
+- Method: `POST`
+- Path: `/api/daily-posts/{postId}/like`
+- Auth: Required
+- Description: Likes a daily post. Calling repeatedly is idempotent.
+- Returns: `dailyPostId`, `likeCount`, `commentCount`, `likedByMe`.
+
+## Unlike Daily Post
+
+- Method: `DELETE`
+- Path: `/api/daily-posts/{postId}/like`
+- Auth: Required
+- Description: Removes current user's like. Calling when not liked is still successful.
+
+## Comment Daily Post
+
+- Method: `POST`
+- Path: `/api/daily-posts/{postId}/comments`
+- Auth: Required
+
+Request:
+
+```json
+{
+  "content": "Looks wonderful!"
+}
+```
+
+Rules:
+
+- Current user must be a member of the post relationship space.
+- `content` length must be 1-1000.
+
+## List Daily Post Comments
+
+- Method: `GET`
+- Path: `/api/daily-posts/{postId}/comments`
+- Auth: Required
+- Query: `page`, `size`.
+- Description: Returns active comments ordered by `created_at` ascending.
+
+## Delete Daily Post Comment
+
+- Method: `DELETE`
+- Path: `/api/daily-posts/{postId}/comments/{commentId}`
+- Auth: Required
+- Description: Soft deletes a comment. Only the comment author can delete it.
+
+## Get Daily Post Interactions
+
+- Method: `GET`
+- Path: `/api/daily-posts/{postId}/interactions`
+- Auth: Required
+- Returns: `dailyPostId`, `likeCount`, `commentCount`, `likedByMe`.
 
 ## Upload File
 
@@ -560,8 +713,12 @@ Activity types:
 - `RELATIONSHIP_CREATED`
 - `MEMBER_JOINED`
 - `MEMBER_LEFT`
+- `MEMBER_REMOVED`
+- `MEMBER_ROLE_UPDATED`
+- `OWNER_TRANSFERRED`
 - `RELATIONSHIP_DELETED`
 - `DAILY_POST_CREATED`
+- `DAILY_POST_COMMENTED`
 - `DAILY_POST_UPDATED`
 - `DAILY_POST_DELETED`
 - `TODO_CREATED`
@@ -578,6 +735,7 @@ Target types:
 - `RELATIONSHIP`
 - `USER`
 - `DAILY_POST`
+- `DAILY_POST_COMMENT`
 - `SPACE_TODO`
 - `ANNIVERSARY`
 
@@ -585,7 +743,13 @@ Automatic activity generation currently covers:
 
 - relationship creation
 - member join
+- member leave
+- member removal
+- member role update
+- owner transfer
+- relationship dissolution
 - daily post creation
+- daily post comment creation
 - todo creation
 - todo completed
 - todo reopened

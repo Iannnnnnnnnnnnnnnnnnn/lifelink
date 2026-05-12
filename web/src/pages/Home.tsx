@@ -26,7 +26,6 @@ import { RecentDailyList } from '../components/dashboard/RecentDailyList';
 import { StatCard } from '../components/dashboard/StatCard';
 import { TodoPreviewList } from '../components/dashboard/TodoPreviewList';
 import { useAuthStore } from '../store/authStore';
-import { useRelationshipThemeStore } from '../store/relationshipThemeStore';
 
 type TodoPreview = SpaceTodo & { relationshipName?: string };
 type DashboardModule = 'relationships' | 'daily' | 'todos' | 'anniversaries' | 'activities';
@@ -44,7 +43,6 @@ export function Home() {
   const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
   const fetchCurrentUser = useAuthStore((state) => state.fetchCurrentUser);
-  const hasCoupleRelationship = useRelationshipThemeStore((state) => state.hasCoupleRelationship);
   const [relationships, setRelationships] = useState<RelationshipSummary[]>([]);
   const [dailyPosts, setDailyPosts] = useState<DailyPost[]>([]);
   const [todos, setTodos] = useState<TodoPreview[]>([]);
@@ -161,7 +159,6 @@ export function Home() {
       {contextHolder}
       <DashboardHero
         username={user?.username}
-        hasCoupleRelationship={hasCoupleRelationship}
         onCreateDaily={() => navigate('/daily/create')}
         onCreateSpace={() => navigate('/relationships/create')}
       />

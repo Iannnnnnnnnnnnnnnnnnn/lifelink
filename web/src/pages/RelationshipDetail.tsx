@@ -1,5 +1,5 @@
-import { CalendarOutlined, CheckSquareOutlined, DollarOutlined, ReloadOutlined, ShareAltOutlined, ThunderboltOutlined } from '@ant-design/icons';
-import { Alert, Button, Card, Col, Descriptions, Empty, message, Row, Space, Table, Tabs, Tag, Typography } from 'antd';
+import { CalendarOutlined, CheckSquareOutlined, DollarOutlined, ReloadOutlined, ShareAltOutlined, ThunderboltOutlined, UserOutlined } from '@ant-design/icons';
+import { Alert, Avatar, Button, Card, Col, Descriptions, Empty, Input, message, Modal, Popconfirm, Row, Space, Table, Tabs, Tag, Typography } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -8,24 +8,38 @@ import { useNavigate } from 'react-router-dom';
 import {
   createRelationshipInvite,
   CreateInviteResponse,
+  dissolveRelationship,
   getRelationshipDetail,
   getRelationshipMembers,
+  leaveRelationship,
+  removeRelationshipMember,
   RelationshipDetail as RelationshipDetailType,
   RelationshipMember,
+  transferRelationshipOwner,
+  updateMemberRole,
+  updateMyRelationshipNickname,
 } from '../api/relationship';
+import { useAuthStore } from '../store/authStore';
+import { useRelationshipThemeStore } from '../store/relationshipThemeStore';
 
 export function RelationshipDetail() {
   const { t } = useTranslation();
   const params = useParams();
   const navigate = useNavigate();
   const relationshipId = Number(params.id);
+  const user = useAuthStore((state) => state.user);
+  const fetchRelationshipThemeStatus = useRelationshipThemeStore((state) => state.fetchRelationshipThemeStatus);
   const [detail, setDetail] = useState<RelationshipDetailType | null>(null);
   const [members, setMembers] = useState<RelationshipMember[]>([]);
   const [invite, setInvite] = useState<CreateInviteResponse | null>(null);
   const [loading, setLoading] = useState(false);
+  const [nicknameModalOpen, setNicknameModalOpen] = useState(false);
+  const [nickname, setNickname] = useState('');
+  const [actionLoading, setActionLoading] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
 
   const canCreateInvite = detail?.currentUserRole === 'OWNER' || detail?.currentUserRole === 'ADMIN';
+  const isOwner = detail?.currentUserRole === 'OWNER';
 
   const loadDetail = async () => {
     setLoading(true);
@@ -53,17 +67,167 @@ export function RelationshipDetail() {
     }
   };
 
+  const refreshAfterMemberChange = async () => {
+    await Promise.all([
+      loadDetail(),
+      fetchRelationshipThemeStatus().catch(() => undefined),
+    ]);
+  };
+
+  const handleUpdateNickname = async () => {
+    setActionLoading(true);
+    try {
+      await updateMyRelationshipNickname(relationshipId, { nickname });
+      messageApi.success(t('member.updateSuccess'));
+      setNicknameModalOpen(false);
+      await refreshAfterMemberChange();
+    } catch (error) {
+      messageApi.error(t('common.failed'));
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleLeave = async () => {
+    setActionLoading(true);
+    try {
+      await leaveRelationship(relationshipId);
+      await fetchRelationshipThemeStatus().catch(() => undefined);
+      messageApi.success(t('member.leaveSuccess'));
+      navigate('/relationships');
+    } catch (error) {
+      messageApi.error(t('common.failed'));
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleDissolve = async () => {
+    setActionLoading(true);
+    try {
+      await dissolveRelationship(relationshipId);
+      await fetchRelationshipThemeStatus().catch(() => undefined);
+      messageApi.success(t('member.dissolveSuccess'));
+      navigate('/relationships');
+    } catch (error) {
+      messageApi.error(t('common.failed'));
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleRoleChange = async (member: RelationshipMember, role: 'ADMIN' | 'MEMBER') => {
+    setActionLoading(true);
+    try {
+      await updateMemberRole(relationshipId, member.userId, { role });
+      messageApi.success(t('member.updateSuccess'));
+      await refreshAfterMemberChange();
+    } catch (error) {
+      messageApi.error(t('common.failed'));
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleRemoveMember = async (member: RelationshipMember) => {
+    setActionLoading(true);
+    try {
+      await removeRelationshipMember(relationshipId, member.userId);
+      messageApi.success(t('member.removeSuccess'));
+      await refreshAfterMemberChange();
+    } catch (error) {
+      messageApi.error(t('common.failed'));
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleTransferOwner = async (member: RelationshipMember) => {
+    setActionLoading(true);
+    try {
+      await transferRelationshipOwner(relationshipId, member.userId);
+      messageApi.success(t('member.transferSuccess'));
+      await refreshAfterMemberChange();
+    } catch (error) {
+      messageApi.error(t('common.failed'));
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const openNicknameModal = () => {
+    const currentMember = members.find((item) => item.userId === user?.id);
+    setNickname(currentMember?.nickname || '');
+    setNicknameModalOpen(true);
+  };
+
   useEffect(() => {
     if (relationshipId) {
       loadDetail();
     }
   }, [relationshipId]);
 
+  const renderRole = (role: string) => {
+    const color = role === 'OWNER' ? 'gold' : role === 'ADMIN' ? 'blue' : 'default';
+    const label = role === 'OWNER' ? t('member.owner') : role === 'ADMIN' ? t('member.admin') : t('member.member');
+    return <Tag color={color}>{label}</Tag>;
+  };
+
   const columns: ColumnsType<RelationshipMember> = [
-    { title: t('relationship.user'), dataIndex: 'username' },
-    { title: t('relationship.role'), dataIndex: 'role', render: (role) => <Tag>{role}</Tag> },
-    { title: t('relationship.nickname'), dataIndex: 'nickname', render: (value) => value || '-' },
+    {
+      title: t('relationship.user'),
+      dataIndex: 'username',
+      render: (_, member) => (
+        <Space>
+          <Avatar src={member.avatarUrl} icon={<UserOutlined />} />
+          <span>{member.username}</span>
+        </Space>
+      ),
+    },
+    { title: t('member.nickname'), dataIndex: 'nickname', render: (value) => value || '-' },
+    { title: t('member.role'), dataIndex: 'role', render: renderRole },
     { title: t('relationship.joinedAt'), dataIndex: 'joinedAt' },
+    {
+      title: t('common.edit'),
+      key: 'actions',
+      render: (_, member) => {
+        const isSelf = member.userId === user?.id;
+        const canOperateMember = isOwner && !isSelf && member.role !== 'OWNER';
+        return (
+          <Space wrap>
+            {isSelf && (
+              <Button size="small" onClick={openNicknameModal}>
+                {t('member.editNickname')}
+              </Button>
+            )}
+            {canOperateMember && member.role === 'MEMBER' && (
+              <Button size="small" onClick={() => handleRoleChange(member, 'ADMIN')} loading={actionLoading}>
+                {t('member.setAdmin')}
+              </Button>
+            )}
+            {canOperateMember && member.role === 'ADMIN' && (
+              <Button size="small" onClick={() => handleRoleChange(member, 'MEMBER')} loading={actionLoading}>
+                {t('member.removeAdmin')}
+              </Button>
+            )}
+            {canOperateMember && (
+              <Popconfirm title={t('member.confirmTransfer')} onConfirm={() => handleTransferOwner(member)}>
+                <Button size="small" loading={actionLoading}>
+                  {t('member.transferOwner')}
+                </Button>
+              </Popconfirm>
+            )}
+            {canOperateMember && (
+              <Popconfirm title={t('member.confirmRemove')} onConfirm={() => handleRemoveMember(member)}>
+                <Button size="small" danger loading={actionLoading}>
+                  {t('member.removeMember')}
+                </Button>
+              </Popconfirm>
+            )}
+          </Space>
+        );
+      },
+    },
   ];
 
   return (
@@ -163,15 +327,34 @@ export function RelationshipDetail() {
           },
           {
             key: 'members',
-            label: t('relationship.members'),
+            label: t('member.title'),
             children: (
-              <Card>
+              <Card
+                title={t('member.title')}
+                extra={
+                  <Space wrap>
+                    <Popconfirm title={t('member.confirmLeave')} onConfirm={handleLeave}>
+                      <Button danger loading={actionLoading}>
+                        {t('member.leaveSpace')}
+                      </Button>
+                    </Popconfirm>
+                    {isOwner && (
+                      <Popconfirm title={t('member.confirmDissolve')} onConfirm={handleDissolve}>
+                        <Button danger type="primary" loading={actionLoading}>
+                          {t('member.dissolveSpace')}
+                        </Button>
+                      </Popconfirm>
+                    )}
+                  </Space>
+                }
+              >
                 <Table
                   rowKey="userId"
                   columns={columns}
                   dataSource={members}
                   pagination={false}
                   loading={loading}
+                  scroll={{ x: 920 }}
                   locale={{ emptyText: <Empty description={t('relationship.noMembers')} /> }}
                 />
               </Card>
@@ -179,6 +362,23 @@ export function RelationshipDetail() {
           },
         ]}
       />
+      <Modal
+        title={t('member.editNickname')}
+        open={nicknameModalOpen}
+        confirmLoading={actionLoading}
+        onOk={handleUpdateNickname}
+        onCancel={() => setNicknameModalOpen(false)}
+        okText={t('common.save')}
+        cancelText={t('common.cancel')}
+      >
+        <Input
+          value={nickname}
+          maxLength={50}
+          showCount
+          placeholder={t('member.nickname')}
+          onChange={(event) => setNickname(event.target.value)}
+        />
+      </Modal>
     </Space>
   );
 }

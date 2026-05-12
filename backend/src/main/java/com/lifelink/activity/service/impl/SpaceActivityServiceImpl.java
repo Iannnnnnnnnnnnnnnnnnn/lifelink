@@ -101,6 +101,7 @@ public class SpaceActivityServiceImpl implements SpaceActivityService {
         RelationshipMember member = relationshipMemberMapper.selectOne(new LambdaQueryWrapper<RelationshipMember>()
                 .eq(RelationshipMember::getRelationshipId, relationshipId)
                 .eq(RelationshipMember::getUserId, userId)
+                .eq(RelationshipMember::getStatus, ACTIVE_STATUS)
                 .last("LIMIT 1"));
         if (member == null) {
             throw new BusinessException(403, "You are not a member of this relationship");
@@ -109,7 +110,8 @@ public class SpaceActivityServiceImpl implements SpaceActivityService {
 
     private List<Long> listCurrentUserRelationshipIds(Long userId) {
         List<RelationshipMember> members = relationshipMemberMapper.selectList(new LambdaQueryWrapper<RelationshipMember>()
-                .eq(RelationshipMember::getUserId, userId));
+                .eq(RelationshipMember::getUserId, userId)
+                .eq(RelationshipMember::getStatus, ACTIVE_STATUS));
         List<Long> relationshipIds = new ArrayList<Long>();
         for (RelationshipMember member : members) {
             Relationship relationship = relationshipMapper.selectById(member.getRelationshipId());

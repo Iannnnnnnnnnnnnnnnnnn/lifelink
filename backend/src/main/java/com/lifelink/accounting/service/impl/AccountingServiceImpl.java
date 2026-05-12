@@ -357,13 +357,15 @@ public class AccountingServiceImpl implements AccountingService {
         RelationshipMember member = relationshipMemberMapper.selectOne(new LambdaQueryWrapper<RelationshipMember>()
                 .eq(RelationshipMember::getRelationshipId, relationshipId)
                 .eq(RelationshipMember::getUserId, userId)
+                .eq(RelationshipMember::getStatus, ACTIVE_STATUS)
                 .last("LIMIT 1"));
         return member != null;
     }
 
     private Set<Long> listCurrentUserRelationshipIds(Long userId) {
         List<RelationshipMember> members = relationshipMemberMapper.selectList(new LambdaQueryWrapper<RelationshipMember>()
-                .eq(RelationshipMember::getUserId, userId));
+                .eq(RelationshipMember::getUserId, userId)
+                .eq(RelationshipMember::getStatus, ACTIVE_STATUS));
         Set<Long> ids = new HashSet<Long>();
         for (RelationshipMember member : members) {
             ids.add(member.getRelationshipId());

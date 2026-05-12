@@ -3,6 +3,7 @@ package com.lifelink.relationship.service.impl;
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.lifelink.activity.service.SpaceActivityService;
 import com.lifelink.common.BusinessException;
+import com.lifelink.notification.service.NotificationService;
 import com.lifelink.relationship.dto.CreateInviteResponse;
 import com.lifelink.relationship.dto.CreateRelationshipRequest;
 import com.lifelink.relationship.dto.JoinRelationshipRequest;
@@ -35,6 +36,9 @@ import java.util.Map;
 public class RelationshipServiceImpl implements RelationshipService {
 
     private static final String ACTIVE_STATUS = "ACTIVE";
+    private static final String DELETED_STATUS = "DELETED";
+    private static final String LEFT_STATUS = "LEFT";
+    private static final String REMOVED_STATUS = "REMOVED";
     private static final String OWNER_ROLE = "OWNER";
     private static final String ADMIN_ROLE = "ADMIN";
     private static final String MEMBER_ROLE = "MEMBER";
@@ -46,6 +50,7 @@ public class RelationshipServiceImpl implements RelationshipService {
     private final RelationshipInviteMapper relationshipInviteMapper;
     private final UserMapper userMapper;
     private final SpaceActivityService spaceActivityService;
+    private final NotificationService notificationService;
 
     @Override
     @Transactional
@@ -66,7 +71,9 @@ public class RelationshipServiceImpl implements RelationshipService {
         owner.setRelationshipId(relationship.getId());
         owner.setUserId(userId);
         owner.setRole(OWNER_ROLE);
+        owner.setStatus(ACTIVE_STATUS);
         owner.setJoinedAt(now);
+        owner.setUpdatedAt(now);
         relationshipMemberMapper.insert(owner);
         createActivitySafely(
                 relationship.getId(),
@@ -85,7 +92,8 @@ public class RelationshipServiceImpl implements RelationshipService {
     @Override
     public List<RelationshipResponse> listRelationships(Long userId) {
         List<RelationshipMember> memberships = relationshipMemberMapper.selectList(new LambdaQueryWrapper<RelationshipMember>()
-                .eq(RelationshipMember::getUserId, userId));
+                .eq(RelationshipMember::getUserId, userId)
+                .eq(RelationshipMember::getStatus, ACTIVE_STATUS));
         List<RelationshipResponse> responses = new ArrayList<RelationshipResponse>();
         for (RelationshipMember member : memberships) {
             Relationship relationship = relationshipMapper.selectById(member.getRelationshipId());
@@ -109,7 +117,8 @@ public class RelationshipServiceImpl implements RelationshipService {
         requireActiveRelationship(relationshipId);
 
         List<RelationshipMember> members = relationshipMemberMapper.selectList(new LambdaQueryWrapper<RelationshipMember>()
-                .eq(RelationshipMember::getRelationshipId, relationshipId));
+                .eq(RelationshipMember::getRelationshipId, relationshipId)
+                .eq(RelationshipMember::getStatus, ACTIVE_STATUS));
         List<RelationshipMemberResponse> responses = new ArrayList<RelationshipMemberResponse>();
         for (RelationshipMember member : members) {
             User user = userMapper.selectById(member.getUserId());
@@ -164,17 +173,29 @@ public class RelationshipServiceImpl implements RelationshipService {
         }
 
         Relationship relationship = requireActiveRelationship(invite.getRelationshipId());
-        RelationshipMember existing = findMember(invite.getRelationshipId(), userId);
-        if (existing != null) {
+        LocalDateTime now = LocalDateTime.now();
+        RelationshipMember existing = findAnyMember(invite.getRelationshipId(), userId);
+        if (existing != null && ACTIVE_STATUS.equals(existing.getStatus())) {
             throw new BusinessException(400, "You are already a member of this relationship");
         }
 
-        RelationshipMember member = new RelationshipMember();
-        member.setRelationshipId(invite.getRelationshipId());
-        member.setUserId(userId);
-        member.setRole(MEMBER_ROLE);
-        member.setJoinedAt(LocalDateTime.now());
-        relationshipMemberMapper.insert(member);
+        if (existing == null) {
+            RelationshipMember member = new RelationshipMember();
+            member.setRelationshipId(invite.getRelationshipId());
+            member.setUserId(userId);
+            member.setRole(MEMBER_ROLE);
+            member.setStatus(ACTIVE_STATUS);
+            member.setJoinedAt(now);
+            member.setUpdatedAt(now);
+            relationshipMemberMapper.insert(member);
+        } else {
+            existing.setRole(MEMBER_ROLE);
+            existing.setNickname(null);
+            existing.setStatus(ACTIVE_STATUS);
+            existing.setJoinedAt(now);
+            existing.setUpdatedAt(now);
+            relationshipMemberMapper.updateById(existing);
+        }
         User user = userMapper.selectById(userId);
         String username = user == null ? null : user.getUsername();
         createActivitySafely(
@@ -187,8 +208,227 @@ public class RelationshipServiceImpl implements RelationshipService {
                 null,
                 Map.of("username", username == null ? "" : username)
         );
+        createNotificationSafely(
+                relationship.getOwnerId(),
+                userId,
+                "RELATIONSHIP_MEMBER_JOINED",
+                "Someone joined your relationship space",
+                (username == null ? "Someone" : username) + " joined " + relationship.getName(),
+                "RELATIONSHIP",
+                relationship.getId(),
+                relationship.getId(),
+                Map.of("relationshipName", relationship.getName(), "username", username == null ? "" : username)
+        );
 
         return toDetail(relationship, MEMBER_ROLE);
+    }
+
+    @Override
+    @Transactional
+    public void updateMyNickname(Long relationshipId, com.lifelink.relationship.dto.UpdateMyNicknameRequest request, Long userId) {
+        requireActiveRelationship(relationshipId);
+        RelationshipMember member = requireMember(relationshipId, userId);
+        String nickname = request.getNickname();
+        member.setNickname(nickname == null || nickname.trim().isEmpty() ? null : nickname.trim());
+        member.setUpdatedAt(LocalDateTime.now());
+        relationshipMemberMapper.updateById(member);
+    }
+
+    @Override
+    @Transactional
+    public void leaveRelationship(Long relationshipId, Long userId) {
+        Relationship relationship = requireActiveRelationship(relationshipId);
+        RelationshipMember member = requireMember(relationshipId, userId);
+        long activeMemberCount = countActiveMembers(relationshipId);
+        if (OWNER_ROLE.equals(member.getRole()) && activeMemberCount > 1) {
+            throw new BusinessException(400, "Owner must transfer ownership or dissolve the relationship before leaving");
+        }
+
+        LocalDateTime now = LocalDateTime.now();
+        member.setStatus(LEFT_STATUS);
+        member.setUpdatedAt(now);
+        relationshipMemberMapper.updateById(member);
+        if (OWNER_ROLE.equals(member.getRole())) {
+            relationship.setStatus(DELETED_STATUS);
+            relationship.setUpdatedAt(now);
+            relationshipMapper.updateById(relationship);
+        }
+
+        createActivitySafely(
+                relationshipId,
+                userId,
+                "MEMBER_LEFT",
+                "USER",
+                userId,
+                "A member left the space",
+                null,
+                Map.of("username", getUsername(userId))
+        );
+    }
+
+    @Override
+    @Transactional
+    public void dissolveRelationship(Long relationshipId, Long userId) {
+        Relationship relationship = requireActiveRelationship(relationshipId);
+        requireOwner(relationshipId, userId);
+        List<RelationshipMember> members = listActiveMembers(relationshipId);
+
+        LocalDateTime now = LocalDateTime.now();
+        relationship.setStatus(DELETED_STATUS);
+        relationship.setUpdatedAt(now);
+        relationshipMapper.updateById(relationship);
+        for (RelationshipMember member : members) {
+            member.setStatus(REMOVED_STATUS);
+            member.setUpdatedAt(now);
+            relationshipMemberMapper.updateById(member);
+            if (!userId.equals(member.getUserId())) {
+                createNotificationSafely(
+                        member.getUserId(),
+                        userId,
+                        "RELATIONSHIP_DELETED",
+                        "Relationship space dissolved",
+                        relationship.getName() + " has been dissolved",
+                        "RELATIONSHIP",
+                        relationshipId,
+                        relationshipId,
+                        Map.of("relationshipName", relationship.getName())
+                );
+            }
+        }
+
+        createActivitySafely(
+                relationshipId,
+                userId,
+                "RELATIONSHIP_DELETED",
+                "RELATIONSHIP",
+                relationshipId,
+                "Dissolved relationship space: " + relationship.getName(),
+                null,
+                Map.of("relationshipName", relationship.getName())
+        );
+    }
+
+    @Override
+    @Transactional
+    public void updateMemberRole(Long relationshipId, Long targetUserId, com.lifelink.relationship.dto.UpdateMemberRoleRequest request, Long userId) {
+        Relationship relationship = requireActiveRelationship(relationshipId);
+        requireOwner(relationshipId, userId);
+        RelationshipMember target = requireMember(relationshipId, targetUserId);
+        if (OWNER_ROLE.equals(target.getRole())) {
+            throw new BusinessException(400, "Cannot change owner role here");
+        }
+        String role = request.getRole();
+        if (!ADMIN_ROLE.equals(role) && !MEMBER_ROLE.equals(role)) {
+            throw new BusinessException(400, "Role must be ADMIN or MEMBER");
+        }
+
+        target.setRole(role);
+        target.setUpdatedAt(LocalDateTime.now());
+        relationshipMemberMapper.updateById(target);
+        createActivitySafely(
+                relationshipId,
+                userId,
+                "MEMBER_ROLE_UPDATED",
+                "USER",
+                targetUserId,
+                "Updated member role",
+                null,
+                Map.of("username", getUsername(targetUserId), "role", role)
+        );
+        if (ADMIN_ROLE.equals(role)) {
+            createNotificationSafely(
+                    targetUserId,
+                    userId,
+                    "MEMBER_ROLE_UPDATED",
+                    "You were set as admin",
+                    "You were set as admin in " + relationship.getName(),
+                    "RELATIONSHIP",
+                    relationshipId,
+                    relationshipId,
+                    Map.of("relationshipName", relationship.getName(), "role", role)
+            );
+        }
+    }
+
+    @Override
+    @Transactional
+    public void removeMember(Long relationshipId, Long targetUserId, Long userId) {
+        Relationship relationship = requireActiveRelationship(relationshipId);
+        requireOwner(relationshipId, userId);
+        RelationshipMember target = requireMember(relationshipId, targetUserId);
+        if (OWNER_ROLE.equals(target.getRole())) {
+            throw new BusinessException(400, "Cannot remove owner");
+        }
+
+        target.setStatus(REMOVED_STATUS);
+        target.setUpdatedAt(LocalDateTime.now());
+        relationshipMemberMapper.updateById(target);
+        createActivitySafely(
+                relationshipId,
+                userId,
+                "MEMBER_REMOVED",
+                "USER",
+                targetUserId,
+                "Removed a member",
+                null,
+                Map.of("username", getUsername(targetUserId))
+        );
+        createNotificationSafely(
+                targetUserId,
+                userId,
+                "MEMBER_REMOVED",
+                "You were removed from a relationship space",
+                "You were removed from " + relationship.getName(),
+                "RELATIONSHIP",
+                relationshipId,
+                relationshipId,
+                Map.of("relationshipName", relationship.getName())
+        );
+    }
+
+    @Override
+    @Transactional
+    public void transferOwner(Long relationshipId, com.lifelink.relationship.dto.TransferOwnerRequest request, Long userId) {
+        Relationship relationship = requireActiveRelationship(relationshipId);
+        RelationshipMember currentOwner = requireOwner(relationshipId, userId);
+        Long targetUserId = request.getTargetUserId();
+        if (userId.equals(targetUserId)) {
+            throw new BusinessException(400, "Target user is already owner");
+        }
+        RelationshipMember target = requireMember(relationshipId, targetUserId);
+
+        LocalDateTime now = LocalDateTime.now();
+        currentOwner.setRole(ADMIN_ROLE);
+        currentOwner.setUpdatedAt(now);
+        relationshipMemberMapper.updateById(currentOwner);
+        target.setRole(OWNER_ROLE);
+        target.setUpdatedAt(now);
+        relationshipMemberMapper.updateById(target);
+        relationship.setOwnerId(targetUserId);
+        relationship.setUpdatedAt(now);
+        relationshipMapper.updateById(relationship);
+
+        createActivitySafely(
+                relationshipId,
+                userId,
+                "OWNER_TRANSFERRED",
+                "USER",
+                targetUserId,
+                "Transferred relationship owner",
+                null,
+                Map.of("username", getUsername(targetUserId))
+        );
+        createNotificationSafely(
+                targetUserId,
+                userId,
+                "OWNER_TRANSFERRED",
+                "You are now the owner",
+                "You are now the owner of " + relationship.getName(),
+                "RELATIONSHIP",
+                relationshipId,
+                relationshipId,
+                Map.of("relationshipName", relationship.getName())
+        );
     }
 
     private void createActivitySafely(Long relationshipId, Long actorUserId, String activityType, String targetType, Long targetId, String title, String content, Map<String, Object> metadata) {
@@ -196,6 +436,14 @@ public class RelationshipServiceImpl implements RelationshipService {
             spaceActivityService.createActivity(relationshipId, actorUserId, activityType, targetType, targetId, title, content, metadata);
         } catch (Exception ex) {
             log.warn("Create relationship activity failed: {}", activityType, ex);
+        }
+    }
+
+    private void createNotificationSafely(Long receiverUserId, Long actorUserId, String notificationType, String title, String content, String relatedType, Long relatedId, Long relationshipId, Map<String, Object> metadata) {
+        try {
+            notificationService.createNotification(receiverUserId, actorUserId, notificationType, title, content, relatedType, relatedId, relationshipId, metadata);
+        } catch (Exception ex) {
+            log.warn("Create relationship notification failed: {}", notificationType, ex);
         }
     }
 
@@ -215,11 +463,44 @@ public class RelationshipServiceImpl implements RelationshipService {
         return member;
     }
 
+    private RelationshipMember requireOwner(Long relationshipId, Long userId) {
+        RelationshipMember member = requireMember(relationshipId, userId);
+        if (!OWNER_ROLE.equals(member.getRole())) {
+            throw new BusinessException(403, "Only owner can operate this relationship");
+        }
+        return member;
+    }
+
     private RelationshipMember findMember(Long relationshipId, Long userId) {
         return relationshipMemberMapper.selectOne(new LambdaQueryWrapper<RelationshipMember>()
                 .eq(RelationshipMember::getRelationshipId, relationshipId)
                 .eq(RelationshipMember::getUserId, userId)
+                .eq(RelationshipMember::getStatus, ACTIVE_STATUS)
                 .last("LIMIT 1"));
+    }
+
+    private RelationshipMember findAnyMember(Long relationshipId, Long userId) {
+        return relationshipMemberMapper.selectOne(new LambdaQueryWrapper<RelationshipMember>()
+                .eq(RelationshipMember::getRelationshipId, relationshipId)
+                .eq(RelationshipMember::getUserId, userId)
+                .last("LIMIT 1"));
+    }
+
+    private long countActiveMembers(Long relationshipId) {
+        return relationshipMemberMapper.selectCount(new LambdaQueryWrapper<RelationshipMember>()
+                .eq(RelationshipMember::getRelationshipId, relationshipId)
+                .eq(RelationshipMember::getStatus, ACTIVE_STATUS));
+    }
+
+    private List<RelationshipMember> listActiveMembers(Long relationshipId) {
+        return relationshipMemberMapper.selectList(new LambdaQueryWrapper<RelationshipMember>()
+                .eq(RelationshipMember::getRelationshipId, relationshipId)
+                .eq(RelationshipMember::getStatus, ACTIVE_STATUS));
+    }
+
+    private String getUsername(Long userId) {
+        User user = userMapper.selectById(userId);
+        return user == null ? "" : user.getUsername();
     }
 
     private RelationshipResponse toResponse(Relationship relationship, String role) {

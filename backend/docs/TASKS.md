@@ -9,8 +9,10 @@
 - [x] Add frontend login, register, logout, and current-user flow.
 - [x] Implement relationship space backend APIs.
 - [x] Add frontend relationship list, create, join, detail, members, and invite flow.
+- [x] Implement relationship member management: leave, dissolve, remove member, role update, nickname, and owner transfer.
 - [x] Implement text-only daily record backend APIs.
 - [x] Add frontend daily timeline, create, detail, filter, and delete flow.
+- [x] Implement daily post likes and comments.
 - [x] Implement relationship space todo backend APIs.
 - [x] Add frontend relationship space todo list, create, edit, toggle, and delete flow.
 - [x] Implement file upload and image publishing.

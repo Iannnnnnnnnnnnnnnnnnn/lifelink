@@ -3,7 +3,13 @@ import { ApiResult, request } from './request';
 export type SpaceActivityType =
   | 'RELATIONSHIP_CREATED'
   | 'MEMBER_JOINED'
+  | 'MEMBER_LEFT'
+  | 'MEMBER_REMOVED'
+  | 'MEMBER_ROLE_UPDATED'
+  | 'OWNER_TRANSFERRED'
+  | 'RELATIONSHIP_DELETED'
   | 'DAILY_POST_CREATED'
+  | 'DAILY_POST_COMMENTED'
   | 'TODO_CREATED'
   | 'TODO_COMPLETED'
   | 'TODO_REOPENED'

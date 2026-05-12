@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lifelink.activity.service.SpaceActivityService;
 import com.lifelink.common.BusinessException;
+import com.lifelink.notification.service.NotificationService;
 import com.lifelink.relationship.entity.Relationship;
 import com.lifelink.relationship.entity.RelationshipMember;
 import com.lifelink.relationship.mapper.RelationshipMapper;
@@ -43,6 +44,7 @@ public class SpaceTodoServiceImpl implements SpaceTodoService {
     private final RelationshipMemberMapper relationshipMemberMapper;
     private final UserMapper userMapper;
     private final SpaceActivityService spaceActivityService;
+    private final NotificationService notificationService;
 
     @Override
     @Transactional
@@ -72,6 +74,7 @@ public class SpaceTodoServiceImpl implements SpaceTodoService {
                 null,
                 Map.of("todoTitle", todo.getTitle(), "priority", todo.getPriority())
         );
+        notifyRelationshipMembersSafely(relationshipId, userId, "TODO_CREATED", "New space todo", "SPACE_TODO", todo.getId(), Map.of("todoTitle", todo.getTitle()));
         return toResponse(todo);
     }
 
@@ -147,6 +150,7 @@ public class SpaceTodoServiceImpl implements SpaceTodoService {
                     null,
                     Map.of("todoTitle", todo.getTitle())
             );
+            notifyRelationshipMembersSafely(relationshipId, userId, "TODO_COMPLETED", "Todo completed", "SPACE_TODO", todo.getId(), Map.of("todoTitle", todo.getTitle()));
         } else if (DONE_STATUS.equals(todo.getStatus())) {
             todo.setStatus(TODO_STATUS);
             todo.setCompletedBy(null);
@@ -161,6 +165,7 @@ public class SpaceTodoServiceImpl implements SpaceTodoService {
                     null,
                     Map.of("todoTitle", todo.getTitle())
             );
+            notifyRelationshipMembersSafely(relationshipId, userId, "TODO_REOPENED", "Todo reopened", "SPACE_TODO", todo.getId(), Map.of("todoTitle", todo.getTitle()));
         } else {
             throw new BusinessException(400, "Todo status cannot be toggled");
         }
@@ -189,6 +194,7 @@ public class SpaceTodoServiceImpl implements SpaceTodoService {
         RelationshipMember member = relationshipMemberMapper.selectOne(new LambdaQueryWrapper<RelationshipMember>()
                 .eq(RelationshipMember::getRelationshipId, relationshipId)
                 .eq(RelationshipMember::getUserId, userId)
+                .eq(RelationshipMember::getStatus, ACTIVE_STATUS)
                 .last("LIMIT 1"));
         if (member == null) {
             throw new BusinessException(403, "You are not a member of this relationship");
@@ -228,6 +234,31 @@ public class SpaceTodoServiceImpl implements SpaceTodoService {
             spaceActivityService.createActivity(relationshipId, actorUserId, activityType, targetType, targetId, title, content, metadata);
         } catch (Exception ex) {
             log.warn("Create todo activity failed: {}", activityType, ex);
+        }
+    }
+
+    private void notifyRelationshipMembersSafely(Long relationshipId, Long actorUserId, String notificationType, String title, String relatedType, Long relatedId, Map<String, Object> metadata) {
+        try {
+            User actor = userMapper.selectById(actorUserId);
+            String actorName = actor == null ? "Someone" : actor.getUsername();
+            List<RelationshipMember> members = relationshipMemberMapper.selectList(new LambdaQueryWrapper<RelationshipMember>()
+                    .eq(RelationshipMember::getRelationshipId, relationshipId)
+                    .eq(RelationshipMember::getStatus, ACTIVE_STATUS));
+            for (RelationshipMember member : members) {
+                notificationService.createNotification(
+                        member.getUserId(),
+                        actorUserId,
+                        notificationType,
+                        title,
+                        actorName + " " + title.toLowerCase(),
+                        relatedType,
+                        relatedId,
+                        relationshipId,
+                        metadata
+                );
+            }
+        } catch (Exception ex) {
+            log.warn("Create todo notification failed: {}", notificationType, ex);
         }
     }
 }

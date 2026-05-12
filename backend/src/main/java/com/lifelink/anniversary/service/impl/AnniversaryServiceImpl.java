@@ -12,10 +12,13 @@ import com.lifelink.anniversary.service.AnniversaryService;
 import com.lifelink.common.BusinessException;
 import com.lifelink.file.entity.FileResource;
 import com.lifelink.file.mapper.FileResourceMapper;
+import com.lifelink.notification.service.NotificationService;
 import com.lifelink.relationship.entity.Relationship;
 import com.lifelink.relationship.entity.RelationshipMember;
 import com.lifelink.relationship.mapper.RelationshipMapper;
 import com.lifelink.relationship.mapper.RelationshipMemberMapper;
+import com.lifelink.user.entity.User;
+import com.lifelink.user.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
@@ -50,6 +53,8 @@ public class AnniversaryServiceImpl implements AnniversaryService {
     private final RelationshipMemberMapper relationshipMemberMapper;
     private final FileResourceMapper fileResourceMapper;
     private final SpaceActivityService spaceActivityService;
+    private final NotificationService notificationService;
+    private final UserMapper userMapper;
 
     @Override
     @Transactional
@@ -81,6 +86,15 @@ public class AnniversaryServiceImpl implements AnniversaryService {
                 anniversary.getId(),
                 "Added anniversary: " + anniversary.getTitle(),
                 null,
+                Map.of("anniversaryTitle", anniversary.getTitle(), "anniversaryDate", anniversary.getAnniversaryDate().toString())
+        );
+        notifyRelationshipMembersSafely(
+                anniversary.getRelationshipId(),
+                userId,
+                "ANNIVERSARY_CREATED",
+                "New anniversary",
+                "ANNIVERSARY",
+                anniversary.getId(),
                 Map.of("anniversaryTitle", anniversary.getTitle(), "anniversaryDate", anniversary.getAnniversaryDate().toString())
         );
 
@@ -173,6 +187,7 @@ public class AnniversaryServiceImpl implements AnniversaryService {
         RelationshipMember member = relationshipMemberMapper.selectOne(new LambdaQueryWrapper<RelationshipMember>()
                 .eq(RelationshipMember::getRelationshipId, relationshipId)
                 .eq(RelationshipMember::getUserId, userId)
+                .eq(RelationshipMember::getStatus, ACTIVE_STATUS)
                 .last("LIMIT 1"));
         if (member == null) {
             throw new BusinessException(403, "You are not a member of this relationship");
@@ -212,7 +227,8 @@ public class AnniversaryServiceImpl implements AnniversaryService {
         }
 
         List<RelationshipMember> members = relationshipMemberMapper.selectList(new LambdaQueryWrapper<RelationshipMember>()
-                .eq(RelationshipMember::getUserId, userId));
+                .eq(RelationshipMember::getUserId, userId)
+                .eq(RelationshipMember::getStatus, ACTIVE_STATUS));
         for (RelationshipMember member : members) {
             Relationship relationship = relationshipMapper.selectById(member.getRelationshipId());
             if (relationship != null && ACTIVE_STATUS.equals(relationship.getStatus())) {
@@ -323,6 +339,31 @@ public class AnniversaryServiceImpl implements AnniversaryService {
             spaceActivityService.createActivity(relationshipId, actorUserId, activityType, targetType, targetId, title, content, metadata);
         } catch (Exception ex) {
             log.warn("Create anniversary activity failed: {}", activityType, ex);
+        }
+    }
+
+    private void notifyRelationshipMembersSafely(Long relationshipId, Long actorUserId, String notificationType, String title, String relatedType, Long relatedId, Map<String, Object> metadata) {
+        try {
+            User actor = userMapper.selectById(actorUserId);
+            String actorName = actor == null ? "Someone" : actor.getUsername();
+            List<RelationshipMember> members = relationshipMemberMapper.selectList(new LambdaQueryWrapper<RelationshipMember>()
+                    .eq(RelationshipMember::getRelationshipId, relationshipId)
+                    .eq(RelationshipMember::getStatus, ACTIVE_STATUS));
+            for (RelationshipMember member : members) {
+                notificationService.createNotification(
+                        member.getUserId(),
+                        actorUserId,
+                        notificationType,
+                        title,
+                        actorName + " added an anniversary",
+                        relatedType,
+                        relatedId,
+                        relationshipId,
+                        metadata
+                );
+            }
+        } catch (Exception ex) {
+            log.warn("Create anniversary notification failed: {}", notificationType, ex);
         }
     }
 

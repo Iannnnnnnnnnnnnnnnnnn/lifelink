@@ -35,4 +35,10 @@ public class DailyPostDetailResponse {
     private LocalDateTime updatedAt;
 
     private List<DailyPostImageResponse> images;
+
+    private Long likeCount;
+
+    private Long commentCount;
+
+    private Boolean likedByMe;
 }

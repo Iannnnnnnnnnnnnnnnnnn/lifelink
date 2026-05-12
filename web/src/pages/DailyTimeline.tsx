@@ -1,9 +1,9 @@
-import { DeleteOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
+import { DeleteOutlined, HeartFilled, HeartOutlined, MessageOutlined, PlusOutlined, ReloadOutlined } from '@ant-design/icons';
 import { Button, Card, Image, message, Popconfirm, Select, Skeleton, Space, Tag, Typography } from 'antd';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
-import { deleteDailyPost, DailyPost, getDailyPosts } from '../api/daily';
+import { deleteDailyPost, DailyPost, getDailyPosts, likeDailyPost, unlikeDailyPost } from '../api/daily';
 import { getRelationships, RelationshipSummary } from '../api/relationship';
 import { useAuthStore } from '../store/authStore';
 import { EmptyState } from '../components/decorations/EmptyState';
@@ -16,6 +16,7 @@ export function DailyTimeline() {
   const [relationships, setRelationships] = useState<RelationshipSummary[]>([]);
   const [relationshipId, setRelationshipId] = useState<number | undefined>();
   const [loading, setLoading] = useState(false);
+  const [likingIds, setLikingIds] = useState<number[]>([]);
   const [messageApi, contextHolder] = message.useMessage();
 
   const loadPosts = async (nextRelationshipId = relationshipId) => {
@@ -46,6 +47,19 @@ export function DailyTimeline() {
       loadPosts();
     } catch (error) {
       messageApi.error(t('daily.deleteFailed'));
+    }
+  };
+
+  const handleToggleLike = async (post: DailyPost) => {
+    setLikingIds((ids) => ids.concat(post.id));
+    try {
+      const response = post.likedByMe ? await unlikeDailyPost(post.id) : await likeDailyPost(post.id);
+      setPosts((items) => items.map((item) => (item.id === post.id ? { ...item, ...response.data.data } : item)));
+      messageApi.success(post.likedByMe ? t('dailyInteraction.unlikeSuccess') : t('dailyInteraction.likeSuccess'));
+    } catch (error) {
+      messageApi.error(t('common.failed'));
+    } finally {
+      setLikingIds((ids) => ids.filter((id) => id !== post.id));
     }
   };
 
@@ -146,6 +160,23 @@ export function DailyTimeline() {
                   <Tag>{t('daily.relationship')}: {post.relationshipName}</Tag>
                   <Typography.Text type="secondary">{t('daily.createdAt')}: {post.createdAt}</Typography.Text>
                 </Space>
+                <div className="daily-interaction-bar" onClick={(event) => event.stopPropagation()}>
+                  <Space className="daily-interaction-actions">
+                    <Button
+                      size="small"
+                      className={`daily-like-button ${post.likedByMe ? 'liked' : ''}`}
+                      icon={post.likedByMe ? <HeartFilled /> : <HeartOutlined />}
+                      loading={likingIds.includes(post.id)}
+                      onClick={() => handleToggleLike(post)}
+                    >
+                      {post.likeCount || 0}
+                    </Button>
+                    <Button size="small" icon={<MessageOutlined />} onClick={() => navigate(`/daily/${post.id}`)}>
+                      {post.commentCount || 0}
+                    </Button>
+                  </Space>
+                  <Typography.Text type="secondary">{t('dailyInteraction.comments')}</Typography.Text>
+                </div>
               </Space>
             </Card>
           ))}

@@ -30,11 +30,6 @@
     "anniversaries": "Anniversaries",
     "finance": "Finance"
   },
-  "theme": {
-    "coupleHint": "Create a couple space to enable the colorful theme.",
-    "grayscale": "Grayscale theme.",
-    "colorful": "Colorful theme."
-  },
   "ui": {
     "welcomeBack": "Welcome back",
     "quickActions": "Quick Actions",
@@ -187,6 +182,30 @@
     "inviteCodeRequired": "Invite code is required",
     "inviteCodePlaceholder": "8-character invite code"
   },
+  "member": {
+    "title": "Members",
+    "nickname": "Space Nickname",
+    "editNickname": "Edit Nickname",
+    "role": "Role",
+    "owner": "Owner",
+    "admin": "Admin",
+    "member": "Member",
+    "setAdmin": "Set Admin",
+    "removeAdmin": "Remove Admin",
+    "removeMember": "Remove Member",
+    "transferOwner": "Transfer Owner",
+    "leaveSpace": "Leave Space",
+    "dissolveSpace": "Dissolve Space",
+    "confirmLeave": "Are you sure you want to leave this relationship space?",
+    "confirmDissolve": "Are you sure you want to dissolve this relationship space? This cannot be undone.",
+    "confirmRemove": "Are you sure you want to remove this member?",
+    "confirmTransfer": "Are you sure you want to transfer ownership to this member?",
+    "updateSuccess": "Updated successfully",
+    "leaveSuccess": "Left the space",
+    "dissolveSuccess": "Space dissolved",
+    "removeSuccess": "Member removed",
+    "transferSuccess": "Owner transferred"
+  },
   "daily": {
     "title": "Daily Timeline",
     "subtitle": "Text-only daily records from your relationship spaces.",
@@ -216,6 +235,21 @@
     "imageTypeLimit": "Only jpg, jpeg, png, webp are supported",
     "uploadFailed": "Upload failed",
     "previewImage": "Preview images"
+  },
+  "dailyInteraction": {
+    "like": "Like",
+    "unlike": "Unlike",
+    "comment": "Comment",
+    "comments": "Comments",
+    "writeComment": "Write a comment...",
+    "sendComment": "Send",
+    "deleteComment": "Delete Comment",
+    "confirmDeleteComment": "Are you sure you want to delete this comment?",
+    "commentEmpty": "No comments yet",
+    "commentSuccess": "Comment posted",
+    "deleteCommentSuccess": "Comment deleted",
+    "likeSuccess": "Liked",
+    "unlikeSuccess": "Unliked"
   },
   "anniversary": {
     "title": "Anniversaries",
@@ -268,7 +302,13 @@
     "someone": "Someone",
     "relationshipCreated": "{{user}} created a space: {{name}}",
     "memberJoined": "{{user}} joined the space",
+    "memberLeft": "{{user}} left the space",
+    "memberRemoved": "{{user}} removed a member: {{target}}",
+    "memberRoleUpdated": "{{user}} updated member role: {{target}}",
+    "ownerTransferred": "{{user}} transferred ownership to: {{target}}",
+    "relationshipDeleted": "{{user}} dissolved a space: {{name}}",
     "dailyPostCreated": "{{user}} posted a daily update",
+    "dailyPostCommented": "{{user}} commented on a daily post",
     "todoCreated": "{{user}} created a todo: {{title}}",
     "todoCompleted": "{{user}} completed a todo: {{title}}",
     "todoReopened": "{{user}} reopened a todo: {{title}}",
@@ -276,7 +316,13 @@
     "types": {
       "RELATIONSHIP_CREATED": "Space Created",
       "MEMBER_JOINED": "Member Joined",
+      "MEMBER_LEFT": "Member Left",
+      "MEMBER_REMOVED": "Member Removed",
+      "MEMBER_ROLE_UPDATED": "Role Updated",
+      "OWNER_TRANSFERRED": "Owner Transferred",
+      "RELATIONSHIP_DELETED": "Space Dissolved",
       "DAILY_POST_CREATED": "Daily Posted",
+      "DAILY_POST_COMMENTED": "Daily Commented",
       "TODO_CREATED": "Todo Created",
       "TODO_COMPLETED": "Todo Completed",
       "TODO_REOPENED": "Todo Reopened",

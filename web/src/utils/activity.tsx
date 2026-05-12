@@ -14,8 +14,20 @@ export function getActivityText(activity: SpaceActivity, t: TFunction) {
       return t('activity.relationshipCreated', { user, name: metadataText(activity, 'relationshipName') || activity.relationshipName || activity.title });
     case 'MEMBER_JOINED':
       return t('activity.memberJoined', { user });
+    case 'MEMBER_LEFT':
+      return t('activity.memberLeft', { user });
+    case 'MEMBER_REMOVED':
+      return t('activity.memberRemoved', { user, target: metadataText(activity, 'username') || activity.title });
+    case 'MEMBER_ROLE_UPDATED':
+      return t('activity.memberRoleUpdated', { user, target: metadataText(activity, 'username') || activity.title });
+    case 'OWNER_TRANSFERRED':
+      return t('activity.ownerTransferred', { user, target: metadataText(activity, 'username') || activity.title });
+    case 'RELATIONSHIP_DELETED':
+      return t('activity.relationshipDeleted', { user, name: metadataText(activity, 'relationshipName') || activity.relationshipName || activity.title });
     case 'DAILY_POST_CREATED':
       return t('activity.dailyPostCreated', { user });
+    case 'DAILY_POST_COMMENTED':
+      return t('activity.dailyPostCommented', { user });
     case 'TODO_CREATED':
       return t('activity.todoCreated', { user, title: metadataText(activity, 'todoTitle') || activity.title });
     case 'TODO_COMPLETED':
@@ -34,7 +46,7 @@ export function getActivityTag(activityType: string, t: TFunction) {
 }
 
 export function getActivityIcon(activityType: string) {
-  if (activityType.startsWith('RELATIONSHIP')) {
+  if (activityType.startsWith('RELATIONSHIP') || activityType.startsWith('OWNER')) {
     return <HomeOutlined />;
   }
   if (activityType.startsWith('MEMBER')) {

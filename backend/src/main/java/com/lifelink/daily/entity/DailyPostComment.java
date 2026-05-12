@@ -1,4 +1,4 @@
-package com.lifelink.relationship.entity;
+package com.lifelink.daily.entity;
 
 import com.baomidou.mybatisplus.annotation.IdType;
 import com.baomidou.mybatisplus.annotation.TableId;
@@ -8,23 +8,21 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-@TableName("relationship_members")
-public class RelationshipMember {
+@TableName("daily_post_comments")
+public class DailyPostComment {
 
     @TableId(type = IdType.AUTO)
     private Long id;
 
-    private Long relationshipId;
+    private Long dailyPostId;
 
     private Long userId;
 
-    private String role;
-
-    private String nickname;
+    private String content;
 
     private String status;
 
-    private LocalDateTime joinedAt;
+    private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;
 }

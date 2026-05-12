@@ -57,6 +57,30 @@ export function getRelationshipMembers(id: number) {
   return request.get<ApiResult<RelationshipMember[]>>(`/api/relationships/${id}/members`);
 }
 
+export function updateMyRelationshipNickname(id: number, data: { nickname?: string }) {
+  return request.patch<ApiResult<void>>(`/api/relationships/${id}/members/me/nickname`, data);
+}
+
+export function leaveRelationship(id: number) {
+  return request.post<ApiResult<void>>(`/api/relationships/${id}/leave`);
+}
+
+export function dissolveRelationship(id: number) {
+  return request.delete<ApiResult<void>>(`/api/relationships/${id}`);
+}
+
+export function updateMemberRole(id: number, userId: number, data: { role: 'ADMIN' | 'MEMBER' }) {
+  return request.patch<ApiResult<void>>(`/api/relationships/${id}/members/${userId}/role`, data);
+}
+
+export function removeRelationshipMember(id: number, userId: number) {
+  return request.delete<ApiResult<void>>(`/api/relationships/${id}/members/${userId}`);
+}
+
+export function transferRelationshipOwner(id: number, targetUserId: number) {
+  return request.post<ApiResult<void>>(`/api/relationships/${id}/transfer-owner`, { targetUserId });
+}
+
 export function createRelationshipInvite(id: number) {
   return request.post<ApiResult<CreateInviteResponse>>(`/api/relationships/${id}/invite`);
 }
