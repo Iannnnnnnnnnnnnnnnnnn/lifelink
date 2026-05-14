@@ -8,6 +8,7 @@ import com.lifelink.notification.service.NotificationService;
 import com.lifelink.relationship.entity.RelationshipMember;
 import com.lifelink.relationship.mapper.RelationshipMemberMapper;
 import com.lifelink.relationship.service.RelationshipPermissionService;
+import com.lifelink.timeline.service.RelationshipTimelineService;
 import com.lifelink.todo.dto.CreateSpaceTodoRequest;
 import com.lifelink.todo.dto.SpaceTodoResponse;
 import com.lifelink.todo.dto.UpdateSpaceTodoRequest;
@@ -44,6 +45,7 @@ public class SpaceTodoServiceImpl implements SpaceTodoService {
     private final UserMapper userMapper;
     private final SpaceActivityService spaceActivityService;
     private final NotificationService notificationService;
+    private final RelationshipTimelineService relationshipTimelineService;
 
     @Override
     @Transactional
@@ -149,6 +151,22 @@ public class SpaceTodoServiceImpl implements SpaceTodoService {
                     null,
                     Map.of("todoTitle", todo.getTitle())
             );
+            if ("HIGH".equals(todo.getPriority())) {
+                createTimelineEventSafely(
+                        relationshipId,
+                        "IMPORTANT_TODO_COMPLETED",
+                        "Completed an important todo",
+                        "Completed \"" + todo.getTitle() + "\"",
+                        userId,
+                        "SPACE_TODO",
+                        todo.getId(),
+                        null,
+                        null,
+                        now,
+                        "IMPORTANT",
+                        Map.of("todoTitle", todo.getTitle(), "priority", todo.getPriority())
+                );
+            }
             notifyRelationshipMembersSafely(relationshipId, userId, "TODO_COMPLETED", "Todo completed", "SPACE_TODO", todo.getId(), Map.of("todoTitle", todo.getTitle()));
         } else if (DONE_STATUS.equals(todo.getStatus())) {
             todo.setStatus(TODO_STATUS);
@@ -222,6 +240,17 @@ public class SpaceTodoServiceImpl implements SpaceTodoService {
             spaceActivityService.createActivity(relationshipId, actorUserId, activityType, targetType, targetId, title, content, metadata);
         } catch (Exception ex) {
             log.warn("Create todo activity failed: {}", activityType, ex);
+        }
+    }
+
+    private void createTimelineEventSafely(Long relationshipId, String eventType, String title, String description, Long actorUserId,
+                                           String targetType, Long targetId, Long coverFileId, String coverUrl, LocalDateTime eventDate,
+                                           String importance, Map<String, Object> metadata) {
+        try {
+            relationshipTimelineService.createAutoEvent(relationshipId, eventType, title, description, actorUserId, targetType, targetId,
+                    coverFileId, coverUrl, eventDate, importance, metadata);
+        } catch (Exception ex) {
+            log.warn("Create todo timeline event failed: {}", eventType, ex);
         }
     }
 

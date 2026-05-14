@@ -20,4 +20,5 @@
 - [x] Implement accounting.
 - [x] Implement relationship anniversaries.
 - [x] Implement relationship space activity timeline.
+- [x] Implement relationship growth timeline.
 - [ ] Implement statistics.

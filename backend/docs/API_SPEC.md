@@ -804,3 +804,82 @@ Response:
   ]
 }
 ```
+
+## Relationship Timeline
+
+Relationship timeline stores curated relationship milestones. It is different from `space_activities`: activities are operational logs, while timeline events are meaningful nodes for later review.
+
+### List Timeline Events
+
+- Method: `GET`
+- Path: `/api/relationships/{relationshipId}/timeline`
+- Auth: Required
+
+Query parameters:
+
+- `eventType`: optional.
+- `importance`: optional, `NORMAL` or `IMPORTANT`.
+- `order`: optional, `ASC` or `DESC`, default `ASC`.
+
+Rules:
+
+- Current user must be an active member of the relationship.
+- Relationship must be active.
+- Only `ACTIVE` timeline events are returned.
+
+### Timeline Event Detail
+
+- Method: `GET`
+- Path: `/api/relationships/{relationshipId}/timeline/{eventId}`
+- Auth: Required
+
+Rules:
+
+- Current user must be an active member.
+- The event must belong to the path relationship.
+
+### Create Custom Timeline Event
+
+- Method: `POST`
+- Path: `/api/relationships/{relationshipId}/timeline`
+- Auth: Required
+
+Request:
+
+```json
+{
+  "title": "A special day",
+  "description": "We moved into our first home",
+  "eventDate": "2026-05-14T20:00:00",
+  "coverFileId": 1,
+  "importance": "IMPORTANT"
+}
+```
+
+Rules:
+
+- Current user must be an active relationship member.
+- `coverFileId`, when present, must be an image uploaded by current user.
+- Created events use `eventType = CUSTOM` and `source = MANUAL`.
+
+### Delete Timeline Event
+
+- Method: `DELETE`
+- Path: `/api/relationships/{relationshipId}/timeline/{eventId}`
+- Auth: Required
+
+Rules:
+
+- Current user must be an active relationship member.
+- The event must belong to the path relationship.
+- Delete is soft delete: `status = DELETED`.
+
+Automatic milestone generation currently covers:
+
+- relationship creation
+- member join
+- first daily post per relationship
+- anniversary creation
+- completed `HIGH` priority todo
+- daily post comment count first reaching 5
+- daily post with uploaded images

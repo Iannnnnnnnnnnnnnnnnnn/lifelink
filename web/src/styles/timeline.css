@@ -1,0 +1,79 @@
+.relationship-timeline-card {
+  border-radius: 8px;
+}
+
+.timeline-toolbar {
+  justify-content: flex-end;
+}
+
+.timeline-event-card {
+  overflow: hidden;
+  border-color: #edf1f7;
+  box-shadow: 0 10px 24px rgba(45, 59, 88, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+}
+
+.timeline-event-card:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 14px 30px rgba(45, 59, 88, 0.1);
+}
+
+.timeline-event-card.is-important {
+  border-color: rgba(250, 173, 20, 0.45);
+  background: linear-gradient(135deg, #fffdf6 0%, #ffffff 58%);
+}
+
+.timeline-cover {
+  width: 100%;
+  max-height: 220px;
+  margin-bottom: 14px;
+  object-fit: cover;
+  border-radius: 8px;
+}
+
+.timeline-dot {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 50%;
+  background: #eaf3ff;
+  color: #1677ff;
+  box-shadow: 0 8px 18px rgba(22, 119, 255, 0.18);
+}
+
+.timeline-dot.important {
+  background: #fff7e6;
+  color: #d48806;
+  box-shadow: 0 8px 18px rgba(250, 173, 20, 0.22);
+}
+
+.timeline-description {
+  margin-bottom: 0 !important;
+  color: #4b5563;
+}
+
+.timeline-event-footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+}
+
+.theme-grayscale .timeline-dot,
+.theme-grayscale .timeline-dot.important,
+.theme-grayscale .timeline-event-card.is-important {
+  filter: grayscale(0.85);
+}
+
+@media (max-width: 720px) {
+  .timeline-event-footer {
+    align-items: flex-start;
+    flex-direction: column;
+  }
+
+  .timeline-page .ant-timeline-item-label {
+    width: auto !important;
+  }
+}

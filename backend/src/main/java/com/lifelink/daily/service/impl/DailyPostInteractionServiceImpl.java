@@ -16,6 +16,7 @@ import com.lifelink.daily.mapper.DailyPostMapper;
 import com.lifelink.daily.service.DailyPostInteractionService;
 import com.lifelink.notification.service.NotificationService;
 import com.lifelink.relationship.service.RelationshipPermissionService;
+import com.lifelink.timeline.service.RelationshipTimelineService;
 import com.lifelink.user.entity.User;
 import com.lifelink.user.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
@@ -44,6 +45,7 @@ public class DailyPostInteractionServiceImpl implements DailyPostInteractionServ
     private final UserMapper userMapper;
     private final SpaceActivityService spaceActivityService;
     private final NotificationService notificationService;
+    private final RelationshipTimelineService relationshipTimelineService;
 
     @Override
     @Transactional
@@ -107,6 +109,7 @@ public class DailyPostInteractionServiceImpl implements DailyPostInteractionServ
                 Map.of("postId", postId, "commentId", comment.getId(), "commentPreview", buildPreview(comment.getContent()))
         );
         createCommentActivitySafely(post, comment, userId);
+        createImportantCommentTimelineSafely(post, comment, userId);
         return toCommentResponse(comment, userId);
     }
 
@@ -205,6 +208,32 @@ public class DailyPostInteractionServiceImpl implements DailyPostInteractionServ
             );
         } catch (Exception ex) {
             log.warn("Create daily comment activity failed", ex);
+        }
+    }
+
+    private void createImportantCommentTimelineSafely(DailyPost post, DailyPostComment comment, Long userId) {
+        try {
+            Long commentCount = dailyPostCommentMapper.selectCount(new LambdaQueryWrapper<DailyPostComment>()
+                    .eq(DailyPostComment::getDailyPostId, post.getId())
+                    .eq(DailyPostComment::getStatus, ACTIVE_STATUS));
+            if (commentCount == 5L) {
+                relationshipTimelineService.createAutoEvent(
+                        post.getRelationshipId(),
+                        "IMPORTANT_COMMENT_INTERACTION",
+                        "A meaningful interaction happened",
+                        "This daily post received multiple comments",
+                        userId,
+                        "DAILY_POST",
+                        post.getId(),
+                        null,
+                        null,
+                        comment.getCreatedAt(),
+                        "IMPORTANT",
+                        Map.of("postId", post.getId(), "commentCount", commentCount, "contentPreview", buildPreview(post.getContent()))
+                );
+            }
+        } catch (Exception ex) {
+            log.warn("Create important comment timeline event failed", ex);
         }
     }
 

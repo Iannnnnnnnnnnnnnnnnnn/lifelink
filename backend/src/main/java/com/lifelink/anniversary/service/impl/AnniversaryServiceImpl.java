@@ -17,6 +17,7 @@ import com.lifelink.relationship.entity.Relationship;
 import com.lifelink.relationship.entity.RelationshipMember;
 import com.lifelink.relationship.mapper.RelationshipMapper;
 import com.lifelink.relationship.service.RelationshipPermissionService;
+import com.lifelink.timeline.service.RelationshipTimelineService;
 import com.lifelink.user.entity.User;
 import com.lifelink.user.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
@@ -55,6 +56,7 @@ public class AnniversaryServiceImpl implements AnniversaryService {
     private final SpaceActivityService spaceActivityService;
     private final NotificationService notificationService;
     private final UserMapper userMapper;
+    private final RelationshipTimelineService relationshipTimelineService;
 
     @Override
     @Transactional
@@ -96,6 +98,20 @@ public class AnniversaryServiceImpl implements AnniversaryService {
                 "ANNIVERSARY",
                 anniversary.getId(),
                 Map.of("anniversaryTitle", anniversary.getTitle(), "anniversaryDate", anniversary.getAnniversaryDate().toString())
+        );
+        createTimelineEventSafely(
+                anniversary.getRelationshipId(),
+                "ANNIVERSARY_CREATED",
+                "Added anniversary",
+                "Added \"" + anniversary.getTitle() + "\"",
+                userId,
+                "ANNIVERSARY",
+                anniversary.getId(),
+                anniversary.getBackgroundFileId(),
+                anniversary.getBackgroundUrl(),
+                anniversary.getCreatedAt(),
+                "IMPORTANT",
+                Map.of("anniversaryTitle", anniversary.getTitle(), "anniversaryDate", anniversary.getAnniversaryDate().toString(), "repeatType", anniversary.getRepeatType())
         );
 
         return toDetail(anniversary, relationship, LocalDate.now());
@@ -319,6 +335,17 @@ public class AnniversaryServiceImpl implements AnniversaryService {
             spaceActivityService.createActivity(relationshipId, actorUserId, activityType, targetType, targetId, title, content, metadata);
         } catch (Exception ex) {
             log.warn("Create anniversary activity failed: {}", activityType, ex);
+        }
+    }
+
+    private void createTimelineEventSafely(Long relationshipId, String eventType, String title, String description, Long actorUserId,
+                                           String targetType, Long targetId, Long coverFileId, String coverUrl, LocalDateTime eventDate,
+                                           String importance, Map<String, Object> metadata) {
+        try {
+            relationshipTimelineService.createAutoEvent(relationshipId, eventType, title, description, actorUserId, targetType, targetId,
+                    coverFileId, coverUrl, eventDate, importance, metadata);
+        } catch (Exception ex) {
+            log.warn("Create anniversary timeline event failed: {}", eventType, ex);
         }
     }
 

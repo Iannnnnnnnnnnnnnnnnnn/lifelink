@@ -342,3 +342,37 @@ Activity initialization SQL:
 ```text
 docs/sql/init_space_activities.sql
 ```
+
+## relationship_timeline_events
+
+Stores curated relationship milestones for long-term review. These records are intentionally less noisy than `space_activities`.
+
+```sql
+CREATE TABLE IF NOT EXISTS relationship_timeline_events (
+    id BIGSERIAL PRIMARY KEY,
+    relationship_id BIGINT NOT NULL,
+    event_type VARCHAR(50) NOT NULL,
+    title VARCHAR(200) NOT NULL,
+    description TEXT,
+    actor_user_id BIGINT,
+    target_type VARCHAR(50),
+    target_id BIGINT,
+    cover_file_id BIGINT,
+    cover_url VARCHAR(1000),
+    event_date TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    importance VARCHAR(20) NOT NULL DEFAULT 'NORMAL',
+    source VARCHAR(30) NOT NULL DEFAULT 'AUTO',
+    metadata JSONB,
+    status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+Supported event types include `RELATIONSHIP_CREATED`, `MEMBER_JOINED`, `FIRST_DAILY_POST`, `ANNIVERSARY_CREATED`, `IMPORTANT_TODO_COMPLETED`, `IMPORTANT_COMMENT_INTERACTION`, `IMAGE_UPLOADED`, and `CUSTOM`.
+
+Relationship timeline initialization SQL:
+
+```text
+docs/sql/init_relationship_timeline_events.sql
+```

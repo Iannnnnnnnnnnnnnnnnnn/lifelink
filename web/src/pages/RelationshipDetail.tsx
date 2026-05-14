@@ -1,4 +1,4 @@
-import { CalendarOutlined, CheckSquareOutlined, DollarOutlined, ReloadOutlined, ShareAltOutlined, ThunderboltOutlined, UserOutlined } from '@ant-design/icons';
+import { CalendarOutlined, CheckSquareOutlined, ClockCircleOutlined, DollarOutlined, ReloadOutlined, ShareAltOutlined, ThunderboltOutlined, UserOutlined } from '@ant-design/icons';
 import { Alert, Avatar, Button, Card, Col, Descriptions, Empty, Input, message, Modal, Popconfirm, Row, Space, Table, Tabs, Tag, Typography } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useEffect, useState } from 'react';
@@ -298,6 +298,17 @@ export function RelationshipDetail() {
                         <div>
                           <Typography.Title level={4}>{t('relationship.viewActivities')}</Typography.Title>
                           <Typography.Text type="secondary">{t('relationship.activityEntryDescription')}</Typography.Text>
+                        </div>
+                      </Space>
+                    </Card>
+                  </Col>
+                  <Col xs={24} md={12}>
+                    <Card className="action-card" hoverable onClick={() => navigate(`/relationships/${relationshipId}/timeline`)}>
+                      <Space align="start">
+                        <ClockCircleOutlined className="action-icon" />
+                        <div>
+                          <Typography.Title level={4}>{t('relationship.viewTimeline')}</Typography.Title>
+                          <Typography.Text type="secondary">{t('relationship.timelineEntryDescription')}</Typography.Text>
                         </div>
                       </Space>
                     </Card>

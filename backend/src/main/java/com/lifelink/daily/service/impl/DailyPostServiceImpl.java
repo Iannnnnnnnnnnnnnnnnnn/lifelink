@@ -22,6 +22,7 @@ import com.lifelink.file.mapper.FileResourceMapper;
 import com.lifelink.relationship.entity.Relationship;
 import com.lifelink.relationship.mapper.RelationshipMapper;
 import com.lifelink.relationship.service.RelationshipPermissionService;
+import com.lifelink.timeline.service.RelationshipTimelineService;
 import com.lifelink.user.entity.User;
 import com.lifelink.user.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
@@ -57,6 +58,7 @@ public class DailyPostServiceImpl implements DailyPostService {
     private final SpaceActivityService spaceActivityService;
     private final DailyPostLikeMapper dailyPostLikeMapper;
     private final DailyPostCommentMapper dailyPostCommentMapper;
+    private final RelationshipTimelineService relationshipTimelineService;
 
     @Override
     @Transactional
@@ -76,6 +78,7 @@ public class DailyPostServiceImpl implements DailyPostService {
         post.setUpdatedAt(now);
         dailyPostMapper.insert(post);
         bindImages(post.getId(), request.getImageIds(), userId, now);
+        List<DailyPostImageResponse> images = listPostImages(post.getId());
         createActivitySafely(
                 post.getRelationshipId(),
                 userId,
@@ -86,6 +89,37 @@ public class DailyPostServiceImpl implements DailyPostService {
                 null,
                 Map.of("contentPreview", buildPreview(post.getContent()), "mood", post.getMood() == null ? "" : post.getMood())
         );
+        createTimelineEventSafely(
+                post.getRelationshipId(),
+                "FIRST_DAILY_POST",
+                "Posted the first daily update",
+                "This relationship has its first daily record",
+                userId,
+                "DAILY_POST",
+                post.getId(),
+                null,
+                null,
+                post.getCreatedAt(),
+                "IMPORTANT",
+                Map.of("contentPreview", buildPreview(post.getContent()), "mood", post.getMood() == null ? "" : post.getMood())
+        );
+        if (!images.isEmpty()) {
+            DailyPostImageResponse firstImage = images.get(0);
+            createTimelineEventSafely(
+                    post.getRelationshipId(),
+                    "IMAGE_UPLOADED",
+                    "Uploaded precious photos",
+                    "Added images to a daily record",
+                    userId,
+                    "DAILY_POST",
+                    post.getId(),
+                    firstImage.getFileId(),
+                    firstImage.getUrl(),
+                    post.getCreatedAt(),
+                    "IMPORTANT",
+                    Map.of("postId", post.getId(), "imageCount", images.size(), "contentPreview", buildPreview(post.getContent()))
+            );
+        }
 
         return toDetail(post, relationship, userId);
     }
@@ -250,6 +284,17 @@ public class DailyPostServiceImpl implements DailyPostService {
             spaceActivityService.createActivity(relationshipId, actorUserId, activityType, targetType, targetId, title, content, metadata);
         } catch (Exception ex) {
             log.warn("Create daily activity failed: {}", activityType, ex);
+        }
+    }
+
+    private void createTimelineEventSafely(Long relationshipId, String eventType, String title, String description, Long actorUserId,
+                                           String targetType, Long targetId, Long coverFileId, String coverUrl, LocalDateTime eventDate,
+                                           String importance, Map<String, Object> metadata) {
+        try {
+            relationshipTimelineService.createAutoEvent(relationshipId, eventType, title, description, actorUserId, targetType, targetId,
+                    coverFileId, coverUrl, eventDate, importance, metadata);
+        } catch (Exception ex) {
+            log.warn("Create daily timeline event failed: {}", eventType, ex);
         }
     }
 

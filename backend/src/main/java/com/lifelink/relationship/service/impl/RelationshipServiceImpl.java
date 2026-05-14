@@ -18,6 +18,7 @@ import com.lifelink.relationship.mapper.RelationshipMapper;
 import com.lifelink.relationship.mapper.RelationshipMemberMapper;
 import com.lifelink.relationship.service.RelationshipPermissionService;
 import com.lifelink.relationship.service.RelationshipService;
+import com.lifelink.timeline.service.RelationshipTimelineService;
 import com.lifelink.user.entity.User;
 import com.lifelink.user.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
@@ -53,6 +54,7 @@ public class RelationshipServiceImpl implements RelationshipService {
     private final SpaceActivityService spaceActivityService;
     private final NotificationService notificationService;
     private final RelationshipPermissionService relationshipPermissionService;
+    private final RelationshipTimelineService relationshipTimelineService;
 
     @Override
     @Transactional
@@ -85,6 +87,20 @@ public class RelationshipServiceImpl implements RelationshipService {
                 relationship.getId(),
                 "Created relationship space: " + relationship.getName(),
                 null,
+                Map.of("relationshipName", relationship.getName(), "relationshipType", relationship.getType())
+        );
+        createTimelineEventSafely(
+                relationship.getId(),
+                "RELATIONSHIP_CREATED",
+                "Created relationship space",
+                "Relationship space \"" + relationship.getName() + "\" started recording",
+                userId,
+                "RELATIONSHIP",
+                relationship.getId(),
+                null,
+                null,
+                relationship.getCreatedAt(),
+                "IMPORTANT",
                 Map.of("relationshipName", relationship.getName(), "relationshipType", relationship.getType())
         );
 
@@ -204,6 +220,20 @@ public class RelationshipServiceImpl implements RelationshipService {
                 userId,
                 (username == null ? "A member" : username) + " joined the space",
                 null,
+                Map.of("username", username == null ? "" : username)
+        );
+        createTimelineEventSafely(
+                relationship.getId(),
+                "MEMBER_JOINED",
+                "New member joined",
+                (username == null ? "A member" : username) + " joined the relationship space",
+                userId,
+                "USER",
+                userId,
+                null,
+                null,
+                now,
+                "NORMAL",
                 Map.of("username", username == null ? "" : username)
         );
         createNotificationSafely(
@@ -446,6 +476,17 @@ public class RelationshipServiceImpl implements RelationshipService {
             notificationService.createNotification(receiverUserId, actorUserId, notificationType, title, content, relatedType, relatedId, relationshipId, metadata);
         } catch (Exception ex) {
             log.warn("Create relationship notification failed: {}", notificationType, ex);
+        }
+    }
+
+    private void createTimelineEventSafely(Long relationshipId, String eventType, String title, String description, Long actorUserId,
+                                           String targetType, Long targetId, Long coverFileId, String coverUrl, LocalDateTime eventDate,
+                                           String importance, Map<String, Object> metadata) {
+        try {
+            relationshipTimelineService.createAutoEvent(relationshipId, eventType, title, description, actorUserId, targetType, targetId,
+                    coverFileId, coverUrl, eventDate, importance, metadata);
+        } catch (Exception ex) {
+            log.warn("Create relationship timeline event failed: {}", eventType, ex);
         }
     }
 
