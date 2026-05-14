@@ -1,5 +1,5 @@
 import { DeleteOutlined, HeartFilled, HeartOutlined, MessageOutlined, SendOutlined } from '@ant-design/icons';
-import { Avatar, Button, Card, Descriptions, Empty, Form, Image, Input, List, message, Popconfirm, Space, Tag, Typography } from 'antd';
+import { Avatar, Button, Card, Descriptions, Form, Image, Input, List, message, Popconfirm, Space, Tag, Typography } from 'antd';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
@@ -13,6 +13,10 @@ import {
   likeDailyPost,
   unlikeDailyPost,
 } from '../api/daily';
+import { EmptyState } from '../components/common/EmptyState';
+import { ErrorState } from '../components/common/ErrorState';
+import { PageLoading } from '../components/common/PageLoading';
+import { getPageErrorType, PageErrorType } from '../utils/error';
 
 interface CommentFormValues {
   content: string;
@@ -24,7 +28,9 @@ export function DailyPostDetail() {
   const postId = Number(params.id);
   const [post, setPost] = useState<DailyPostDetailType | null>(null);
   const [comments, setComments] = useState<DailyPostComment[]>([]);
+  const [loadingPost, setLoadingPost] = useState(false);
   const [loadingComments, setLoadingComments] = useState(false);
+  const [pageError, setPageError] = useState<PageErrorType | null>(null);
   const [submitting, setSubmitting] = useState(false);
   const [liking, setLiking] = useState(false);
   const [form] = Form.useForm<CommentFormValues>();
@@ -32,8 +38,16 @@ export function DailyPostDetail() {
 
   const loadPost = async () => {
     if (!postId) return;
-    const response = await getDailyPostDetail(postId);
-    setPost(response.data.data);
+    setLoadingPost(true);
+    try {
+      const response = await getDailyPostDetail(postId);
+      setPost(response.data.data);
+      setPageError(null);
+    } catch (error) {
+      setPageError(getPageErrorType(error));
+    } finally {
+      setLoadingPost(false);
+    }
   };
 
   const loadComments = async () => {
@@ -94,6 +108,27 @@ export function DailyPostDetail() {
     loadComments();
   }, [postId]);
 
+  if (loadingPost && !post) {
+    return (
+      <Space direction="vertical" size={16} className="page-wide">
+        {contextHolder}
+        <PageLoading />
+      </Space>
+    );
+  }
+
+  if (pageError) {
+    return (
+      <Space direction="vertical" size={16} className="page-wide">
+        {contextHolder}
+        <ErrorState type={pageError} onRetry={() => {
+          loadPost();
+          loadComments();
+        }} />
+      </Space>
+    );
+  }
+
   return (
     <Space direction="vertical" size={16} className="page-wide">
       {contextHolder}
@@ -148,7 +183,7 @@ export function DailyPostDetail() {
         <List
           loading={loadingComments}
           dataSource={comments}
-          locale={{ emptyText: <Empty description={t('dailyInteraction.commentEmpty')} /> }}
+          locale={{ emptyText: <EmptyState title={t('empty.noComments')} description={t('dailyInteraction.commentEmpty')} /> }}
           renderItem={(comment) => (
             <List.Item
               className="daily-comment-item"

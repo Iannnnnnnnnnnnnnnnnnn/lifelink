@@ -1,6 +1,7 @@
 import { HeartOutlined, LockOutlined, MailOutlined, PhoneOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Card, Form, Input, message, Typography } from 'antd';
 import { useTranslation } from 'react-i18next';
+import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { register } from '../api/auth';
 import { FloatingStickers } from '../components/decorations/FloatingStickers';
@@ -17,6 +18,7 @@ interface RegisterFormValues {
 export function Register() {
   const navigate = useNavigate();
   const { t } = useTranslation();
+  const [submitting, setSubmitting] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
 
   const handleSubmit = async (values: RegisterFormValues) => {
@@ -29,6 +31,7 @@ export function Register() {
       return;
     }
 
+    setSubmitting(true);
     try {
       await register({
         username: values.username,
@@ -40,6 +43,8 @@ export function Register() {
       navigate('/login');
     } catch (error) {
       messageApi.error(t('auth.registerFailed'));
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -89,7 +94,7 @@ export function Register() {
           <Form.Item name="confirmPassword" label={t('auth.confirmPassword')} rules={[{ required: true, message: t('auth.confirmPasswordRequired') }]}>
             <Input.Password prefix={<LockOutlined />} placeholder={t('auth.confirmPasswordPlaceholder')} />
           </Form.Item>
-          <Button type="primary" htmlType="submit" block>
+          <Button type="primary" htmlType="submit" loading={submitting} block>
             {t('auth.register')}
           </Button>
         </Form>

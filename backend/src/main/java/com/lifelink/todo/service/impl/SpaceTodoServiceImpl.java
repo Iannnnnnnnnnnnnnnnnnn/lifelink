@@ -5,10 +5,9 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lifelink.activity.service.SpaceActivityService;
 import com.lifelink.common.BusinessException;
 import com.lifelink.notification.service.NotificationService;
-import com.lifelink.relationship.entity.Relationship;
 import com.lifelink.relationship.entity.RelationshipMember;
-import com.lifelink.relationship.mapper.RelationshipMapper;
 import com.lifelink.relationship.mapper.RelationshipMemberMapper;
+import com.lifelink.relationship.service.RelationshipPermissionService;
 import com.lifelink.todo.dto.CreateSpaceTodoRequest;
 import com.lifelink.todo.dto.SpaceTodoResponse;
 import com.lifelink.todo.dto.UpdateSpaceTodoRequest;
@@ -40,8 +39,8 @@ public class SpaceTodoServiceImpl implements SpaceTodoService {
     private static final String NORMAL_PRIORITY = "NORMAL";
 
     private final SpaceTodoMapper spaceTodoMapper;
-    private final RelationshipMapper relationshipMapper;
     private final RelationshipMemberMapper relationshipMemberMapper;
+    private final RelationshipPermissionService relationshipPermissionService;
     private final UserMapper userMapper;
     private final SpaceActivityService spaceActivityService;
     private final NotificationService notificationService;
@@ -187,18 +186,7 @@ public class SpaceTodoServiceImpl implements SpaceTodoService {
     }
 
     private void requireMember(Long relationshipId, Long userId) {
-        Relationship relationship = relationshipMapper.selectById(relationshipId);
-        if (relationship == null || !ACTIVE_STATUS.equals(relationship.getStatus())) {
-            throw new BusinessException(404, "Relationship not found");
-        }
-        RelationshipMember member = relationshipMemberMapper.selectOne(new LambdaQueryWrapper<RelationshipMember>()
-                .eq(RelationshipMember::getRelationshipId, relationshipId)
-                .eq(RelationshipMember::getUserId, userId)
-                .eq(RelationshipMember::getStatus, ACTIVE_STATUS)
-                .last("LIMIT 1"));
-        if (member == null) {
-            throw new BusinessException(403, "You are not a member of this relationship");
-        }
+        relationshipPermissionService.requireActiveRelationshipMember(relationshipId, userId);
     }
 
     private SpaceTodo requireTodo(Long relationshipId, Long todoId) {

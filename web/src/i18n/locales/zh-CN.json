@@ -22,6 +22,47 @@
     "due": "截止时间",
     "all": "全部"
   },
+  "error": {
+    "unauthorized": "登录已过期，请重新登录",
+    "forbidden": "你没有权限执行此操作",
+    "forbiddenTitle": "无权限访问",
+    "notFound": "内容不存在或已被删除",
+    "notFoundTitle": "内容不存在",
+    "network": "网络异常，请稍后重试",
+    "server": "服务暂时不可用，请稍后重试",
+    "serverTitle": "加载失败",
+    "backHome": "返回首页",
+    "retry": "重试"
+  },
+  "empty": {
+    "noData": "这里还没有内容",
+    "noRelationships": "还没有关系空间",
+    "noDailyPosts": "还没有日常记录",
+    "noTodos": "今天没有待办",
+    "noComments": "暂无评论",
+    "noAnniversaries": "暂无纪念日",
+    "noActivities": "暂无动态",
+    "noNotifications": "暂无通知",
+    "noSearchResults": "没有找到相关内容"
+  },
+  "validation": {
+    "required": "请填写{{field}}",
+    "selectRequired": "请选择{{field}}",
+    "maxLength": "{{field}}不能超过{{max}}个字符",
+    "minLength": "{{field}}至少需要{{min}}个字符",
+    "email": "请输入正确的邮箱地址",
+    "passwordMismatch": "两次输入的密码不一致",
+    "positiveNumber": "{{field}}必须大于 0",
+    "keywordRequired": "请输入搜索关键词"
+  },
+  "message": {
+    "createSuccess": "创建成功",
+    "updateSuccess": "更新成功",
+    "deleteSuccess": "删除成功",
+    "saveSuccess": "保存成功",
+    "operationSuccess": "操作成功",
+    "operationFailed": "操作失败，请稍后重试"
+  },
   "menu": {
     "home": "首页",
     "relationships": "关系空间",
@@ -38,6 +79,26 @@
     "createFirstSpace": "创建第一个关系空间",
     "createFirstSpaceHint": "创建你的第一个关系空间",
     "lifeSlogan": "记录关系里的每一个重要日常"
+  },
+  "search": {
+    "placeholder": "搜索关系、日常、代办、纪念日...",
+    "title": "全局搜索",
+    "inputPlaceholder": "输入关键词搜索",
+    "searchButton": "搜索",
+    "all": "全部",
+    "relationships": "关系空间",
+    "dailyPosts": "日常",
+    "todos": "代办",
+    "anniversaries": "纪念日",
+    "activities": "动态",
+    "comments": "评论",
+    "notifications": "通知",
+    "transactions": "账单",
+    "startHint": "输入关键词开始搜索",
+    "empty": "没有找到相关内容",
+    "resultCount": "共找到 {{count}} 条结果",
+    "loadFailed": "搜索失败，请稍后重试",
+    "viewDetail": "查看详情"
   },
   "dashboard": {
     "title": "首页",

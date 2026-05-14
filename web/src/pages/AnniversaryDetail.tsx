@@ -8,7 +8,10 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { Anniversary, AnniversaryRepeatType, deleteAnniversary, getAnniversaryDetail, updateAnniversary } from '../api/anniversary';
 import { uploadFile, UploadFileResponse } from '../api/file';
+import { ErrorState } from '../components/common/ErrorState';
+import { PageLoading } from '../components/common/PageLoading';
 import { getAnniversaryDisplayText, getRepeatTypeLabel } from '../utils/anniversary';
+import { getPageErrorType, PageErrorType } from '../utils/error';
 
 interface AnniversaryEditValues {
   title: string;
@@ -24,6 +27,7 @@ export function AnniversaryDetail() {
   const anniversaryId = Number(params.id);
   const [item, setItem] = useState<Anniversary | null>(null);
   const [loading, setLoading] = useState(false);
+  const [pageError, setPageError] = useState<PageErrorType | null>(null);
   const [editing, setEditing] = useState(false);
   const [backgroundFileId, setBackgroundFileId] = useState<number | undefined>();
   const [fileList, setFileList] = useState<UploadFile[]>([]);
@@ -36,8 +40,9 @@ export function AnniversaryDetail() {
     try {
       const response = await getAnniversaryDetail(anniversaryId);
       setItem(response.data.data);
+      setPageError(null);
     } catch (error) {
-      messageApi.error(t('anniversary.loadFailed'));
+      setPageError(getPageErrorType(error));
     } finally {
       setLoading(false);
     }
@@ -136,6 +141,24 @@ export function AnniversaryDetail() {
       return true;
     },
   };
+
+  if (loading && !item) {
+    return (
+      <Space direction="vertical" size={16} className="page-wide">
+        {contextHolder}
+        <PageLoading />
+      </Space>
+    );
+  }
+
+  if (pageError) {
+    return (
+      <Space direction="vertical" size={16} className="page-wide">
+        {contextHolder}
+        <ErrorState type={pageError} onRetry={loadDetail} />
+      </Space>
+    );
+  }
 
   return (
     <Space direction="vertical" size={16} className="page-wide">

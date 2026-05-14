@@ -22,6 +22,47 @@
     "due": "Due",
     "all": "All"
   },
+  "error": {
+    "unauthorized": "Your session has expired. Please log in again.",
+    "forbidden": "You do not have permission to perform this action.",
+    "forbiddenTitle": "Access denied",
+    "notFound": "The content does not exist or has been deleted.",
+    "notFoundTitle": "Content not found",
+    "network": "Network error. Please try again later.",
+    "server": "Service is temporarily unavailable. Please try again later.",
+    "serverTitle": "Failed to load",
+    "backHome": "Back Home",
+    "retry": "Retry"
+  },
+  "empty": {
+    "noData": "Nothing here yet",
+    "noRelationships": "No relationship spaces yet",
+    "noDailyPosts": "No daily posts yet",
+    "noTodos": "No todos for today",
+    "noComments": "No comments yet",
+    "noAnniversaries": "No anniversaries yet",
+    "noActivities": "No activities yet",
+    "noNotifications": "No notifications yet",
+    "noSearchResults": "No related content found"
+  },
+  "validation": {
+    "required": "Please enter {{field}}",
+    "selectRequired": "Please select {{field}}",
+    "maxLength": "{{field}} cannot exceed {{max}} characters",
+    "minLength": "{{field}} must be at least {{min}} characters",
+    "email": "Please enter a valid email address",
+    "passwordMismatch": "The two passwords do not match",
+    "positiveNumber": "{{field}} must be greater than 0",
+    "keywordRequired": "Please enter a search keyword"
+  },
+  "message": {
+    "createSuccess": "Created successfully",
+    "updateSuccess": "Updated successfully",
+    "deleteSuccess": "Deleted successfully",
+    "saveSuccess": "Saved successfully",
+    "operationSuccess": "Operation successful",
+    "operationFailed": "Operation failed. Please try again later."
+  },
   "menu": {
     "home": "Home",
     "relationships": "Relationships",
@@ -38,6 +79,26 @@
     "createFirstSpace": "Create your first space",
     "createFirstSpaceHint": "Create your first relationship space",
     "lifeSlogan": "Capture every meaningful moment together"
+  },
+  "search": {
+    "placeholder": "Search spaces, daily posts, todos, anniversaries...",
+    "title": "Global Search",
+    "inputPlaceholder": "Enter keywords to search",
+    "searchButton": "Search",
+    "all": "All",
+    "relationships": "Spaces",
+    "dailyPosts": "Daily Posts",
+    "todos": "Todos",
+    "anniversaries": "Anniversaries",
+    "activities": "Activities",
+    "comments": "Comments",
+    "notifications": "Notifications",
+    "transactions": "Transactions",
+    "startHint": "Enter a keyword to start searching",
+    "empty": "No related content found",
+    "resultCount": "{{count}} results found",
+    "loadFailed": "Search failed. Please try again later.",
+    "viewDetail": "View Details"
   },
   "dashboard": {
     "title": "Dashboard",

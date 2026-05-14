@@ -19,8 +19,11 @@ import {
   updateMemberRole,
   updateMyRelationshipNickname,
 } from '../api/relationship';
+import { ErrorState } from '../components/common/ErrorState';
+import { PageLoading } from '../components/common/PageLoading';
 import { useAuthStore } from '../store/authStore';
 import { useRelationshipThemeStore } from '../store/relationshipThemeStore';
+import { getPageErrorType, PageErrorType } from '../utils/error';
 
 export function RelationshipDetail() {
   const { t } = useTranslation();
@@ -33,6 +36,7 @@ export function RelationshipDetail() {
   const [members, setMembers] = useState<RelationshipMember[]>([]);
   const [invite, setInvite] = useState<CreateInviteResponse | null>(null);
   const [loading, setLoading] = useState(false);
+  const [pageError, setPageError] = useState<PageErrorType | null>(null);
   const [nicknameModalOpen, setNicknameModalOpen] = useState(false);
   const [nickname, setNickname] = useState('');
   const [actionLoading, setActionLoading] = useState(false);
@@ -50,8 +54,9 @@ export function RelationshipDetail() {
       ]);
       setDetail(detailResponse.data.data);
       setMembers(membersResponse.data.data);
+      setPageError(null);
     } catch (error) {
-      messageApi.error(t('relationship.loadFailed'));
+      setPageError(getPageErrorType(error));
     } finally {
       setLoading(false);
     }
@@ -229,6 +234,24 @@ export function RelationshipDetail() {
       },
     },
   ];
+
+  if (loading && !detail) {
+    return (
+      <Space direction="vertical" size={16} className="page-wide">
+        {contextHolder}
+        <PageLoading />
+      </Space>
+    );
+  }
+
+  if (pageError) {
+    return (
+      <Space direction="vertical" size={16} className="page-wide">
+        {contextHolder}
+        <ErrorState type={pageError} onRetry={loadDetail} />
+      </Space>
+    );
+  }
 
   return (
     <Space direction="vertical" size={16} className="page-wide">

@@ -20,7 +20,10 @@ import { Login } from './pages/Login';
 import { RelationshipDetail } from './pages/RelationshipDetail';
 import { RelationshipList } from './pages/RelationshipList';
 import { Register } from './pages/Register';
+import { SearchPage } from './pages/SearchPage';
 import { SpaceTodoList } from './pages/SpaceTodoList';
+import { ForbiddenPage } from './pages/error/ForbiddenPage';
+import { NotFoundPage } from './pages/error/NotFoundPage';
 
 export const router = createBrowserRouter([
   {
@@ -37,6 +40,18 @@ export const router = createBrowserRouter([
           {
             path: 'relationships',
             element: <RelationshipList />,
+          },
+          {
+            path: 'search',
+            element: <SearchPage />,
+          },
+          {
+            path: '403',
+            element: <ForbiddenPage />,
+          },
+          {
+            path: '404',
+            element: <NotFoundPage />,
           },
           {
             path: 'relationships/create',
@@ -106,6 +121,10 @@ export const router = createBrowserRouter([
             path: 'finance/create',
             element: <FinanceCreateTransaction />,
           },
+          {
+            path: '*',
+            element: <NotFoundPage />,
+          },
         ],
       },
     ],
@@ -122,5 +141,9 @@ export const router = createBrowserRouter([
         element: <Register />,
       },
     ],
+  },
+  {
+    path: '*',
+    element: <NotFoundPage />,
   },
 ]);

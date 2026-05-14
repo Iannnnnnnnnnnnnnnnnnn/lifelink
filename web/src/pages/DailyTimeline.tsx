@@ -7,6 +7,8 @@ import { deleteDailyPost, DailyPost, getDailyPosts, likeDailyPost, unlikeDailyPo
 import { getRelationships, RelationshipSummary } from '../api/relationship';
 import { useAuthStore } from '../store/authStore';
 import { EmptyState } from '../components/decorations/EmptyState';
+import { ErrorState } from '../components/common/ErrorState';
+import { getPageErrorType, PageErrorType } from '../utils/error';
 
 export function DailyTimeline() {
   const { t } = useTranslation();
@@ -17,6 +19,7 @@ export function DailyTimeline() {
   const [relationshipId, setRelationshipId] = useState<number | undefined>();
   const [loading, setLoading] = useState(false);
   const [likingIds, setLikingIds] = useState<number[]>([]);
+  const [pageError, setPageError] = useState<PageErrorType | null>(null);
   const [messageApi, contextHolder] = message.useMessage();
 
   const loadPosts = async (nextRelationshipId = relationshipId) => {
@@ -24,8 +27,9 @@ export function DailyTimeline() {
     try {
       const response = await getDailyPosts({ relationshipId: nextRelationshipId, page: 1, size: 20 });
       setPosts(response.data.data);
+      setPageError(null);
     } catch (error) {
-      messageApi.error(t('daily.loadFailed'));
+      setPageError(getPageErrorType(error));
     } finally {
       setLoading(false);
     }
@@ -97,7 +101,9 @@ export function DailyTimeline() {
         </Space>
       </div>
 
-      {loading && posts.length === 0 ? (
+      {pageError ? (
+        <ErrorState type={pageError} onRetry={() => loadPosts()} />
+      ) : loading && posts.length === 0 ? (
         <Card>
           <Skeleton active paragraph={{ rows: 5 }} />
         </Card>

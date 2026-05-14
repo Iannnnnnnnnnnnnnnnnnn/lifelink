@@ -1,8 +1,9 @@
-import { CalendarOutlined, DollarOutlined, HeartOutlined, HomeOutlined, LogoutOutlined, ReadOutlined, TeamOutlined, UserOutlined, ThunderboltOutlined } from '@ant-design/icons';
-import { Avatar, Button, Layout, Menu, Space, Typography } from 'antd';
+import { CalendarOutlined, DollarOutlined, HeartOutlined, HomeOutlined, LogoutOutlined, MenuOutlined, ReadOutlined, TeamOutlined, ThunderboltOutlined, UserOutlined } from '@ant-design/icons';
+import { Avatar, Button, Drawer, Grid, Input, Layout, Menu, Space, Typography } from 'antd';
+import type { MenuProps } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { useAppStore } from '../store/appStore';
 import { useAuthStore } from '../store/authStore';
@@ -10,6 +11,7 @@ import { useRelationshipThemeStore } from '../store/relationshipThemeStore';
 import { FloatingStickers } from './decorations/FloatingStickers';
 
 const { Header, Content, Sider } = Layout;
+const { useBreakpoint } = Grid;
 
 export function AppLayout() {
   const navigate = useNavigate();
@@ -21,6 +23,10 @@ export function AppLayout() {
   const logout = useAuthStore((state) => state.logout);
   const hasCoupleRelationship = useRelationshipThemeStore((state) => state.hasCoupleRelationship);
   const fetchRelationshipThemeStatus = useRelationshipThemeStore((state) => state.fetchRelationshipThemeStatus);
+  const [searchKeyword, setSearchKeyword] = useState('');
+  const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const screens = useBreakpoint();
+  const isMobile = !screens.md;
 
   const selectedKey = location.pathname.startsWith('/relationships')
     ? '/relationships'
@@ -39,6 +45,15 @@ export function AppLayout() {
     navigate('/login');
   };
 
+  const handleGlobalSearch = (value: string) => {
+    const keyword = value.trim();
+    if (!keyword) {
+      return;
+    }
+    setSearchKeyword('');
+    navigate(`/search?keyword=${encodeURIComponent(keyword)}`);
+  };
+
   useEffect(() => {
     if (isAuthenticated) {
       fetchRelationshipThemeStatus();
@@ -46,70 +61,125 @@ export function AppLayout() {
   }, [fetchRelationshipThemeStatus, isAuthenticated]);
 
   const themeClassName = hasCoupleRelationship ? 'theme-colorful' : 'theme-grayscale';
+  const menuItems: MenuProps['items'] = [
+    {
+      key: '/',
+      icon: <HomeOutlined />,
+      label: t('menu.home'),
+      onClick: () => {
+        navigate('/');
+        setMobileMenuOpen(false);
+      },
+    },
+    {
+      key: '/relationships',
+      icon: <TeamOutlined />,
+      label: t('menu.relationships'),
+      onClick: () => {
+        navigate('/relationships');
+        setMobileMenuOpen(false);
+      },
+    },
+    {
+      key: '/daily',
+      icon: <ReadOutlined />,
+      label: t('menu.daily'),
+      onClick: () => {
+        navigate('/daily');
+        setMobileMenuOpen(false);
+      },
+    },
+    {
+      key: '/activities',
+      icon: <ThunderboltOutlined />,
+      label: t('menu.activities'),
+      onClick: () => {
+        navigate('/activities');
+        setMobileMenuOpen(false);
+      },
+    },
+    {
+      key: '/anniversaries',
+      icon: <CalendarOutlined />,
+      label: t('menu.anniversaries'),
+      onClick: () => {
+        navigate('/anniversaries');
+        setMobileMenuOpen(false);
+      },
+    },
+    {
+      key: '/finance',
+      icon: <DollarOutlined />,
+      label: t('menu.finance'),
+      onClick: () => {
+        navigate('/finance');
+        setMobileMenuOpen(false);
+      },
+    },
+  ];
+
+  const brand = (
+    <div className="brand">
+      <span className="brand-mark">
+        <HeartOutlined className="brand-icon" />
+      </span>
+      <div>
+        <Typography.Text strong className="brand-name">{appName}</Typography.Text>
+        <Typography.Text type="secondary" className="brand-subtitle">{t('app.subtitle')}</Typography.Text>
+      </div>
+    </div>
+  );
+
+  const menu = (
+    <Menu
+      mode="inline"
+      selectedKeys={[selectedKey]}
+      className="app-menu"
+      items={menuItems}
+    />
+  );
 
   return (
     <Layout className={`app-shell ${themeClassName}`}>
       <FloatingStickers />
-      <Sider width={220} className="app-sider">
-        <div className="brand">
-          <span className="brand-mark">
-            <HeartOutlined className="brand-icon" />
-          </span>
-          <div>
-            <Typography.Text strong className="brand-name">{appName}</Typography.Text>
-            <Typography.Text type="secondary" className="brand-subtitle">{t('app.subtitle')}</Typography.Text>
-          </div>
-        </div>
-        <Menu
-          mode="inline"
-          selectedKeys={[selectedKey]}
-          className="app-menu"
-          items={[
-            {
-              key: '/',
-              icon: <HomeOutlined />,
-              label: t('menu.home'),
-              onClick: () => navigate('/'),
-            },
-            {
-              key: '/relationships',
-              icon: <TeamOutlined />,
-              label: t('menu.relationships'),
-              onClick: () => navigate('/relationships'),
-            },
-            {
-              key: '/daily',
-              icon: <ReadOutlined />,
-              label: t('menu.daily'),
-              onClick: () => navigate('/daily'),
-            },
-            {
-              key: '/activities',
-              icon: <ThunderboltOutlined />,
-              label: t('menu.activities'),
-              onClick: () => navigate('/activities'),
-            },
-            {
-              key: '/anniversaries',
-              icon: <CalendarOutlined />,
-              label: t('menu.anniversaries'),
-              onClick: () => navigate('/anniversaries'),
-            },
-            {
-              key: '/finance',
-              icon: <DollarOutlined />,
-              label: t('menu.finance'),
-              onClick: () => navigate('/finance'),
-            },
-          ]}
-        />
-      </Sider>
+      {!isMobile && (
+        <Sider width={220} className="app-sider desktop-sider">
+          {brand}
+          {menu}
+        </Sider>
+      )}
+      <Drawer
+        className="mobile-menu-drawer"
+        placement="left"
+        width={260}
+        open={mobileMenuOpen}
+        onClose={() => setMobileMenuOpen(false)}
+        closable={false}
+      >
+        {brand}
+        {menu}
+      </Drawer>
       <Layout>
         <Header className="app-header">
-          <div>
+          {isMobile && (
+            <Button
+              className="mobile-menu-button"
+              icon={<MenuOutlined />}
+              onClick={() => setMobileMenuOpen(true)}
+            />
+          )}
+          <div className="app-header-title">
             <Typography.Title level={4}>{t('app.title')}</Typography.Title>
             <Typography.Text type="secondary" className="header-subtitle">{t('app.headerSubtitle')}</Typography.Text>
           </div>
+          <Input.Search
+            allowClear
+            className="global-search"
+            value={searchKeyword}
+            placeholder={t('search.placeholder')}
+            onChange={(event) => setSearchKeyword(event.target.value)}
+            onSearch={handleGlobalSearch}
+          />
           <Space className="header-actions">
             <LanguageSwitcher />
             <Space className="user-chip">

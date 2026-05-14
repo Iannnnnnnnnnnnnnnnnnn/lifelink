@@ -16,7 +16,7 @@ import com.lifelink.notification.service.NotificationService;
 import com.lifelink.relationship.entity.Relationship;
 import com.lifelink.relationship.entity.RelationshipMember;
 import com.lifelink.relationship.mapper.RelationshipMapper;
-import com.lifelink.relationship.mapper.RelationshipMemberMapper;
+import com.lifelink.relationship.service.RelationshipPermissionService;
 import com.lifelink.user.entity.User;
 import com.lifelink.user.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
@@ -50,7 +50,7 @@ public class AnniversaryServiceImpl implements AnniversaryService {
 
     private final AnniversaryMapper anniversaryMapper;
     private final RelationshipMapper relationshipMapper;
-    private final RelationshipMemberMapper relationshipMemberMapper;
+    private final RelationshipPermissionService relationshipPermissionService;
     private final FileResourceMapper fileResourceMapper;
     private final SpaceActivityService spaceActivityService;
     private final NotificationService notificationService;
@@ -176,22 +176,11 @@ public class AnniversaryServiceImpl implements AnniversaryService {
     }
 
     private Relationship requireActiveRelationship(Long relationshipId) {
-        Relationship relationship = relationshipMapper.selectById(relationshipId);
-        if (relationship == null || !ACTIVE_STATUS.equals(relationship.getStatus())) {
-            throw new BusinessException(404, "Relationship not found");
-        }
-        return relationship;
+        return relationshipPermissionService.requireActiveRelationship(relationshipId);
     }
 
     private void requireMember(Long relationshipId, Long userId) {
-        RelationshipMember member = relationshipMemberMapper.selectOne(new LambdaQueryWrapper<RelationshipMember>()
-                .eq(RelationshipMember::getRelationshipId, relationshipId)
-                .eq(RelationshipMember::getUserId, userId)
-                .eq(RelationshipMember::getStatus, ACTIVE_STATUS)
-                .last("LIMIT 1"));
-        if (member == null) {
-            throw new BusinessException(403, "You are not a member of this relationship");
-        }
+        relationshipPermissionService.requireActiveRelationshipMember(relationshipId, userId);
     }
 
     private Anniversary requireActiveAnniversary(Long id) {
@@ -226,16 +215,7 @@ public class AnniversaryServiceImpl implements AnniversaryService {
             return relationshipIds;
         }
 
-        List<RelationshipMember> members = relationshipMemberMapper.selectList(new LambdaQueryWrapper<RelationshipMember>()
-                .eq(RelationshipMember::getUserId, userId)
-                .eq(RelationshipMember::getStatus, ACTIVE_STATUS));
-        for (RelationshipMember member : members) {
-            Relationship relationship = relationshipMapper.selectById(member.getRelationshipId());
-            if (relationship != null && ACTIVE_STATUS.equals(relationship.getStatus())) {
-                relationshipIds.add(member.getRelationshipId());
-            }
-        }
-        return relationshipIds;
+        return relationshipPermissionService.listActiveRelationshipIds(userId);
     }
 
     private AnniversaryResponse toResponse(Anniversary anniversary, Relationship relationship, LocalDate today) {
@@ -346,9 +326,7 @@ public class AnniversaryServiceImpl implements AnniversaryService {
         try {
             User actor = userMapper.selectById(actorUserId);
             String actorName = actor == null ? "Someone" : actor.getUsername();
-            List<RelationshipMember> members = relationshipMemberMapper.selectList(new LambdaQueryWrapper<RelationshipMember>()
-                    .eq(RelationshipMember::getRelationshipId, relationshipId)
-                    .eq(RelationshipMember::getStatus, ACTIVE_STATUS));
+            List<RelationshipMember> members = relationshipPermissionService.listActiveMembers(relationshipId);
             for (RelationshipMember member : members) {
                 notificationService.createNotification(
                         member.getUserId(),

@@ -18,6 +18,8 @@ import {
 } from '../api/spaceTodo';
 import type { ApiResult } from '../api/request';
 import { EmptyState } from '../components/decorations/EmptyState';
+import { ErrorState } from '../components/common/ErrorState';
+import { getPageErrorType, PageErrorType } from '../utils/error';
 
 interface TodoFormValues {
   title: string;
@@ -37,6 +39,7 @@ export function SpaceTodoList() {
   const [editing, setEditing] = useState<SpaceTodo | null>(null);
   const [loading, setLoading] = useState(false);
   const [togglingIds, setTogglingIds] = useState<number[]>([]);
+  const [pageError, setPageError] = useState<PageErrorType | null>(null);
   const [form] = Form.useForm<TodoFormValues>();
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -50,8 +53,9 @@ export function SpaceTodoList() {
         size: 50,
       });
       setTodos(response.data.data);
+      setPageError(null);
     } catch (error) {
-      messageApi.error(t('todo.loadFailed'));
+      setPageError(getPageErrorType(error));
     } finally {
       setLoading(false);
     }
@@ -159,11 +163,14 @@ export function SpaceTodoList() {
       </div>
 
       <Card className="todo-list-card">
-        <List
-          loading={loading}
-          dataSource={todos}
-          locale={{ emptyText: <EmptyState description={t('todo.empty')} /> }}
-          renderItem={(todo) => (
+        {pageError ? (
+          <ErrorState type={pageError} onRetry={loadTodos} />
+        ) : (
+          <List
+            loading={loading}
+            dataSource={todos}
+            locale={{ emptyText: <EmptyState description={t('todo.empty')} /> }}
+            renderItem={(todo) => (
             <List.Item
               className="todo-list-item"
               actions={[
@@ -205,8 +212,9 @@ export function SpaceTodoList() {
                 }
               />
             </List.Item>
-          )}
-        />
+            )}
+          />
+        )}
       </Card>
 
       <Modal title={editing ? t('todo.editTodo') : t('todo.newTodo')} open={open} onOk={handleSubmit} onCancel={() => setOpen(false)} okText={t('common.save')} cancelText={t('common.cancel')}>

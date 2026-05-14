@@ -6,6 +6,8 @@ import { useParams } from 'react-router-dom';
 import { getMyActivities, getRelationshipActivities, SpaceActivity } from '../api/activity';
 import { getActivityIcon, getActivityTag, getActivityText } from '../utils/activity';
 import { EmptyState } from '../components/decorations/EmptyState';
+import { ErrorState } from '../components/common/ErrorState';
+import { getPageErrorType, PageErrorType } from '../utils/error';
 
 const activityOptions = [
   'RELATIONSHIP_CREATED',
@@ -24,6 +26,7 @@ export function ActivityTimeline() {
   const [items, setItems] = useState<SpaceActivity[]>([]);
   const [activityType, setActivityType] = useState<string | undefined>();
   const [loading, setLoading] = useState(false);
+  const [pageError, setPageError] = useState<PageErrorType | null>(null);
   const [messageApi, contextHolder] = message.useMessage();
 
   const loadData = async () => {
@@ -34,8 +37,9 @@ export function ActivityTimeline() {
         ? await getRelationshipActivities(relationshipId, requestParams)
         : await getMyActivities(requestParams);
       setItems(response.data.data);
+      setPageError(null);
     } catch (error) {
-      messageApi.error(t('activity.loadFailed'));
+      setPageError(getPageErrorType(error));
     } finally {
       setLoading(false);
     }
@@ -69,6 +73,9 @@ export function ActivityTimeline() {
       </div>
 
       <Card className="activity-timeline-card">
+        {pageError ? (
+          <ErrorState type={pageError} onRetry={loadData} />
+        ) : (
         <Spin spinning={loading}>
           {items.length === 0 ? (
             <EmptyState description={t('activity.empty')} />
@@ -99,6 +106,7 @@ export function ActivityTimeline() {
             />
           )}
         </Spin>
+        )}
       </Card>
     </Space>
   );

@@ -19,9 +19,8 @@ import com.lifelink.accounting.mapper.TransactionMapper;
 import com.lifelink.accounting.service.AccountingService;
 import com.lifelink.common.BusinessException;
 import com.lifelink.relationship.entity.Relationship;
-import com.lifelink.relationship.entity.RelationshipMember;
 import com.lifelink.relationship.mapper.RelationshipMapper;
-import com.lifelink.relationship.mapper.RelationshipMemberMapper;
+import com.lifelink.relationship.service.RelationshipPermissionService;
 import com.lifelink.user.entity.User;
 import com.lifelink.user.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
@@ -56,7 +55,7 @@ public class AccountingServiceImpl implements AccountingService {
     private final TransactionCategoryMapper categoryMapper;
     private final TransactionMapper transactionMapper;
     private final RelationshipMapper relationshipMapper;
-    private final RelationshipMemberMapper relationshipMemberMapper;
+    private final RelationshipPermissionService relationshipPermissionService;
     private final UserMapper userMapper;
 
     @Override
@@ -344,33 +343,15 @@ public class AccountingServiceImpl implements AccountingService {
     }
 
     private void requireRelationshipMember(Long relationshipId, Long userId) {
-        Relationship relationship = relationshipMapper.selectById(relationshipId);
-        if (relationship == null || !ACTIVE_STATUS.equals(relationship.getStatus())) {
-            throw new BusinessException(404, "Relationship not found");
-        }
-        if (!isRelationshipMember(relationshipId, userId)) {
-            throw new BusinessException(403, "You are not a member of this relationship");
-        }
+        relationshipPermissionService.requireActiveRelationshipMember(relationshipId, userId);
     }
 
     private boolean isRelationshipMember(Long relationshipId, Long userId) {
-        RelationshipMember member = relationshipMemberMapper.selectOne(new LambdaQueryWrapper<RelationshipMember>()
-                .eq(RelationshipMember::getRelationshipId, relationshipId)
-                .eq(RelationshipMember::getUserId, userId)
-                .eq(RelationshipMember::getStatus, ACTIVE_STATUS)
-                .last("LIMIT 1"));
-        return member != null;
+        return relationshipPermissionService.isActiveRelationshipMember(relationshipId, userId);
     }
 
     private Set<Long> listCurrentUserRelationshipIds(Long userId) {
-        List<RelationshipMember> members = relationshipMemberMapper.selectList(new LambdaQueryWrapper<RelationshipMember>()
-                .eq(RelationshipMember::getUserId, userId)
-                .eq(RelationshipMember::getStatus, ACTIVE_STATUS));
-        Set<Long> ids = new HashSet<Long>();
-        for (RelationshipMember member : members) {
-            ids.add(member.getRelationshipId());
-        }
-        return ids;
+        return new HashSet<Long>(relationshipPermissionService.listActiveRelationshipIds(userId));
     }
 
     private YearMonth parseMonth(String month) {

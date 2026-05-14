@@ -7,6 +7,8 @@ import { Anniversary, AnniversaryDisplayType, getAnniversaries } from '../api/an
 import { getRelationships, RelationshipSummary } from '../api/relationship';
 import { getAnniversaryDisplayText, getRepeatTypeLabel } from '../utils/anniversary';
 import { EmptyState } from '../components/decorations/EmptyState';
+import { ErrorState } from '../components/common/ErrorState';
+import { getPageErrorType, PageErrorType } from '../utils/error';
 
 export function AnniversaryList() {
   const { t } = useTranslation();
@@ -19,6 +21,7 @@ export function AnniversaryList() {
   const [displayType, setDisplayType] = useState<AnniversaryDisplayType | undefined>();
   const [keyword, setKeyword] = useState('');
   const [loading, setLoading] = useState(false);
+  const [pageError, setPageError] = useState<PageErrorType | null>(null);
   const [messageApi, contextHolder] = message.useMessage();
 
   const loadData = async (nextRelationshipId = relationshipId) => {
@@ -32,8 +35,9 @@ export function AnniversaryList() {
         size: 50,
       });
       setItems(response.data.data);
+      setPageError(null);
     } catch (error) {
-      messageApi.error(t('anniversary.loadFailed'));
+      setPageError(getPageErrorType(error));
     } finally {
       setLoading(false);
     }
@@ -94,7 +98,9 @@ export function AnniversaryList() {
         </Space>
       </div>
 
-      {loading && items.length === 0 ? (
+      {pageError ? (
+        <ErrorState type={pageError} onRetry={() => loadData()} />
+      ) : loading && items.length === 0 ? (
         <div className="anniversary-grid">
           {[1, 2, 3].map((item) => (
             <Card key={item}>

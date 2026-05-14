@@ -8,11 +8,9 @@ import com.lifelink.activity.dto.SpaceActivityResponse;
 import com.lifelink.activity.entity.SpaceActivity;
 import com.lifelink.activity.mapper.SpaceActivityMapper;
 import com.lifelink.activity.service.SpaceActivityService;
-import com.lifelink.common.BusinessException;
 import com.lifelink.relationship.entity.Relationship;
-import com.lifelink.relationship.entity.RelationshipMember;
 import com.lifelink.relationship.mapper.RelationshipMapper;
-import com.lifelink.relationship.mapper.RelationshipMemberMapper;
+import com.lifelink.relationship.service.RelationshipPermissionService;
 import com.lifelink.user.entity.User;
 import com.lifelink.user.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
@@ -33,7 +31,7 @@ public class SpaceActivityServiceImpl implements SpaceActivityService {
 
     private final SpaceActivityMapper spaceActivityMapper;
     private final RelationshipMapper relationshipMapper;
-    private final RelationshipMemberMapper relationshipMemberMapper;
+    private final RelationshipPermissionService relationshipPermissionService;
     private final UserMapper userMapper;
     private final ObjectMapper objectMapper;
 
@@ -91,35 +89,15 @@ public class SpaceActivityServiceImpl implements SpaceActivityService {
     }
 
     private void requireActiveRelationship(Long relationshipId) {
-        Relationship relationship = relationshipMapper.selectById(relationshipId);
-        if (relationship == null || !ACTIVE_STATUS.equals(relationship.getStatus())) {
-            throw new BusinessException(404, "Relationship not found");
-        }
+        relationshipPermissionService.requireActiveRelationship(relationshipId);
     }
 
     private void requireMember(Long relationshipId, Long userId) {
-        RelationshipMember member = relationshipMemberMapper.selectOne(new LambdaQueryWrapper<RelationshipMember>()
-                .eq(RelationshipMember::getRelationshipId, relationshipId)
-                .eq(RelationshipMember::getUserId, userId)
-                .eq(RelationshipMember::getStatus, ACTIVE_STATUS)
-                .last("LIMIT 1"));
-        if (member == null) {
-            throw new BusinessException(403, "You are not a member of this relationship");
-        }
+        relationshipPermissionService.requireActiveRelationshipMember(relationshipId, userId);
     }
 
     private List<Long> listCurrentUserRelationshipIds(Long userId) {
-        List<RelationshipMember> members = relationshipMemberMapper.selectList(new LambdaQueryWrapper<RelationshipMember>()
-                .eq(RelationshipMember::getUserId, userId)
-                .eq(RelationshipMember::getStatus, ACTIVE_STATUS));
-        List<Long> relationshipIds = new ArrayList<Long>();
-        for (RelationshipMember member : members) {
-            Relationship relationship = relationshipMapper.selectById(member.getRelationshipId());
-            if (relationship != null && ACTIVE_STATUS.equals(relationship.getStatus())) {
-                relationshipIds.add(member.getRelationshipId());
-            }
-        }
-        return relationshipIds;
+        return relationshipPermissionService.listActiveRelationshipIds(userId);
     }
 
     private List<SpaceActivityResponse> toResponses(List<SpaceActivity> activities) {

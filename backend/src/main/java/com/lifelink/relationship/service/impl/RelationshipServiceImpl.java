@@ -16,6 +16,7 @@ import com.lifelink.relationship.entity.RelationshipMember;
 import com.lifelink.relationship.mapper.RelationshipInviteMapper;
 import com.lifelink.relationship.mapper.RelationshipMapper;
 import com.lifelink.relationship.mapper.RelationshipMemberMapper;
+import com.lifelink.relationship.service.RelationshipPermissionService;
 import com.lifelink.relationship.service.RelationshipService;
 import com.lifelink.user.entity.User;
 import com.lifelink.user.mapper.UserMapper;
@@ -51,6 +52,7 @@ public class RelationshipServiceImpl implements RelationshipService {
     private final UserMapper userMapper;
     private final SpaceActivityService spaceActivityService;
     private final NotificationService notificationService;
+    private final RelationshipPermissionService relationshipPermissionService;
 
     @Override
     @Transactional
@@ -139,11 +141,7 @@ public class RelationshipServiceImpl implements RelationshipService {
     @Override
     @Transactional
     public CreateInviteResponse createInvite(Long relationshipId, Long userId) {
-        RelationshipMember member = requireMember(relationshipId, userId);
-        requireActiveRelationship(relationshipId);
-        if (!OWNER_ROLE.equals(member.getRole()) && !ADMIN_ROLE.equals(member.getRole())) {
-            throw new BusinessException(403, "Only owner or admin can create invite code");
-        }
+        relationshipPermissionService.requireRelationshipAdminOrOwner(relationshipId, userId);
 
         LocalDateTime now = LocalDateTime.now();
         LocalDateTime expireAt = now.plusDays(7);
@@ -390,7 +388,7 @@ public class RelationshipServiceImpl implements RelationshipService {
     @Transactional
     public void transferOwner(Long relationshipId, com.lifelink.relationship.dto.TransferOwnerRequest request, Long userId) {
         Relationship relationship = requireActiveRelationship(relationshipId);
-        RelationshipMember currentOwner = requireOwner(relationshipId, userId);
+        requireOwner(relationshipId, userId);
         Long targetUserId = request.getTargetUserId();
         if (userId.equals(targetUserId)) {
             throw new BusinessException(400, "Target user is already owner");
@@ -398,9 +396,13 @@ public class RelationshipServiceImpl implements RelationshipService {
         RelationshipMember target = requireMember(relationshipId, targetUserId);
 
         LocalDateTime now = LocalDateTime.now();
-        currentOwner.setRole(ADMIN_ROLE);
-        currentOwner.setUpdatedAt(now);
-        relationshipMemberMapper.updateById(currentOwner);
+        for (RelationshipMember activeMember : listActiveMembers(relationshipId)) {
+            if (OWNER_ROLE.equals(activeMember.getRole()) && !targetUserId.equals(activeMember.getUserId())) {
+                activeMember.setRole(ADMIN_ROLE);
+                activeMember.setUpdatedAt(now);
+                relationshipMemberMapper.updateById(activeMember);
+            }
+        }
         target.setRole(OWNER_ROLE);
         target.setUpdatedAt(now);
         relationshipMemberMapper.updateById(target);
@@ -448,27 +450,15 @@ public class RelationshipServiceImpl implements RelationshipService {
     }
 
     private Relationship requireActiveRelationship(Long relationshipId) {
-        Relationship relationship = relationshipMapper.selectById(relationshipId);
-        if (relationship == null || !ACTIVE_STATUS.equals(relationship.getStatus())) {
-            throw new BusinessException(404, "Relationship not found");
-        }
-        return relationship;
+        return relationshipPermissionService.requireActiveRelationship(relationshipId);
     }
 
     private RelationshipMember requireMember(Long relationshipId, Long userId) {
-        RelationshipMember member = findMember(relationshipId, userId);
-        if (member == null) {
-            throw new BusinessException(403, "You are not a member of this relationship");
-        }
-        return member;
+        return relationshipPermissionService.requireActiveRelationshipMember(relationshipId, userId);
     }
 
     private RelationshipMember requireOwner(Long relationshipId, Long userId) {
-        RelationshipMember member = requireMember(relationshipId, userId);
-        if (!OWNER_ROLE.equals(member.getRole())) {
-            throw new BusinessException(403, "Only owner can operate this relationship");
-        }
-        return member;
+        return relationshipPermissionService.requireRelationshipOwner(relationshipId, userId);
     }
 
     private RelationshipMember findMember(Long relationshipId, Long userId) {
@@ -487,15 +477,11 @@ public class RelationshipServiceImpl implements RelationshipService {
     }
 
     private long countActiveMembers(Long relationshipId) {
-        return relationshipMemberMapper.selectCount(new LambdaQueryWrapper<RelationshipMember>()
-                .eq(RelationshipMember::getRelationshipId, relationshipId)
-                .eq(RelationshipMember::getStatus, ACTIVE_STATUS));
+        return relationshipPermissionService.listActiveMembers(relationshipId).size();
     }
 
     private List<RelationshipMember> listActiveMembers(Long relationshipId) {
-        return relationshipMemberMapper.selectList(new LambdaQueryWrapper<RelationshipMember>()
-                .eq(RelationshipMember::getRelationshipId, relationshipId)
-                .eq(RelationshipMember::getStatus, ACTIVE_STATUS));
+        return relationshipPermissionService.listActiveMembers(relationshipId);
     }
 
     private String getUsername(Long userId) {

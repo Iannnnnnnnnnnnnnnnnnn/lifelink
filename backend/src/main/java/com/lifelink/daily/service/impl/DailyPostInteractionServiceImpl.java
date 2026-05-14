@@ -15,8 +15,7 @@ import com.lifelink.daily.mapper.DailyPostLikeMapper;
 import com.lifelink.daily.mapper.DailyPostMapper;
 import com.lifelink.daily.service.DailyPostInteractionService;
 import com.lifelink.notification.service.NotificationService;
-import com.lifelink.relationship.entity.RelationshipMember;
-import com.lifelink.relationship.mapper.RelationshipMemberMapper;
+import com.lifelink.relationship.service.RelationshipPermissionService;
 import com.lifelink.user.entity.User;
 import com.lifelink.user.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
@@ -41,7 +40,7 @@ public class DailyPostInteractionServiceImpl implements DailyPostInteractionServ
     private final DailyPostMapper dailyPostMapper;
     private final DailyPostLikeMapper dailyPostLikeMapper;
     private final DailyPostCommentMapper dailyPostCommentMapper;
-    private final RelationshipMemberMapper relationshipMemberMapper;
+    private final RelationshipPermissionService relationshipPermissionService;
     private final UserMapper userMapper;
     private final SpaceActivityService spaceActivityService;
     private final NotificationService notificationService;
@@ -157,14 +156,7 @@ public class DailyPostInteractionServiceImpl implements DailyPostInteractionServ
         if (post == null || !ACTIVE_STATUS.equals(post.getStatus())) {
             throw new BusinessException(404, "Daily post not found");
         }
-        RelationshipMember member = relationshipMemberMapper.selectOne(new LambdaQueryWrapper<RelationshipMember>()
-                .eq(RelationshipMember::getRelationshipId, post.getRelationshipId())
-                .eq(RelationshipMember::getUserId, userId)
-                .eq(RelationshipMember::getStatus, ACTIVE_STATUS)
-                .last("LIMIT 1"));
-        if (member == null) {
-            throw new BusinessException(403, "You are not a member of this relationship");
-        }
+        relationshipPermissionService.requireActiveRelationshipMember(post.getRelationshipId(), userId);
         return post;
     }
 

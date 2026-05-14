@@ -1,4 +1,6 @@
 import axios from 'axios';
+import { message } from 'antd';
+import i18n from '../i18n';
 
 export interface ApiResult<T> {
   code: number;
@@ -13,6 +15,28 @@ export const request = axios.create({
   timeout: 10000,
 });
 
+let unauthorizedHandled = false;
+let lastErrorMessageAt = 0;
+let lastErrorMessage = '';
+
+function showErrorOnce(content: string) {
+  const now = Date.now();
+  if (content === lastErrorMessage && now - lastErrorMessageAt < 1500) {
+    return;
+  }
+  lastErrorMessage = content;
+  lastErrorMessageAt = now;
+  message.error(content);
+}
+
+function getFallbackMessage(status?: number) {
+  if (status === 401) return i18n.t('error.unauthorized');
+  if (status === 403) return i18n.t('error.forbidden');
+  if (status === 404) return i18n.t('error.notFound');
+  if (!status) return i18n.t('error.network');
+  return i18n.t('error.server');
+}
+
 request.interceptors.request.use((config) => {
   const token = localStorage.getItem(TOKEN_STORAGE_KEY);
   if (token) {
@@ -24,12 +48,28 @@ request.interceptors.request.use((config) => {
 request.interceptors.response.use(
   (response) => response,
   (error) => {
-    if (error.response?.status === 401) {
+    const status = error.response?.status;
+    const backendMessage = error.response?.data?.message;
+    const fallbackMessage = getFallbackMessage(status);
+    const displayMessage = backendMessage || fallbackMessage;
+    error.__lifelinkHandled = true;
+
+    if (status === 401) {
       localStorage.removeItem(TOKEN_STORAGE_KEY);
       window.dispatchEvent(new Event('lifelink:unauthorized'));
-      if (window.location.pathname !== '/login') {
+
+      const isAuthPage = ['/login', '/register'].includes(window.location.pathname);
+      if (!unauthorizedHandled) {
+        unauthorizedHandled = true;
+        if (!isAuthPage) {
+          showErrorOnce(displayMessage);
+        }
+      }
+      if (!isAuthPage) {
         window.location.href = '/login';
       }
+    } else if (status === 403 || status === 404 || status >= 500 || !status) {
+      showErrorOnce(displayMessage);
     }
     return Promise.reject(error);
   },

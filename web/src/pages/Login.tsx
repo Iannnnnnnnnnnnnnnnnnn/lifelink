@@ -1,6 +1,7 @@
 import { HeartOutlined, LockOutlined, UserOutlined } from '@ant-design/icons';
 import { Button, Card, Form, Input, message, Typography } from 'antd';
 import { AxiosError } from 'axios';
+import { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useNavigate } from 'react-router-dom';
 import { ApiResult } from '../api/request';
@@ -18,9 +19,11 @@ export function Login() {
   const navigate = useNavigate();
   const { t } = useTranslation();
   const saveLogin = useAuthStore((state) => state.login);
+  const [submitting, setSubmitting] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
 
   const handleSubmit = async (values: LoginFormValues) => {
+    setSubmitting(true);
     try {
       const response = await login(values);
       saveLogin(response.data.data);
@@ -29,6 +32,8 @@ export function Login() {
     } catch (error) {
       const axiosError = error as AxiosError<ApiResult<unknown>>;
       messageApi.error(axiosError.response?.data?.message || t('auth.loginFailed'));
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -55,7 +60,7 @@ export function Login() {
           <Form.Item name="password" label={t('auth.password')} rules={[{ required: true, message: t('auth.passwordRequired') }]}>
             <Input.Password prefix={<LockOutlined />} placeholder={t('auth.passwordPlaceholder')} />
           </Form.Item>
-          <Button type="primary" htmlType="submit" block>
+          <Button type="primary" htmlType="submit" loading={submitting} block>
             {t('auth.login')}
           </Button>
         </Form>

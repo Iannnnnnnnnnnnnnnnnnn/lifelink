@@ -754,3 +754,53 @@ Automatic activity generation currently covers:
 - todo completed
 - todo reopened
 - anniversary creation
+
+## Global Search
+
+- Method: `GET`
+- Path: `/api/search`
+- Auth: Required
+
+Query parameters:
+
+- `keyword`: required, length 1-100.
+- `types`: optional comma-separated list, supports `RELATIONSHIP`, `DAILY_POST`, `TODO`, `ANNIVERSARY`, `ACTIVITY`.
+- `page`: optional, reserved for future pagination.
+- `size`: optional, per-group result limit, default `8`, max `20`.
+
+Rules:
+
+- Only searches data in active relationship spaces where current user is an active member.
+- Deleted relationship spaces, left/removed memberships, deleted daily posts, deleted todos, deleted anniversaries, and deleted activities are excluded.
+- First version uses PostgreSQL `ILIKE` fuzzy matching on existing business tables.
+
+Response:
+
+```json
+{
+  "keyword": "birthday",
+  "totalCount": 2,
+  "groups": [
+    {
+      "type": "ANNIVERSARY",
+      "title": "Anniversaries",
+      "count": 1,
+      "items": [
+        {
+          "id": 1,
+          "type": "ANNIVERSARY",
+          "title": "Birthday",
+          "description": "A special day",
+          "relationshipId": 1,
+          "relationshipName": "Our Home",
+          "targetUrl": "/anniversaries/1",
+          "createdAt": "2026-05-13T10:00:00",
+          "metadata": {
+            "repeatType": "YEARLY"
+          }
+        }
+      ]
+    }
+  ]
+}
+```

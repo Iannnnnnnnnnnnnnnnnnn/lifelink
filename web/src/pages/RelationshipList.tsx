@@ -5,12 +5,15 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { getRelationships, RelationshipSummary } from '../api/relationship';
 import { EmptyState } from '../components/decorations/EmptyState';
+import { ErrorState } from '../components/common/ErrorState';
+import { getPageErrorType, PageErrorType } from '../utils/error';
 
 export function RelationshipList() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [relationships, setRelationships] = useState<RelationshipSummary[]>([]);
   const [loading, setLoading] = useState(false);
+  const [pageError, setPageError] = useState<PageErrorType | null>(null);
   const [messageApi, contextHolder] = message.useMessage();
 
   const loadRelationships = async () => {
@@ -18,8 +21,9 @@ export function RelationshipList() {
     try {
       const response = await getRelationships();
       setRelationships(response.data.data);
+      setPageError(null);
     } catch (error) {
-      messageApi.error(t('relationship.loadFailed'));
+      setPageError(getPageErrorType(error));
     } finally {
       setLoading(false);
     }
@@ -47,7 +51,9 @@ export function RelationshipList() {
         </Space>
       </div>
 
-      {loading && relationships.length === 0 ? (
+      {pageError ? (
+        <ErrorState type={pageError} onRetry={loadRelationships} />
+      ) : loading && relationships.length === 0 ? (
         <div className="relationship-grid">
           {[1, 2, 3].map((item) => (
             <Card key={item}>

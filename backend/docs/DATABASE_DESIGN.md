@@ -98,6 +98,12 @@ docs/sql/init_relationships.sql
 
 Stores daily records (text with optional images).
 
+## global search
+
+Global search does not introduce a dedicated search index table in the first version.
+It queries existing business tables with PostgreSQL `ILIKE` and filters by active relationship memberships.
+Suggested future optimizations include PostgreSQL full-text search or `pg_trgm` indexes when data volume grows.
+
 ```sql
 CREATE TABLE IF NOT EXISTS daily_posts (
     id BIGSERIAL PRIMARY KEY,

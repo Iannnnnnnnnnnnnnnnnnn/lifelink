@@ -10,6 +10,7 @@
 - [x] Implement relationship space backend APIs.
 - [x] Add frontend relationship list, create, join, detail, members, and invite flow.
 - [x] Implement relationship member management: leave, dissolve, remove member, role update, nickname, and owner transfer.
+- [x] Implement global search across relationships, daily posts, todos, anniversaries, and activities.
 - [x] Implement text-only daily record backend APIs.
 - [x] Add frontend daily timeline, create, detail, filter, and delete flow.
 - [x] Implement daily post likes and comments.

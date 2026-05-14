@@ -20,9 +20,8 @@ import com.lifelink.daily.service.DailyPostService;
 import com.lifelink.file.entity.FileResource;
 import com.lifelink.file.mapper.FileResourceMapper;
 import com.lifelink.relationship.entity.Relationship;
-import com.lifelink.relationship.entity.RelationshipMember;
 import com.lifelink.relationship.mapper.RelationshipMapper;
-import com.lifelink.relationship.mapper.RelationshipMemberMapper;
+import com.lifelink.relationship.service.RelationshipPermissionService;
 import com.lifelink.user.entity.User;
 import com.lifelink.user.mapper.UserMapper;
 import lombok.RequiredArgsConstructor;
@@ -51,7 +50,7 @@ public class DailyPostServiceImpl implements DailyPostService {
 
     private final DailyPostMapper dailyPostMapper;
     private final RelationshipMapper relationshipMapper;
-    private final RelationshipMemberMapper relationshipMemberMapper;
+    private final RelationshipPermissionService relationshipPermissionService;
     private final UserMapper userMapper;
     private final FileResourceMapper fileResourceMapper;
     private final DailyPostImageMapper dailyPostImageMapper;
@@ -148,36 +147,15 @@ public class DailyPostServiceImpl implements DailyPostService {
     }
 
     private Relationship requireActiveRelationship(Long relationshipId) {
-        Relationship relationship = relationshipMapper.selectById(relationshipId);
-        if (relationship == null || !ACTIVE_STATUS.equals(relationship.getStatus())) {
-            throw new BusinessException(404, "Relationship not found");
-        }
-        return relationship;
+        return relationshipPermissionService.requireActiveRelationship(relationshipId);
     }
 
     private void requireRelationshipMember(Long relationshipId, Long userId) {
-        RelationshipMember member = relationshipMemberMapper.selectOne(new LambdaQueryWrapper<RelationshipMember>()
-                .eq(RelationshipMember::getRelationshipId, relationshipId)
-                .eq(RelationshipMember::getUserId, userId)
-                .eq(RelationshipMember::getStatus, ACTIVE_STATUS)
-                .last("LIMIT 1"));
-        if (member == null) {
-            throw new BusinessException(403, "You are not a member of this relationship");
-        }
+        relationshipPermissionService.requireActiveRelationshipMember(relationshipId, userId);
     }
 
     private List<Long> listCurrentUserRelationshipIds(Long userId) {
-        List<RelationshipMember> members = relationshipMemberMapper.selectList(new LambdaQueryWrapper<RelationshipMember>()
-                .eq(RelationshipMember::getUserId, userId)
-                .eq(RelationshipMember::getStatus, ACTIVE_STATUS));
-        List<Long> relationshipIds = new ArrayList<Long>();
-        for (RelationshipMember member : members) {
-            Relationship relationship = relationshipMapper.selectById(member.getRelationshipId());
-            if (relationship != null && ACTIVE_STATUS.equals(relationship.getStatus())) {
-                relationshipIds.add(member.getRelationshipId());
-            }
-        }
-        return relationshipIds;
+        return relationshipPermissionService.listActiveRelationshipIds(userId);
     }
 
     private DailyPostResponse toResponse(DailyPost post, Relationship relationship, Long currentUserId) {
@@ -241,6 +219,11 @@ public class DailyPostServiceImpl implements DailyPostService {
                 .eq(FileResource::getUserId, userId));
         if (resources.size() != uniqueIds.size()) {
             throw new BusinessException(400, "Some images are invalid or not uploaded by current user");
+        }
+        for (FileResource resource : resources) {
+            if (!StringUtils.hasText(resource.getContentType()) || !resource.getContentType().toLowerCase().startsWith("image/")) {
+                throw new BusinessException(400, "Daily post files must be images");
+            }
         }
 
         int index = 0;
