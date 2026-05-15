@@ -1,0 +1,57 @@
+.anniversaries-title {
+  display: block;
+  margin-bottom: 24rpx;
+  font-size: 42rpx;
+  font-weight: 900;
+}
+
+.anniversary-card {
+  position: relative;
+  height: 300rpx;
+  margin-bottom: 22rpx;
+  overflow: hidden;
+  background: linear-gradient(135deg, #ff9ab0, #8fb8ff);
+}
+
+.anniversary-card--TODAY {
+  background: linear-gradient(135deg, #ff7a90, #ffd166);
+}
+
+.anniversary-card__image {
+  width: 100%;
+  height: 100%;
+}
+
+.anniversary-card__mask {
+  position: absolute;
+  inset: 0;
+  padding: 30rpx;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  color: #ffffff;
+  background: rgba(17, 24, 39, 0.38);
+}
+
+.anniversary-card__name,
+.anniversary-card__text,
+.anniversary-card__space {
+  display: block;
+}
+
+.anniversary-card__name {
+  font-size: 32rpx;
+  font-weight: 800;
+}
+
+.anniversary-card__count {
+  display: block;
+  margin-top: 12rpx;
+  font-size: 72rpx;
+  font-weight: 900;
+}
+
+.anniversary-card__space {
+  margin-top: 12rpx;
+  opacity: 0.85;
+}

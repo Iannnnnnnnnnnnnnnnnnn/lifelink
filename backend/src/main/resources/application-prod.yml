@@ -1,0 +1,41 @@
+server:
+  port: ${SERVER_PORT:8081}
+
+spring:
+  application:
+    name: lifelink-backend
+  datasource:
+    driver-class-name: org.postgresql.Driver
+    url: ${SPRING_DATASOURCE_URL:jdbc:postgresql://postgres:5432/lifelink}
+    username: ${SPRING_DATASOURCE_USERNAME:lifelink}
+    password: ${SPRING_DATASOURCE_PASSWORD:change-me}
+  data:
+    redis:
+      host: ${SPRING_REDIS_HOST:redis}
+      port: ${SPRING_REDIS_PORT:6379}
+      database: ${SPRING_REDIS_DATABASE:0}
+      password: ${SPRING_REDIS_PASSWORD:}
+  servlet:
+    multipart:
+      max-file-size: ${LIFELINK_MAX_FILE_SIZE:5MB}
+      max-request-size: ${LIFELINK_MAX_REQUEST_SIZE:50MB}
+
+mybatis-plus:
+  configuration:
+    map-underscore-to-camel-case: true
+  global-config:
+    banner: false
+
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+
+lifelink:
+  jwt:
+    secret: ${LIFELINK_JWT_SECRET}
+    expiration: ${LIFELINK_JWT_EXPIRATION:604800000}
+  minio:
+    endpoint: ${LIFELINK_MINIO_ENDPOINT:http://minio:9000}
+    access-key: ${MINIO_ROOT_USER:lifelink_minio}
+    secret-key: ${MINIO_ROOT_PASSWORD:change-me}
+    bucket: ${LIFELINK_MINIO_BUCKET:lifelink}

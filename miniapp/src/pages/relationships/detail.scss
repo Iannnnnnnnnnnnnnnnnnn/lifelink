@@ -1,0 +1,30 @@
+.relationship-hero {
+  padding: 36rpx;
+  background: linear-gradient(135deg, #fff, #fff2f5);
+}
+
+.relationship-hero__name {
+  display: block;
+  font-size: 44rpx;
+  font-weight: 900;
+}
+
+.relationship-hero__desc {
+  display: block;
+  margin-top: 14rpx;
+  color: #4b5563;
+  line-height: 1.6;
+}
+
+.relationship-hero__meta {
+  display: flex;
+  gap: 16rpx;
+  margin-top: 22rpx;
+  color: #6b7280;
+}
+
+.relationship-actions {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 18rpx;
+}

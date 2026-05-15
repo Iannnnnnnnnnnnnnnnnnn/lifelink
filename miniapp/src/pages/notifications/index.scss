@@ -1,0 +1,55 @@
+.notifications-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 24rpx;
+}
+
+.notifications-title {
+  font-size: 42rpx;
+  font-weight: 900;
+}
+
+.notifications-read-all {
+  width: 180rpx;
+  height: 68rpx;
+  line-height: 68rpx;
+  font-size: 24rpx;
+}
+
+.notification-card {
+  margin-bottom: 18rpx;
+  padding: 24rpx;
+}
+
+.notification-card--unread {
+  border-color: rgba(231, 111, 138, 0.35);
+  background: #fff8fa;
+}
+
+.notification-card__top {
+  display: flex;
+  justify-content: space-between;
+  gap: 18rpx;
+}
+
+.notification-card__title {
+  flex: 1;
+  font-weight: 700;
+  line-height: 1.5;
+}
+
+.notification-dot {
+  width: 16rpx;
+  height: 16rpx;
+  border-radius: 50%;
+  background: #e76f8a;
+}
+
+.notification-card__meta,
+.notification-card__time {
+  display: block;
+  margin-top: 10rpx;
+  color: #6b7280;
+  font-size: 24rpx;
+}

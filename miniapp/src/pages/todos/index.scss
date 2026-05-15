@@ -1,0 +1,68 @@
+.todos-filter {
+  padding: 24rpx;
+  margin-bottom: 24rpx;
+}
+
+.todos-picker,
+.todos-input {
+  height: 76rpx;
+  line-height: 76rpx;
+  padding: 0 20rpx;
+  border-radius: 18rpx;
+  background: #f9fafb;
+  border: 1rpx solid #e5e7eb;
+}
+
+.todos-create {
+  display: flex;
+  gap: 14rpx;
+  margin-top: 18rpx;
+}
+
+.todos-input {
+  flex: 1;
+}
+
+.todos-create__button {
+  width: 150rpx;
+  height: 76rpx;
+  line-height: 76rpx;
+}
+
+.todo-card {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 18rpx;
+  padding: 24rpx;
+  margin-bottom: 18rpx;
+}
+
+.todo-card--done {
+  opacity: 0.62;
+}
+
+.todo-card--done .todo-card__title {
+  text-decoration: line-through;
+}
+
+.todo-card__title,
+.todo-card__meta {
+  display: block;
+}
+
+.todo-card__title {
+  font-weight: 800;
+}
+
+.todo-card__meta {
+  margin-top: 8rpx;
+  color: #6b7280;
+  font-size: 24rpx;
+}
+
+.todo-card__button {
+  width: 132rpx;
+  height: 68rpx;
+  line-height: 68rpx;
+}

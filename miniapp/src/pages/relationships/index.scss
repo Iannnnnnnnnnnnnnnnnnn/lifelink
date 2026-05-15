@@ -1,0 +1,55 @@
+.relationships-header {
+  padding: 12rpx 4rpx 28rpx;
+}
+
+.relationships-title {
+  display: block;
+  font-size: 44rpx;
+  font-weight: 800;
+}
+
+.relationships-desc {
+  display: block;
+  margin-top: 10rpx;
+  color: #6b7280;
+}
+
+.relationship-card {
+  margin-bottom: 20rpx;
+  padding: 28rpx;
+}
+
+.relationship-card__top,
+.relationship-card__meta {
+  display: flex;
+  justify-content: space-between;
+  gap: 18rpx;
+}
+
+.relationship-card__name {
+  font-size: 34rpx;
+  font-weight: 800;
+}
+
+.relationship-card__tag {
+  padding: 6rpx 14rpx;
+  border-radius: 999rpx;
+  background: #ffe4ea;
+  color: #9f4d63;
+  font-size: 22rpx;
+}
+
+.relationship-card__desc {
+  display: block;
+  margin: 18rpx 0;
+  color: #4b5563;
+}
+
+.relationship-card__meta {
+  color: #6b7280;
+  font-size: 24rpx;
+}
+
+.relationships-create {
+  margin-top: 28rpx;
+}
