@@ -16,6 +16,7 @@ import { FinanceTransactionList } from './pages/FinanceTransactionList';
 import { Home } from './pages/Home';
 import { JoinRelationship } from './pages/JoinRelationship';
 import { RelationshipFinance } from './pages/RelationshipFinance';
+import { CalendarPage } from './pages/calendar/CalendarPage';
 import { Login } from './pages/Login';
 import { RelationshipDetail } from './pages/RelationshipDetail';
 import { RelationshipList } from './pages/RelationshipList';
@@ -77,6 +78,10 @@ export const router = createBrowserRouter([
           {
             path: 'relationships/:relationshipId/timeline',
             element: <RelationshipTimelinePage />,
+          },
+          {
+            path: 'relationships/:relationshipId/calendar',
+            element: <CalendarPage />,
           },
           {
             path: 'relationships/:relationshipId/anniversaries',

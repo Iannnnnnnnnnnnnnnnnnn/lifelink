@@ -18,6 +18,7 @@ import './styles/dashboard.css';
 import './styles/daily-interaction.css';
 import './styles/search.css';
 import './styles/timeline.css';
+import './styles/calendar.css';
 import './styles/animations.css';
 import './styles/stickers.css';
 import './styles/ui-polish.css';

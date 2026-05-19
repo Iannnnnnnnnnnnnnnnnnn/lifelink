@@ -883,3 +883,45 @@ Automatic milestone generation currently covers:
 - completed `HIGH` priority todo
 - daily post comment count first reaching 5
 - daily post with uploaded images
+
+## Life Calendar
+
+Life Calendar aggregates relationship-space todos, anniversaries, daily posts, transactions, holidays, solar terms, and custom calendar events. All relationship-scoped endpoints require the current user to be an active member of the relationship.
+
+### Get Month Calendar
+
+- Method: `GET`
+- Path: `/api/calendar/month`
+- Auth: Required
+- Query: `relationshipId`, `year`, `month`
+- Description: Returns one month of aggregated calendar days for the relationship.
+
+### Get Day Calendar
+
+- Method: `GET`
+- Path: `/api/calendar/day`
+- Auth: Required
+- Query: `relationshipId`, `date` in `yyyy-MM-dd`.
+- Description: Returns one day's aggregated calendar detail.
+
+### Create Calendar Event
+
+- Method: `POST`
+- Path: `/api/calendar/events`
+- Auth: Required
+- Body: `relationshipId`, `title`, `description`, `eventType`, `startTime`, `endTime`, `allDay`, `repeatType`, `reminderMinutes`, `color`.
+- Description: Creates a user-defined calendar event in a relationship space.
+
+### Update Calendar Event
+
+- Method: `PUT`
+- Path: `/api/calendar/events/{eventId}`
+- Auth: Required
+- Description: Creator can update the event. Relationship `OWNER` and `ADMIN` can update any event in the space.
+
+### Delete Calendar Event
+
+- Method: `DELETE`
+- Path: `/api/calendar/events/{eventId}`
+- Auth: Required
+- Description: Soft deletes the event by setting `calendar_events.status` to `DELETED`.

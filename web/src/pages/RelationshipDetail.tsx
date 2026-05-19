@@ -325,6 +325,17 @@ export function RelationshipDetail() {
                     </Card>
                   </Col>
                   <Col xs={24} md={12}>
+                    <Card className="action-card" hoverable onClick={() => navigate(`/relationships/${relationshipId}/calendar`)}>
+                      <Space align="start">
+                        <CalendarOutlined className="action-icon" />
+                        <div>
+                          <Typography.Title level={4}>{t('relationship.viewCalendar')}</Typography.Title>
+                          <Typography.Text type="secondary">{t('relationship.calendarEntryDescription')}</Typography.Text>
+                        </div>
+                      </Space>
+                    </Card>
+                  </Col>
+                  <Col xs={24} md={12}>
                     <Card className="action-card" hoverable onClick={() => navigate(`/relationships/${relationshipId}/anniversaries`)}>
                       <Space align="start">
                         <CalendarOutlined className="action-icon" />

@@ -1,0 +1,163 @@
+.calendar-page .calendar-toolbar {
+  justify-content: flex-end;
+}
+
+.calendar-card {
+  overflow: hidden;
+}
+
+.calendar-card .ant-card-body {
+  padding: 12px;
+}
+
+.calendar-card .ant-picker-calendar-date {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.calendar-cell {
+  min-height: 116px;
+  padding: 8px;
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+.calendar-cell-muted {
+  opacity: 0.45;
+}
+
+.calendar-cell-today {
+  background: #f0f7ff;
+  box-shadow: inset 0 0 0 1px #91caff;
+}
+
+.calendar-cell-date {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 6px;
+  min-height: 24px;
+  font-weight: 700;
+}
+
+.calendar-cell-content {
+  display: grid;
+  gap: 4px;
+  margin-top: 6px;
+}
+
+.calendar-cell-content .ant-badge {
+  min-width: 0;
+  font-size: 12px;
+  line-height: 18px;
+}
+
+.calendar-cell-content .ant-badge-status-text {
+  max-width: 100%;
+  overflow: hidden;
+  color: #4b5874;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.calendar-cell-content .ant-tag {
+  width: fit-content;
+  max-width: 100%;
+  margin-inline-end: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.calendar-more {
+  font-size: 12px;
+}
+
+.calendar-day-item {
+  border-radius: 8px;
+  transition: background 0.2s ease;
+}
+
+.calendar-day-item-clickable {
+  cursor: pointer;
+}
+
+.calendar-day-item-clickable:hover {
+  background: #f7faff;
+}
+
+.calendar-day-item-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border-radius: 8px;
+  background: #eef5ff;
+  color: #1677ff;
+}
+
+.calendar-color-option {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.calendar-color-option span {
+  display: inline-block;
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+}
+
+.calendar-modal-footer {
+  width: 100%;
+  justify-content: flex-end;
+}
+
+.theme-grayscale .calendar-cell-today {
+  background: #f4f5f7;
+  box-shadow: inset 0 0 0 1px #aeb4bf;
+}
+
+.theme-grayscale .calendar-day-item-icon {
+  background: #f2f3f5;
+  color: #4b5563;
+}
+
+@media (max-width: 720px) {
+  .calendar-page .calendar-toolbar,
+  .calendar-page .relationship-filter,
+  .calendar-page .ant-picker,
+  .calendar-page .calendar-toolbar .ant-btn {
+    width: 100%;
+  }
+
+  .calendar-card .ant-picker-calendar {
+    font-size: 12px;
+  }
+
+  .calendar-cell {
+    min-height: 96px;
+    padding: 6px;
+  }
+
+  .calendar-cell-date {
+    min-height: 20px;
+    font-size: 12px;
+  }
+
+  .calendar-cell-date .ant-tag {
+    display: none;
+  }
+
+  .calendar-cell-content {
+    gap: 2px;
+    margin-top: 4px;
+  }
+
+  .calendar-cell-content .ant-badge,
+  .calendar-cell-content .ant-tag,
+  .calendar-more {
+    font-size: 11px;
+  }
+}
