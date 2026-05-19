@@ -11,6 +11,7 @@ import { uploadFile, UploadFileResponse } from '../api/file';
 import { ErrorState } from '../components/common/ErrorState';
 import { PageLoading } from '../components/common/PageLoading';
 import { getAnniversaryDisplayText, getRepeatTypeLabel } from '../utils/anniversary';
+import { formatDate, formatDateTime } from '../utils/date';
 import { getPageErrorType, PageErrorType } from '../utils/error';
 
 interface AnniversaryEditValues {
@@ -21,7 +22,7 @@ interface AnniversaryEditValues {
 }
 
 export function AnniversaryDetail() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const params = useParams();
   const anniversaryId = Number(params.id);
@@ -210,11 +211,11 @@ export function AnniversaryDetail() {
           <Descriptions.Item label={t('anniversary.name')}>{item?.title || '-'}</Descriptions.Item>
           <Descriptions.Item label={t('anniversary.description')}>{item?.description || '-'}</Descriptions.Item>
           <Descriptions.Item label={t('anniversary.relationship')}>{item?.relationshipName || '-'}</Descriptions.Item>
-          <Descriptions.Item label={t('anniversary.date')}>{item?.anniversaryDate || '-'}</Descriptions.Item>
+          <Descriptions.Item label={t('anniversary.date')}>{formatDate(item?.anniversaryDate, t, i18n.resolvedLanguage)}</Descriptions.Item>
           <Descriptions.Item label={t('anniversary.repeatType')}>{item ? getRepeatTypeLabel(item.repeatType, t) : '-'}</Descriptions.Item>
           <Descriptions.Item label={t('anniversary.displayType')}>{item ? t(`anniversary.${item.displayType.toLowerCase()}`) : '-'}</Descriptions.Item>
-          <Descriptions.Item label={t('anniversary.createdAt')}>{item?.createdAt || '-'}</Descriptions.Item>
-          <Descriptions.Item label={t('anniversary.updatedAt')}>{item?.updatedAt || '-'}</Descriptions.Item>
+          <Descriptions.Item label={t('anniversary.createdAt')}>{formatDateTime(item?.createdAt, t, i18n.resolvedLanguage)}</Descriptions.Item>
+          <Descriptions.Item label={t('anniversary.updatedAt')}>{formatDateTime(item?.updatedAt, t, i18n.resolvedLanguage)}</Descriptions.Item>
         </Descriptions>
       </Card>
 

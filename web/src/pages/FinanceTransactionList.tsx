@@ -14,6 +14,8 @@ import {
   TransactionType,
   updateTransaction,
 } from '../api/accounting';
+import { formatDateTime } from '../utils/date';
+import { getTransactionCategoryLabel, getTransactionTypeLabel } from '../utils/display';
 
 interface EditValues {
   type: TransactionType;
@@ -25,7 +27,7 @@ interface EditValues {
 }
 
 export function FinanceTransactionList() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [items, setItems] = useState<Transaction[]>([]);
   const [type, setType] = useState<TransactionType | undefined>();
@@ -128,10 +130,10 @@ export function FinanceTransactionList() {
         columns={[
           { title: t('finance.titleField'), dataIndex: 'title' },
           { title: t('finance.accountBook'), dataIndex: 'accountBookName' },
-          { title: t('finance.category'), dataIndex: 'categoryName', render: (value) => value || '-' },
-          { title: t('finance.type'), dataIndex: 'type', render: (value) => <Tag color={value === 'INCOME' ? 'green' : 'red'}>{t(`finance.${String(value).toLowerCase()}`)}</Tag> },
+          { title: t('finance.category'), dataIndex: 'categoryName', render: (value) => getTransactionCategoryLabel(t, value) },
+          { title: t('finance.type'), dataIndex: 'type', render: (value) => <Tag color={value === 'INCOME' ? 'green' : 'red'}>{getTransactionTypeLabel(t, value)}</Tag> },
           { title: t('finance.amount'), dataIndex: 'amount' },
-          { title: t('finance.transactionTime'), dataIndex: 'transactionTime' },
+          { title: t('finance.transactionTime'), dataIndex: 'transactionTime', render: (value) => formatDateTime(value, t, i18n.resolvedLanguage) },
           {
             title: t('common.edit'),
             render: (_, record) => (
@@ -164,7 +166,7 @@ export function FinanceTransactionList() {
             <InputNumber min={0.01} precision={2} className="full-width" />
           </Form.Item>
           <Form.Item name="categoryId" label={t('finance.category')}>
-            <Select allowClear options={categories.map((item) => ({ value: item.id, label: item.name }))} />
+            <Select allowClear options={categories.map((item) => ({ value: item.id, label: getTransactionCategoryLabel(t, item.name, item.icon) }))} />
           </Form.Item>
           <Form.Item name="title" label={t('finance.titleField')} rules={[{ required: true }]}>
             <Input />

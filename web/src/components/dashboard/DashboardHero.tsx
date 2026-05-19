@@ -1,6 +1,7 @@
 import { CalendarOutlined } from '@ant-design/icons';
 import { Button, Space, Tag, Typography } from 'antd';
 import { useTranslation } from 'react-i18next';
+import { formatDashboardDate } from '../../utils/date';
 
 interface DashboardHeroProps {
   username?: string;
@@ -10,11 +11,7 @@ interface DashboardHeroProps {
 
 export function DashboardHero({ username, onCreateDaily, onCreateSpace }: DashboardHeroProps) {
   const { t, i18n } = useTranslation();
-  const currentDate = new Intl.DateTimeFormat(i18n.resolvedLanguage === 'en-US' ? 'en-US' : 'zh-CN', {
-    weekday: 'long',
-    month: 'long',
-    day: 'numeric',
-  }).format(new Date());
+  const currentDate = formatDashboardDate(new Date(), i18n.resolvedLanguage);
 
   return (
     <section className="dashboard-hero-card">

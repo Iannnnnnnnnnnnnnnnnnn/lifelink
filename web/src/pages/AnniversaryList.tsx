@@ -8,10 +8,11 @@ import { getRelationships, RelationshipSummary } from '../api/relationship';
 import { getAnniversaryDisplayText, getRepeatTypeLabel } from '../utils/anniversary';
 import { EmptyState } from '../components/decorations/EmptyState';
 import { ErrorState } from '../components/common/ErrorState';
+import { formatDate } from '../utils/date';
 import { getPageErrorType, PageErrorType } from '../utils/error';
 
 export function AnniversaryList() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const params = useParams();
   const routeRelationshipId = params.relationshipId ? Number(params.relationshipId) : undefined;
@@ -128,7 +129,7 @@ export function AnniversaryList() {
                     <Tag>{getRepeatTypeLabel(item.repeatType, t)}</Tag>
                   </Space>
                   <Typography.Title level={3}>{item.title}</Typography.Title>
-                  <Typography.Text>{item.anniversaryDate}</Typography.Text>
+                  <Typography.Text>{formatDate(item.anniversaryDate, t, i18n.resolvedLanguage)}</Typography.Text>
                 </div>
                 <div>
                   <div className="anniversary-day-count">{item.dayCount}</div>

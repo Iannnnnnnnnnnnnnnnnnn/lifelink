@@ -1,6 +1,8 @@
 import { Checkbox, List, Skeleton, Space, Tag, Typography } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SpaceTodo } from '../../api/spaceTodo';
+import { formatDateTime } from '../../utils/date';
+import { getTodoPriorityColor, getTodoPriorityLabel } from '../../utils/display';
 import { EmptyState } from '../decorations/EmptyState';
 
 interface TodoPreviewListProps {
@@ -11,7 +13,7 @@ interface TodoPreviewListProps {
 }
 
 export function TodoPreviewList({ items, loading, togglingIds, onToggle }: TodoPreviewListProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   if (loading) {
     return <Skeleton active paragraph={{ rows: 4 }} />;
@@ -32,10 +34,10 @@ export function TodoPreviewList({ items, loading, togglingIds, onToggle }: TodoP
             title={
               <Space wrap>
                 <Typography.Text strong>{todo.title}</Typography.Text>
-                <Tag color={todo.priority === 'HIGH' ? 'red' : todo.priority === 'LOW' ? 'default' : 'blue'}>{todo.priority}</Tag>
+                <Tag color={getTodoPriorityColor(todo.priority)}>{getTodoPriorityLabel(t, todo.priority)}</Tag>
               </Space>
             }
-            description={`${todo.relationshipName || '-'} · ${t('common.due')}: ${todo.dueTime || '-'}`}
+            description={`${todo.relationshipName || t('common.notAvailable')} · ${t('common.due')}: ${formatDateTime(todo.dueTime, t, i18n.resolvedLanguage)}`}
           />
         </List.Item>
       )}

@@ -20,7 +20,71 @@
     "success": "操作成功",
     "failed": "操作失败",
     "due": "截止时间",
-    "all": "全部"
+    "all": "全部",
+    "notAvailable": "-"
+  },
+  "language": {
+    "zhCN": "中文",
+    "enUS": "English"
+  },
+  "enum": {
+    "relationshipType": {
+      "COUPLE": "恋人",
+      "FAMILY": "家人",
+      "FRIEND": "朋友",
+      "TEAM": "团队",
+      "OTHER": "其他",
+      "ROOMMATE": "室友",
+      "CUSTOM": "自定义"
+    },
+    "role": {
+      "OWNER": "拥有者",
+      "ADMIN": "管理员",
+      "MEMBER": "成员"
+    },
+    "status": {
+      "ACTIVE": "正常",
+      "DISABLED": "禁用",
+      "DELETED": "已删除"
+    },
+    "todoStatus": {
+      "TODO": "未完成",
+      "DONE": "已完成",
+      "DELETED": "已删除"
+    },
+    "todoPriority": {
+      "LOW": "低",
+      "NORMAL": "普通",
+      "HIGH": "高"
+    },
+    "transactionType": {
+      "INCOME": "收入",
+      "EXPENSE": "支出"
+    },
+    "visibility": {
+      "RELATIONSHIP": "关系空间可见",
+      "PRIVATE": "仅自己可见",
+      "PUBLIC": "公开"
+    },
+    "timelineImportance": {
+      "NORMAL": "普通",
+      "IMPORTANT": "重要"
+    },
+    "transactionCategory": {
+      "food": "餐饮",
+      "transport": "交通",
+      "shopping": "购物",
+      "home": "住房",
+      "entertainment": "娱乐",
+      "medical": "医疗",
+      "study": "学习",
+      "travel": "旅行",
+      "other": "其他",
+      "salary": "工资",
+      "bonus": "奖金",
+      "gift": "红包",
+      "part-time": "兼职"
+    }
   },
   "error": {
     "unauthorized": "登录已过期，请重新登录",

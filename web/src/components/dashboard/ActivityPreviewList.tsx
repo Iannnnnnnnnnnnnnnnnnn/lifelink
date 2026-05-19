@@ -2,6 +2,7 @@ import { Avatar, List, Skeleton, Space, Tag, Typography } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { SpaceActivity } from '../../api/activity';
 import { getActivityIcon, getActivityTag, getActivityText } from '../../utils/activity';
+import { formatDateTime } from '../../utils/date';
 import { EmptyState } from '../decorations/EmptyState';
 
 interface ActivityPreviewListProps {
@@ -11,7 +12,7 @@ interface ActivityPreviewListProps {
 }
 
 export function ActivityPreviewList({ items, loading, onOpen }: ActivityPreviewListProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   if (loading) {
     return <Skeleton active paragraph={{ rows: 4 }} />;
@@ -32,9 +33,9 @@ export function ActivityPreviewList({ items, loading, onOpen }: ActivityPreviewL
             title={<Typography.Text>{getActivityText(item, t)}</Typography.Text>}
             description={
               <Space wrap>
-                <Tag>{item.relationshipName || '-'}</Tag>
+                <Tag>{item.relationshipName || t('common.notAvailable')}</Tag>
                 <Tag color="blue">{getActivityTag(item.activityType, t)}</Tag>
-                <Typography.Text type="secondary">{item.createdAt}</Typography.Text>
+                <Typography.Text type="secondary">{formatDateTime(item.createdAt, t, i18n.resolvedLanguage)}</Typography.Text>
               </Space>
             }
           />

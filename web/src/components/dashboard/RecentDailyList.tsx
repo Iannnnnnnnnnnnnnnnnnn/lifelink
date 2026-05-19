@@ -1,6 +1,7 @@
 import { Image, List, Skeleton, Space, Tag, Typography } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { DailyPost } from '../../api/daily';
+import { formatDateTime } from '../../utils/date';
 import { EmptyState } from '../decorations/EmptyState';
 
 interface RecentDailyListProps {
@@ -11,7 +12,7 @@ interface RecentDailyListProps {
 }
 
 export function RecentDailyList({ items, loading, onOpen, onCreate }: RecentDailyListProps) {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   if (loading) {
     return <Skeleton active paragraph={{ rows: 4 }} />;
@@ -47,7 +48,7 @@ export function RecentDailyList({ items, loading, onOpen, onCreate }: RecentDail
                     ))}
                   </Space>
                 )}
-                <Typography.Text type="secondary">{post.createdAt}</Typography.Text>
+                <Typography.Text type="secondary">{formatDateTime(post.createdAt, t, i18n.resolvedLanguage)}</Typography.Text>
               </Space>
             }
           />

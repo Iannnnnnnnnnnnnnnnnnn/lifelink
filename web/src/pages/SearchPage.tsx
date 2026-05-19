@@ -13,12 +13,13 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { globalSearch, SearchGroup, SearchItem } from '../api/search';
 import { EmptyState } from '../components/common/EmptyState';
 import { ErrorState } from '../components/common/ErrorState';
+import { formatDateTime } from '../utils/date';
 import { highlightKeyword } from '../utils/search';
 
 const SEARCH_TYPES = ['RELATIONSHIP', 'DAILY_POST', 'TODO', 'ANNIVERSARY', 'ACTIVITY'];
 
 export function SearchPage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [searchParams, setSearchParams] = useSearchParams();
   const keywordFromUrl = searchParams.get('keyword') || '';
@@ -159,7 +160,7 @@ export function SearchPage() {
                     description={
                       <Space direction="vertical" size={4}>
                         <Typography.Text type="secondary">{highlightKeyword(item.description, keywordFromUrl)}</Typography.Text>
-                        {item.createdAt && <Typography.Text type="secondary">{item.createdAt}</Typography.Text>}
+                        {item.createdAt && <Typography.Text type="secondary">{formatDateTime(item.createdAt, t, i18n.resolvedLanguage)}</Typography.Text>}
                       </Space>
                     }
                   />

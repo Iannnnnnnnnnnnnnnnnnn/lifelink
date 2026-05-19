@@ -6,8 +6,10 @@ import { useNavigate, useParams } from 'react-router-dom';
 import { getRelationshipTimeline, RelationshipTimelineEvent } from '../api/timeline';
 import { EmptyState } from '../components/common/EmptyState';
 import { ErrorState } from '../components/common/ErrorState';
+import { formatDateTime } from '../utils/date';
+import { getTimelineImportanceLabel } from '../utils/display';
 import { getPageErrorType, PageErrorType } from '../utils/error';
-import { getTimelineEventIcon, getTimelineEventTag, getTimelineEventText, getTimelineTargetPath } from '../utils/timeline';
+import { getTimelineEventDescription, getTimelineEventIcon, getTimelineEventTag, getTimelineEventText, getTimelineTargetPath } from '../utils/timeline';
 
 const eventTypeOptions = [
   'RELATIONSHIP_CREATED',
@@ -21,7 +23,7 @@ const eventTypeOptions = [
 ];
 
 export function RelationshipTimelinePage() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const params = useParams();
   const relationshipId = Number(params.relationshipId);
@@ -74,8 +76,8 @@ export function RelationshipTimelinePage() {
             value={importance}
             onChange={setImportance}
             options={[
-              { value: 'NORMAL', label: t('timeline.normal') },
-              { value: 'IMPORTANT', label: t('timeline.important') },
+              { value: 'NORMAL', label: getTimelineImportanceLabel(t, 'NORMAL') },
+              { value: 'IMPORTANT', label: getTimelineImportanceLabel(t, 'IMPORTANT') },
             ]}
           />
           <Select
@@ -120,17 +122,19 @@ export function RelationshipTimelinePage() {
                         <Space direction="vertical" size={10} className="full-width">
                           <Space wrap>
                             <Tag color={item.importance === 'IMPORTANT' ? 'gold' : 'blue'}>{getTimelineEventTag(item.eventType, t)}</Tag>
-                            <Tag>{item.importance === 'IMPORTANT' ? t('timeline.important') : t('timeline.normal')}</Tag>
-                            <Typography.Text type="secondary">{item.eventDate}</Typography.Text>
+                            <Tag>{getTimelineImportanceLabel(t, item.importance)}</Tag>
+                            <Typography.Text type="secondary">{formatDateTime(item.eventDate, t, i18n.resolvedLanguage)}</Typography.Text>
                           </Space>
                           <Typography.Title level={4}>{getTimelineEventText(item, t)}</Typography.Title>
-                          <Typography.Paragraph className="timeline-description">
-                            {item.description || item.title}
-                          </Typography.Paragraph>
+                          {getTimelineEventDescription(item) && (
+                            <Typography.Paragraph className="timeline-description">
+                              {getTimelineEventDescription(item)}
+                            </Typography.Paragraph>
+                          )}
                           <div className="timeline-event-footer">
                             <Space>
                               <Avatar src={item.actorAvatarUrl}>{item.actorUsername?.[0]}</Avatar>
-                              <Typography.Text>{item.actorUsername || '-'}</Typography.Text>
+                              <Typography.Text>{item.actorUsername || t('common.notAvailable')}</Typography.Text>
                             </Space>
                             {targetPath && (
                               <Button type="link" onClick={(event) => {

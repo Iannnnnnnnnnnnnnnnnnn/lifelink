@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { createRelationship, RelationshipType } from '../api/relationship';
 import { useRelationshipThemeStore } from '../store/relationshipThemeStore';
+import { getRelationshipTypeOptions } from '../utils/display';
 
 interface CreateRelationshipValues {
   name: string;
@@ -46,13 +47,7 @@ export function CreateRelationship() {
           <Form.Item name="type" label={t('relationship.type')} rules={[{ required: true, message: t('relationship.typeRequired') }]}>
             <Select
               placeholder={t('relationship.selectType')}
-              options={[
-                { value: 'COUPLE', label: 'COUPLE' },
-                { value: 'FAMILY', label: 'FAMILY' },
-                { value: 'FRIEND', label: 'FRIEND' },
-                { value: 'ROOMMATE', label: 'ROOMMATE' },
-                { value: 'CUSTOM', label: 'CUSTOM' },
-              ]}
+              options={getRelationshipTypeOptions(t)}
             />
           </Form.Item>
           <Form.Item name="description" label={t('relationship.description')} rules={[{ max: 500 }]}>

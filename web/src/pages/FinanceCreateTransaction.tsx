@@ -5,6 +5,7 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AccountBook, createTransaction, getAccountBooks, getTransactionCategories, TransactionCategory, TransactionType } from '../api/accounting';
+import { getTransactionCategoryLabel } from '../utils/display';
 
 interface TransactionFormValues {
   accountBookId: number;
@@ -82,7 +83,7 @@ export function FinanceCreateTransaction() {
             <InputNumber min={0.01} precision={2} className="full-width" />
           </Form.Item>
           <Form.Item name="categoryId" label={t('finance.category')}>
-            <Select allowClear options={categories.map((item) => ({ value: item.id, label: item.name }))} />
+            <Select allowClear options={categories.map((item) => ({ value: item.id, label: getTransactionCategoryLabel(t, item.name, item.icon) }))} />
           </Form.Item>
           <Form.Item name="title" label={t('finance.titleField')} rules={[{ required: true, message: t('finance.titleRequired') }]}>
             <Input />

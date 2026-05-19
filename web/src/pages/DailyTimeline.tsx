@@ -8,10 +8,11 @@ import { getRelationships, RelationshipSummary } from '../api/relationship';
 import { useAuthStore } from '../store/authStore';
 import { EmptyState } from '../components/decorations/EmptyState';
 import { ErrorState } from '../components/common/ErrorState';
+import { formatDateTime } from '../utils/date';
 import { getPageErrorType, PageErrorType } from '../utils/error';
 
 export function DailyTimeline() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const currentUser = useAuthStore((state) => state.user);
   const [posts, setPosts] = useState<DailyPost[]>([]);
@@ -164,7 +165,7 @@ export function DailyTimeline() {
                 <Space wrap className="daily-meta">
                   <Tag>{t('daily.author')}: {post.username}</Tag>
                   <Tag>{t('daily.relationship')}: {post.relationshipName}</Tag>
-                  <Typography.Text type="secondary">{t('daily.createdAt')}: {post.createdAt}</Typography.Text>
+                  <Typography.Text type="secondary">{t('daily.createdAt')}: {formatDateTime(post.createdAt, t, i18n.resolvedLanguage)}</Typography.Text>
                 </Space>
                 <div className="daily-interaction-bar" onClick={(event) => event.stopPropagation()}>
                   <Space className="daily-interaction-actions">

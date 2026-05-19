@@ -20,7 +20,71 @@
     "success": "Success",
     "failed": "Failed",
     "due": "Due",
-    "all": "All"
+    "all": "All",
+    "notAvailable": "-"
+  },
+  "language": {
+    "zhCN": "中文",
+    "enUS": "English"
+  },
+  "enum": {
+    "relationshipType": {
+      "COUPLE": "Couple",
+      "FAMILY": "Family",
+      "FRIEND": "Friend",
+      "TEAM": "Team",
+      "OTHER": "Other",
+      "ROOMMATE": "Roommate",
+      "CUSTOM": "Custom"
+    },
+    "role": {
+      "OWNER": "Owner",
+      "ADMIN": "Admin",
+      "MEMBER": "Member"
+    },
+    "status": {
+      "ACTIVE": "Active",
+      "DISABLED": "Disabled",
+      "DELETED": "Deleted"
+    },
+    "todoStatus": {
+      "TODO": "Todo",
+      "DONE": "Done",
+      "DELETED": "Deleted"
+    },
+    "todoPriority": {
+      "LOW": "Low",
+      "NORMAL": "Normal",
+      "HIGH": "High"
+    },
+    "transactionType": {
+      "INCOME": "Income",
+      "EXPENSE": "Expense"
+    },
+    "visibility": {
+      "RELATIONSHIP": "Relationship space",
+      "PRIVATE": "Private",
+      "PUBLIC": "Public"
+    },
+    "timelineImportance": {
+      "NORMAL": "Normal",
+      "IMPORTANT": "Important"
+    },
+    "transactionCategory": {
+      "food": "Food",
+      "transport": "Transport",
+      "shopping": "Shopping",
+      "home": "Housing",
+      "entertainment": "Entertainment",
+      "medical": "Medical",
+      "study": "Study",
+      "travel": "Travel",
+      "other": "Other",
+      "salary": "Salary",
+      "bonus": "Bonus",
+      "gift": "Gift",
+      "part-time": "Part-time"
+    }
   },
   "error": {
     "unauthorized": "Your session has expired. Please log in again.",

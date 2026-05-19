@@ -4,9 +4,11 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useParams } from 'react-router-dom';
 import { AccountBook, createAccountBook, getAccountBooks, getMonthlyFinanceSummary, getTransactions, MonthlyFinanceSummary, Transaction } from '../api/accounting';
+import { formatDateTime } from '../utils/date';
+import { getTransactionCategoryLabel, getTransactionTypeLabel } from '../utils/display';
 
 export function RelationshipFinance() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const params = useParams();
   const relationshipId = Number(params.relationshipId);
@@ -72,10 +74,10 @@ export function RelationshipFinance() {
           columns={[
             { title: t('finance.titleField'), dataIndex: 'title' },
             { title: t('finance.accountBook'), dataIndex: 'accountBookName' },
-            { title: t('finance.category'), dataIndex: 'categoryName', render: (value) => value || '-' },
-            { title: t('finance.type'), dataIndex: 'type', render: (value) => <Tag color={value === 'INCOME' ? 'green' : 'red'}>{t(`finance.${String(value).toLowerCase()}`)}</Tag> },
+            { title: t('finance.category'), dataIndex: 'categoryName', render: (value) => getTransactionCategoryLabel(t, value) },
+            { title: t('finance.type'), dataIndex: 'type', render: (value) => <Tag color={value === 'INCOME' ? 'green' : 'red'}>{getTransactionTypeLabel(t, value)}</Tag> },
             { title: t('finance.amount'), dataIndex: 'amount' },
-            { title: t('finance.transactionTime'), dataIndex: 'transactionTime' },
+            { title: t('finance.transactionTime'), dataIndex: 'transactionTime', render: (value) => formatDateTime(value, t, i18n.resolvedLanguage) },
           ]}
         />
       </Card>

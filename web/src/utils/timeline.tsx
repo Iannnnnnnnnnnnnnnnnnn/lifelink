@@ -2,6 +2,8 @@ import type { TFunction } from 'i18next';
 import { CalendarOutlined, CameraOutlined, CheckCircleOutlined, CommentOutlined, EditOutlined, HeartOutlined, HomeOutlined, StarOutlined, UserAddOutlined } from '@ant-design/icons';
 import type { RelationshipTimelineEvent } from '../api/timeline';
 
+const userAuthoredEventTypes = new Set(['CUSTOM']);
+
 function metadataText(event: RelationshipTimelineEvent, key: string) {
   const value = event.metadata?.[key];
   return typeof value === 'string' || typeof value === 'number' ? String(value) : undefined;
@@ -32,6 +34,13 @@ export function getTimelineEventText(event: RelationshipTimelineEvent, t: TFunct
 
 export function getTimelineEventTag(eventType: string, t: TFunction) {
   return t(`timeline.types.${eventType}`, { defaultValue: eventType });
+}
+
+export function getTimelineEventDescription(event: RelationshipTimelineEvent) {
+  if (!userAuthoredEventTypes.has(event.eventType)) {
+    return undefined;
+  }
+  return event.description || undefined;
 }
 
 export function getTimelineEventIcon(eventType: string) {

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { LANGUAGE_STORAGE_KEY } from '../i18n';
 
 export function LanguageSwitcher() {
-  const { i18n } = useTranslation();
+  const { t, i18n } = useTranslation();
 
   const current = i18n.resolvedLanguage === 'en-US' ? 'en-US' : 'zh-CN';
 
@@ -20,8 +20,8 @@ export function LanguageSwitcher() {
       prefix={<GlobalOutlined />}
       style={{ width: 130 }}
       options={[
-        { value: 'zh-CN', label: '中文' },
-        { value: 'en-US', label: 'English' },
+        { value: 'zh-CN', label: t('language.zhCN') },
+        { value: 'en-US', label: t('language.enUS') },
       ]}
     />
   );
