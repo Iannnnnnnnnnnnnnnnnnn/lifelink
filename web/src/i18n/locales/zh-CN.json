@@ -133,7 +133,8 @@
     "daily": "日常",
     "activities": "动态",
     "anniversaries": "纪念日",
-    "finance": "记账"
+    "finance": "记账",
+    "philosophy": "思想对话"
   },
   "ui": {
     "welcomeBack": "欢迎回来",
@@ -629,6 +630,30 @@
       "MONTHLY": "每月",
       "YEARLY": "每年"
     }
+  },
+  "philosophy": {
+    "title": "思想对话",
+    "subtitle": "让不同思想家从不同角度回应你的问题",
+    "disclaimer": "以下内容为基于哲学思想风格生成的 AI 模拟观点，并非历史人物本人言论。",
+    "question": "问题",
+    "questionPlaceholder": "输入一句话或一个问题，例如：人为什么会感到孤独？",
+    "selectPhilosophers": "选择思想家",
+    "generate": "生成观点",
+    "regenerate": "重新生成",
+    "clear": "清空",
+    "history": "历史记录",
+    "viewpoint": "核心观点",
+    "questionBack": "追问",
+    "objection": "可能的反驳",
+    "summary": "一句话总结",
+    "copy": "复制",
+    "copySuccess": "已复制",
+    "emptyResult": "输入一个问题，开始一场思想对话",
+    "generating": "正在生成不同思想家的观点...",
+    "deleteHistory": "删除记录",
+    "deleteConfirm": "确定删除这条思想对话吗？",
+    "deleteSuccess": "删除成功",
+    "generateFailed": "生成失败，请稍后重试"
   },
   "finance": {
     "title": "记账",

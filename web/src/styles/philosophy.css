@@ -1,0 +1,300 @@
+.philosophy-page {
+  animation: fadeIn 0.2s ease;
+}
+
+.philosophy-hero-card,
+.philosophy-input-card,
+.philosophy-history-card,
+.philosopher-card,
+.philosophy-empty-result {
+  border: 1px solid rgba(31, 41, 55, 0.07);
+  border-radius: 18px;
+  box-shadow: 0 18px 45px rgba(31, 41, 55, 0.06);
+}
+
+.philosophy-hero-card {
+  margin-bottom: 20px;
+  background: linear-gradient(135deg, #fffdf8 0%, #f7fbff 100%);
+}
+
+.philosophy-hero-content {
+  display: flex;
+  align-items: flex-start;
+  gap: 16px;
+  margin-bottom: 18px;
+}
+
+.philosophy-hero-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  border-radius: 16px;
+  background: rgba(95, 124, 190, 0.12);
+  color: #526da8;
+  font-size: 24px;
+}
+
+.philosophy-hero-card h2 {
+  margin: 0 0 6px;
+}
+
+.philosophy-hero-card p {
+  margin-bottom: 0;
+  color: rgba(0, 0, 0, 0.56);
+}
+
+.philosophy-disclaimer {
+  border-radius: 12px;
+  background: rgba(82, 109, 168, 0.08);
+  border-color: rgba(82, 109, 168, 0.14);
+}
+
+.philosophy-layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 320px;
+  gap: 20px;
+  align-items: start;
+}
+
+.philosophy-layout.mobile {
+  grid-template-columns: 1fr;
+}
+
+.philosophy-main,
+.philosophy-aside,
+.philosophy-input-stack {
+  width: 100%;
+}
+
+.philosophy-input-card textarea.ant-input {
+  border-radius: 14px;
+  font-size: 15px;
+}
+
+.philosopher-selector {
+  width: 100%;
+}
+
+.philosopher-selector .ant-select-selector {
+  border-radius: 14px !important;
+  padding: 6px 10px !important;
+}
+
+.philosopher-option {
+  padding: 4px 0;
+}
+
+.philosopher-option-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.philosophy-input-actions {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+.philosophy-generating-text {
+  display: block;
+  min-height: 28px;
+  padding: 8px 2px 0;
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.philosophy-result-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 16px;
+}
+
+.philosopher-card,
+.philosopher-card-loading {
+  position: relative;
+  overflow: hidden;
+  background: #ffffff;
+}
+
+.philosopher-card::before {
+  content: "";
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  background: #8aa3d4;
+}
+
+.philosopher-card-socrates::before,
+.philosopher-card-plato::before,
+.philosopher-card-aristotle::before {
+  background: #7fa7d6;
+}
+
+.philosopher-card-kant::before {
+  background: #9d92d1;
+}
+
+.philosopher-card-nietzsche::before {
+  background: #cc8f8f;
+}
+
+.philosopher-card-schopenhauer::before {
+  background: #8b8f9a;
+}
+
+.philosopher-card-confucius::before {
+  background: #d0a86e;
+}
+
+.philosopher-card-zhuangzi::before {
+  background: #82b89a;
+}
+
+.philosopher-card-header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 10px;
+}
+
+.philosopher-card-header h4 {
+  margin: 0 0 2px;
+}
+
+.philosopher-card-tags {
+  margin-bottom: 14px;
+}
+
+.philosophy-card-section {
+  margin-top: 14px;
+}
+
+.philosophy-section-label {
+  display: block;
+  margin-bottom: 6px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 12px;
+}
+
+.philosophy-card-section p {
+  margin-bottom: 0;
+  line-height: 1.72;
+}
+
+.philosophy-question-back {
+  padding: 12px 14px;
+  border-left: 3px solid rgba(82, 109, 168, 0.36);
+  border-radius: 12px;
+  background: rgba(82, 109, 168, 0.07);
+}
+
+.philosophy-summary-bar {
+  display: grid;
+  gap: 6px;
+  margin-top: 16px;
+  padding: 12px 14px;
+  border-radius: 14px;
+  background: rgba(245, 180, 87, 0.14);
+}
+
+.philosophy-empty-result {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  min-height: 260px;
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.philosophy-history-card {
+  position: sticky;
+  top: 84px;
+}
+
+.philosophy-history-item {
+  padding: 10px 0 !important;
+}
+
+.philosophy-history-item.active {
+  border-radius: 12px;
+  background: rgba(82, 109, 168, 0.07);
+}
+
+.philosophy-history-button {
+  display: grid;
+  width: 100%;
+  gap: 4px;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  text-align: left;
+  cursor: pointer;
+}
+
+.theme-grayscale .philosophy-hero-card,
+.theme-grayscale .philosophy-input-card,
+.theme-grayscale .philosophy-history-card,
+.theme-grayscale .philosopher-card,
+.theme-grayscale .philosophy-empty-result {
+  border-color: rgba(0, 0, 0, 0.08);
+  box-shadow: 0 16px 36px rgba(0, 0, 0, 0.05);
+}
+
+.theme-grayscale .philosophy-hero-card {
+  background: #ffffff;
+}
+
+.theme-grayscale .philosophy-hero-icon,
+.theme-grayscale .philosophy-disclaimer,
+.theme-grayscale .philosophy-question-back,
+.theme-grayscale .philosophy-history-item.active {
+  background: rgba(0, 0, 0, 0.05);
+  color: rgba(0, 0, 0, 0.72);
+}
+
+.theme-grayscale .philosopher-card::before {
+  background: #8c8c8c;
+}
+
+.theme-grayscale .philosophy-summary-bar {
+  background: rgba(0, 0, 0, 0.05);
+}
+
+@media (max-width: 960px) {
+  .philosophy-result-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .philosophy-history-card {
+    position: static;
+  }
+}
+
+@media (max-width: 640px) {
+  .philosophy-hero-card,
+  .philosophy-input-card,
+  .philosophy-history-card,
+  .philosopher-card {
+    border-radius: 14px;
+  }
+
+  .philosophy-hero-content {
+    gap: 12px;
+  }
+
+  .philosophy-hero-icon {
+    width: 42px;
+    height: 42px;
+    border-radius: 14px;
+  }
+
+  .philosophy-input-actions {
+    justify-content: stretch;
+  }
+
+  .philosophy-input-actions .ant-btn {
+    flex: 1;
+  }
+}

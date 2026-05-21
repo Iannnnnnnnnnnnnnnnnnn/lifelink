@@ -39,3 +39,10 @@ lifelink:
     access-key: ${MINIO_ROOT_USER:lifelink_minio}
     secret-key: ${MINIO_ROOT_PASSWORD:change-me}
     bucket: ${LIFELINK_MINIO_BUCKET:lifelink}
+  ai:
+    provider: ${AI_PROVIDER:mock}
+    api-key: ${AI_API_KEY:}
+    model: ${AI_MODEL:gpt-4o-mini}
+    timeout-seconds: ${AI_TIMEOUT_SECONDS:30}
+    max-output-tokens: ${AI_MAX_OUTPUT_TOKENS:800}
+    base-url: ${AI_BASE_URL:https://api.openai.com/v1/chat/completions}

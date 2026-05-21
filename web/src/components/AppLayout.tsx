@@ -1,4 +1,4 @@
-import { CalendarOutlined, DollarOutlined, HeartOutlined, HomeOutlined, LogoutOutlined, MenuOutlined, ReadOutlined, TeamOutlined, ThunderboltOutlined, UserOutlined } from '@ant-design/icons';
+import { BulbOutlined, CalendarOutlined, DollarOutlined, HeartOutlined, HomeOutlined, LogoutOutlined, MenuOutlined, ReadOutlined, TeamOutlined, ThunderboltOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Button, Drawer, Dropdown, Grid, Input, Layout, Menu, Space, Typography } from 'antd';
 import type { MenuProps } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -42,6 +42,8 @@ export function AppLayout() {
         ? '/anniversaries'
       : location.pathname.startsWith('/finance')
         ? '/finance'
+      : location.pathname.startsWith('/philosophy')
+        ? '/philosophy'
         : '/';
 
   const handleLogout = () => {
@@ -136,6 +138,15 @@ export function AppLayout() {
       label: t('menu.finance'),
       onClick: () => {
         navigate('/finance');
+        setMobileMenuOpen(false);
+      },
+    },
+    {
+      key: '/philosophy',
+      icon: <BulbOutlined />,
+      label: t('menu.philosophy'),
+      onClick: () => {
+        navigate('/philosophy');
         setMobileMenuOpen(false);
       },
     },

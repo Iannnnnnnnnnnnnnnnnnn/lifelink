@@ -18,6 +18,7 @@ import { JoinRelationship } from './pages/JoinRelationship';
 import { RelationshipFinance } from './pages/RelationshipFinance';
 import { CalendarPage } from './pages/calendar/CalendarPage';
 import { Login } from './pages/Login';
+import { PhilosophyPage } from './pages/philosophy/PhilosophyPage';
 import { ProfilePage } from './pages/profile/ProfilePage';
 import { RelationshipDetail } from './pages/RelationshipDetail';
 import { RelationshipList } from './pages/RelationshipList';
@@ -135,6 +136,10 @@ export const router = createBrowserRouter([
           {
             path: 'finance/create',
             element: <FinanceCreateTransaction />,
+          },
+          {
+            path: 'philosophy',
+            element: <PhilosophyPage />,
           },
           {
             path: '*',

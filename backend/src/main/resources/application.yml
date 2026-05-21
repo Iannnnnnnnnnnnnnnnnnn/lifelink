@@ -38,3 +38,10 @@ lifelink:
     access-key: admin
     secret-key: admin123456
     bucket: lifelink
+  ai:
+    provider: ${AI_PROVIDER:mock}
+    api-key: ${AI_API_KEY:}
+    model: ${AI_MODEL:gpt-4o-mini}
+    timeout-seconds: ${AI_TIMEOUT_SECONDS:30}
+    max-output-tokens: ${AI_MAX_OUTPUT_TOKENS:800}
+    base-url: ${AI_BASE_URL:https://api.openai.com/v1/chat/completions}

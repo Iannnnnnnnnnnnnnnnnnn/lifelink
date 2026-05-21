@@ -133,7 +133,8 @@
     "daily": "Daily",
     "activities": "Activities",
     "anniversaries": "Anniversaries",
-    "finance": "Finance"
+    "finance": "Finance",
+    "philosophy": "Philosophy"
   },
   "ui": {
     "welcomeBack": "Welcome back",
@@ -629,6 +630,30 @@
       "MONTHLY": "Monthly",
       "YEARLY": "Yearly"
     }
+  },
+  "philosophy": {
+    "title": "Philosophy Dialogues",
+    "subtitle": "Let different thinkers respond to your question from different perspectives",
+    "disclaimer": "The following content is an AI-generated simulation based on philosophical styles, not actual statements by historical figures.",
+    "question": "Question",
+    "questionPlaceholder": "Enter a sentence or question, e.g. Why do people feel lonely?",
+    "selectPhilosophers": "Select Thinkers",
+    "generate": "Generate",
+    "regenerate": "Regenerate",
+    "clear": "Clear",
+    "history": "History",
+    "viewpoint": "Viewpoint",
+    "questionBack": "Question Back",
+    "objection": "Possible Objection",
+    "summary": "One-line Summary",
+    "copy": "Copy",
+    "copySuccess": "Copied",
+    "emptyResult": "Enter a question to start a philosophical dialogue",
+    "generating": "Generating perspectives from different thinkers...",
+    "deleteHistory": "Delete",
+    "deleteConfirm": "Are you sure you want to delete this dialogue?",
+    "deleteSuccess": "Deleted successfully",
+    "generateFailed": "Generation failed. Please try again later."
   },
   "finance": {
     "title": "Finance",
