@@ -30,6 +30,7 @@ import java.util.UUID;
 public class FileServiceImpl implements FileService {
 
     private static final long MAX_FILE_SIZE = 5L * 1024L * 1024L;
+    private static final String DEFAULT_PUBLIC_ENDPOINT = "http://47.97.202.182";
     private static final Set<String> ALLOWED_EXTENSIONS = new HashSet<String>(Arrays.asList("jpg", "jpeg", "png", "webp"));
     private static final Set<String> ALLOWED_CONTENT_TYPES = new HashSet<String>(Arrays.asList("image/jpeg", "image/png", "image/webp"));
 
@@ -151,12 +152,21 @@ public class FileServiceImpl implements FileService {
     }
 
     private String buildFileUrl(String bucket, String objectKey) {
-        String endpoint = StringUtils.hasText(minioProperties.getPublicEndpoint())
-                ? minioProperties.getPublicEndpoint()
-                : minioProperties.getEndpoint();
+        String endpoint = resolvePublicEndpoint();
         if (endpoint.endsWith("/")) {
             return endpoint + bucket + "/" + objectKey;
         }
         return endpoint + "/" + bucket + "/" + objectKey;
+    }
+
+    private String resolvePublicEndpoint() {
+        if (StringUtils.hasText(minioProperties.getPublicEndpoint())) {
+            return minioProperties.getPublicEndpoint().trim();
+        }
+        String endpoint = minioProperties.getEndpoint();
+        if (StringUtils.hasText(endpoint) && endpoint.contains("://minio:")) {
+            return DEFAULT_PUBLIC_ENDPOINT;
+        }
+        return endpoint;
     }
 }
