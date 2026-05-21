@@ -37,6 +37,10 @@ public class PhilosophyServiceImpl implements PhilosophyService {
     private static final String DELETED_STATUS = "DELETED";
     private static final String ZH_CN = "zh-CN";
     private static final String EN_US = "en-US";
+    private static final String ROLE_PHILOSOPHER = "PHILOSOPHER";
+    private static final String ROLE_COUNSELOR = "COUNSELOR";
+    private static final String LAYOUT_PHILOSOPHY_CARD = "PHILOSOPHY_CARD";
+    private static final String LAYOUT_COUNSELOR_CARD = "COUNSELOR_CARD";
 
     private final PhilosopherMapper philosopherMapper;
     private final PhilosophySessionMapper sessionMapper;
@@ -208,6 +212,11 @@ public class PhilosophyServiceImpl implements PhilosophyService {
         response.setQuestionBack(item.getQuestionBack());
         response.setObjection(item.getObjection());
         response.setSummary(item.getSummary());
+        response.setResponseLayout(resolveResponseLayout(item.getResponseLayout(), item.getPhilosopherCode()));
+        response.setUnderstanding(item.getUnderstanding());
+        response.setAdvice(item.getAdvice());
+        response.setPractice(item.getPractice());
+        response.setSupport(item.getSupport());
         response.setRawResponse(item.getRawResponse());
         response.setStatus(ACTIVE_STATUS);
         response.setCreatedAt(LocalDateTime.now());
@@ -217,15 +226,26 @@ public class PhilosophyServiceImpl implements PhilosophyService {
     private PhilosophyResponseItem buildFailedItem(Philosopher philosopher, String language) {
         boolean zh = ZH_CN.equals(language);
         String name = zh ? philosopher.getNameZh() : philosopher.getNameEn();
-        return new PhilosophyResponseItem(
-                philosopher.getCode(),
-                name,
-                zh ? "这位思想家的观点暂时生成失败。" : "This thinker's perspective could not be generated.",
-                zh ? "是否换一个问题重新尝试？" : "Would you like to try again with a different question?",
-                zh ? "生成失败可能来自模型服务暂时不可用，并不代表该思想风格无法回应这个问题。" : "The failure may come from temporary model unavailability, not from the style being unable to address the question.",
-                zh ? "请稍后重新生成。" : "Please regenerate later.",
-                null
-        );
+        PhilosophyResponseItem item = new PhilosophyResponseItem();
+        item.setPhilosopherCode(philosopher.getCode());
+        item.setPhilosopherName(name);
+        item.setResponseLayout(resolveResponseLayout(philosopher.getResponseLayout(), philosopher.getCode()));
+        if (LAYOUT_COUNSELOR_CARD.equals(item.getResponseLayout())) {
+            item.setUnderstanding(zh ? "心理老师的支持性建议暂时生成失败。" : "The psychology teacher's supportive guidance could not be generated.");
+            item.setAdvice(zh ? "你可以稍后重新生成，或者先把问题写成更具体的一句话：发生了什么、你现在的感受是什么、你希望先解决哪一步。" : "You can try again later, or first rewrite the issue in one concrete sentence: what happened, how you feel, and which step matters most now.");
+            item.setPractice(zh ? "先写下一个你现在能做的小动作，比如喝水、离开冲突现场、或给可信的人发一条消息。" : "Write down one small action you can take now, such as drinking water, stepping away from conflict, or messaging someone you trust.");
+            item.setSupport(zh ? "先照顾好此刻的自己。" : "Start by taking care of yourself right now.");
+            item.setViewpoint(item.getUnderstanding());
+            item.setQuestionBack(item.getAdvice());
+            item.setObjection(item.getPractice());
+            item.setSummary(item.getSupport());
+            return item;
+        }
+        item.setViewpoint(zh ? "这位思想家的观点暂时生成失败。" : "This thinker's perspective could not be generated.");
+        item.setQuestionBack(zh ? "是否换一个问题重新尝试？" : "Would you like to try again with a different question?");
+        item.setObjection(zh ? "生成失败可能来自模型服务暂时不可用，并不代表该思想风格无法回应这个问题。" : "The failure may come from temporary model unavailability, not from the style being unable to address the question.");
+        item.setSummary(zh ? "请稍后重新生成。" : "Please regenerate later.");
+        return item;
     }
 
     private PhilosophySessionResponse toSessionResponse(PhilosophySession session, List<PhilosophyResponseItem> responses) {
@@ -239,15 +259,20 @@ public class PhilosophyServiceImpl implements PhilosophyService {
     }
 
     private PhilosophyResponseItem toResponseItem(PhilosophyResponse response) {
-        return new PhilosophyResponseItem(
-                response.getPhilosopherCode(),
-                response.getPhilosopherName(),
-                response.getViewpoint(),
-                response.getQuestionBack(),
-                response.getObjection(),
-                response.getSummary(),
-                response.getRawResponse()
-        );
+        PhilosophyResponseItem item = new PhilosophyResponseItem();
+        item.setPhilosopherCode(response.getPhilosopherCode());
+        item.setPhilosopherName(response.getPhilosopherName());
+        item.setResponseLayout(resolveResponseLayout(response.getResponseLayout(), response.getPhilosopherCode()));
+        item.setViewpoint(response.getViewpoint());
+        item.setQuestionBack(response.getQuestionBack());
+        item.setObjection(response.getObjection());
+        item.setSummary(response.getSummary());
+        item.setUnderstanding(StringUtils.hasText(response.getUnderstanding()) ? response.getUnderstanding() : response.getViewpoint());
+        item.setAdvice(StringUtils.hasText(response.getAdvice()) ? response.getAdvice() : response.getQuestionBack());
+        item.setPractice(StringUtils.hasText(response.getPractice()) ? response.getPractice() : response.getObjection());
+        item.setSupport(StringUtils.hasText(response.getSupport()) ? response.getSupport() : response.getSummary());
+        item.setRawResponse(response.getRawResponse());
+        return item;
     }
 
     private PhilosopherResponse toPhilosopherResponse(Philosopher philosopher, String language) {
@@ -265,8 +290,21 @@ public class PhilosophyServiceImpl implements PhilosophyService {
                 philosopher.getDescriptionEn(),
                 philosopher.getAvatarUrl(),
                 parseTags(philosopher.getTags()),
-                philosopher.getSortOrder()
+                philosopher.getSortOrder(),
+                resolveRoleType(philosopher.getRoleType()),
+                resolveResponseLayout(philosopher.getResponseLayout(), philosopher.getCode())
         );
+    }
+
+    private String resolveRoleType(String roleType) {
+        return StringUtils.hasText(roleType) ? roleType : ROLE_PHILOSOPHER;
+    }
+
+    private String resolveResponseLayout(String responseLayout, String code) {
+        if (StringUtils.hasText(responseLayout)) {
+            return responseLayout;
+        }
+        return "PSYCHOLOGY_TEACHER".equals(code) ? LAYOUT_COUNSELOR_CARD : LAYOUT_PHILOSOPHY_CARD;
     }
 
     private List<String> parseTags(String tags) {

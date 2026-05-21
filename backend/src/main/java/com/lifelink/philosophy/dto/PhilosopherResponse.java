@@ -36,4 +36,8 @@ public class PhilosopherResponse {
     private List<String> tags;
 
     private Integer sortOrder;
+
+    private String roleType;
+
+    private String responseLayout;
 }

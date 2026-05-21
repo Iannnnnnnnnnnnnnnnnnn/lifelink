@@ -31,4 +31,8 @@ public class AiProperties {
     private Double temperature = 0.7;
 
     private Boolean mock = true;
+
+    private Integer chatContextMessages = 16;
+
+    private Integer chatMaxUserMessageLength = 2000;
 }

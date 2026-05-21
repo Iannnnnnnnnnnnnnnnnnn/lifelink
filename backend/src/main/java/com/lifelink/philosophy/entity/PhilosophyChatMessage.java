@@ -8,37 +8,23 @@ import lombok.Data;
 import java.time.LocalDateTime;
 
 @Data
-@TableName("philosophy_responses")
-public class PhilosophyResponse {
+@TableName("philosophy_chat_messages")
+public class PhilosophyChatMessage {
 
     @TableId(type = IdType.AUTO)
     private Long id;
 
     private Long sessionId;
 
-    private String philosopherCode;
+    private Long userId;
 
-    private String philosopherName;
+    private String role;
 
-    private String viewpoint;
-
-    private String questionBack;
-
-    private String objection;
-
-    private String summary;
-
-    private String responseLayout;
-
-    private String understanding;
-
-    private String advice;
-
-    private String practice;
-
-    private String support;
+    private String content;
 
     private String rawResponse;
+
+    private Integer tokenCount;
 
     private String status;
 

@@ -14,15 +14,22 @@ export interface Philosopher {
   avatarUrl?: string;
   tags: string[];
   sortOrder: number;
+  roleType?: 'PHILOSOPHER' | 'COUNSELOR';
+  responseLayout?: 'PHILOSOPHY_CARD' | 'COUNSELOR_CARD';
 }
 
 export interface PhilosophyResponseItem {
   philosopherCode: string;
   philosopherName: string;
-  viewpoint: string;
-  questionBack: string;
-  objection: string;
-  summary: string;
+  responseLayout?: 'PHILOSOPHY_CARD' | 'COUNSELOR_CARD';
+  viewpoint?: string;
+  questionBack?: string;
+  objection?: string;
+  summary?: string;
+  understanding?: string;
+  advice?: string;
+  practice?: string;
+  support?: string;
   rawResponse?: string;
 }
 
@@ -32,6 +39,33 @@ export interface PhilosophySession {
   language: 'zh-CN' | 'en-US';
   responses: PhilosophyResponseItem[];
   createdAt: string;
+}
+
+export type PhilosophyChatRole = 'USER' | 'ASSISTANT' | 'SYSTEM';
+
+export interface PhilosophyChatMessage {
+  id: number;
+  role: PhilosophyChatRole;
+  content: string;
+  createdAt: string;
+}
+
+export interface PhilosophyChatSession {
+  id: number;
+  philosopherCode: string;
+  philosopherName: string;
+  title: string;
+  language: 'zh-CN' | 'en-US';
+  lastMessagePreview?: string;
+  lastMessageAt?: string;
+  messageCount?: number;
+  messages: PhilosophyChatMessage[];
+  createdAt: string;
+}
+
+export interface SendPhilosophyChatMessageResponse {
+  userMessage: PhilosophyChatMessage;
+  assistantMessage: PhilosophyChatMessage;
 }
 
 export interface CreatePhilosophySessionRequest {
@@ -63,4 +97,32 @@ export function getPhilosophySessionDetail(id: number) {
 
 export function deletePhilosophySession(id: number) {
   return request.delete<ApiResult<void>>(`/api/philosophy/sessions/${id}`);
+}
+
+export function createChatSession(data: { philosopherCode: string; language: 'zh-CN' | 'en-US' }) {
+  return request.post<ApiResult<PhilosophyChatSession>>('/api/philosophy/chat/sessions', data);
+}
+
+export function getChatSessions(params?: PhilosophySessionQuery) {
+  return request.get<ApiResult<PhilosophyChatSession[]>>('/api/philosophy/chat/sessions', { params });
+}
+
+export function getChatSessionDetail(sessionId: number) {
+  return request.get<ApiResult<PhilosophyChatSession>>(`/api/philosophy/chat/sessions/${sessionId}`);
+}
+
+export function sendChatMessage(sessionId: number, data: { content: string }) {
+  return request.post<ApiResult<SendPhilosophyChatMessageResponse>>(
+    `/api/philosophy/chat/sessions/${sessionId}/messages`,
+    data,
+    { timeout: 90000 },
+  );
+}
+
+export function deleteChatSession(sessionId: number) {
+  return request.delete<ApiResult<void>>(`/api/philosophy/chat/sessions/${sessionId}`);
+}
+
+export function updateChatSessionTitle(sessionId: number, data: { title: string }) {
+  return request.put<ApiResult<PhilosophyChatSession>>(`/api/philosophy/chat/sessions/${sessionId}/title`, data);
 }

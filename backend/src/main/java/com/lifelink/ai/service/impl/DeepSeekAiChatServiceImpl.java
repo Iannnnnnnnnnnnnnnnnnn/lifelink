@@ -3,6 +3,7 @@ package com.lifelink.ai.service.impl;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lifelink.ai.config.AiProperties;
+import com.lifelink.ai.dto.AiChatMessage;
 import com.lifelink.ai.dto.AiChatRequest;
 import com.lifelink.ai.dto.AiChatResult;
 import com.lifelink.ai.service.AiChatService;
@@ -109,6 +110,12 @@ public class DeepSeekAiChatServiceImpl implements AiChatService {
 
     private List<Map<String, String>> buildMessages(AiChatRequest request) {
         List<Map<String, String>> messages = new ArrayList<Map<String, String>>();
+        if (request.getMessages() != null && !request.getMessages().isEmpty()) {
+            for (AiChatMessage chatMessage : request.getMessages()) {
+                messages.add(message(chatMessage.getRole(), chatMessage.getContent()));
+            }
+            return messages;
+        }
         messages.add(message("system", request.getSystemPrompt()));
         messages.add(message("user", request.getUserPrompt()));
         return messages;

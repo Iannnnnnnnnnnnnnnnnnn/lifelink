@@ -11,9 +11,11 @@ import {
   getPhilosophySessionDetail,
   getPhilosophySessions,
 } from '../../api/philosophy';
+import { CharacterChatPanel } from '../../components/philosophy/CharacterChatPanel';
 import { PhilosophyDisclaimer } from '../../components/philosophy/PhilosophyDisclaimer';
 import { PhilosophyHistoryList } from '../../components/philosophy/PhilosophyHistoryList';
 import { PhilosophyInputPanel } from '../../components/philosophy/PhilosophyInputPanel';
+import { PhilosophyModeTabs } from '../../components/philosophy/PhilosophyModeTabs';
 import { PhilosophyResultGrid } from '../../components/philosophy/PhilosophyResultGrid';
 
 export function PhilosophyPage() {
@@ -29,6 +31,7 @@ export function PhilosophyPage() {
   const [loadingPhilosophers, setLoadingPhilosophers] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [loadingHistory, setLoadingHistory] = useState(false);
+  const [activeMode, setActiveMode] = useState('perspectives');
 
   const language = i18n.resolvedLanguage === 'en-US' ? 'en-US' : 'zh-CN';
   const resultItems = currentSession?.responses || [];
@@ -125,13 +128,22 @@ export function PhilosophyPage() {
   };
 
   const handleCopy = async (item: PhilosophyResponseItem) => {
-    const content = [
-      `${item.philosopherName}`,
-      `${tString('philosophy.viewpoint')}: ${item.viewpoint}`,
-      `${tString('philosophy.questionBack')}: ${item.questionBack}`,
-      `${tString('philosophy.objection')}: ${item.objection}`,
-      `${tString('philosophy.summary')}: ${item.summary}`,
-    ].join('\n');
+    const isCounselor = item.responseLayout === 'COUNSELOR_CARD' || item.philosopherCode === 'PSYCHOLOGY_TEACHER';
+    const content = isCounselor
+      ? [
+        `${item.philosopherName}`,
+        `${tString('philosophy.understanding')}: ${item.understanding || item.viewpoint || ''}`,
+        `${tString('philosophy.advice')}: ${item.advice || item.questionBack || ''}`,
+        `${tString('philosophy.practice')}: ${item.practice || item.objection || ''}`,
+        `${tString('philosophy.support')}: ${item.support || item.summary || ''}`,
+      ].join('\n')
+      : [
+        `${item.philosopherName}`,
+        `${tString('philosophy.viewpoint')}: ${item.viewpoint || ''}`,
+        `${tString('philosophy.questionBack')}: ${item.questionBack || ''}`,
+        `${tString('philosophy.objection')}: ${item.objection || ''}`,
+        `${tString('philosophy.summary')}: ${item.summary || ''}`,
+      ].join('\n');
     try {
       await navigator.clipboard.writeText(content);
       messageApi.success(tString('philosophy.copySuccess'));
@@ -160,43 +172,49 @@ export function PhilosophyPage() {
         <PhilosophyDisclaimer />
       </Card>
 
-      <div className={isMobile ? 'philosophy-layout mobile' : 'philosophy-layout'}>
-        <main className="philosophy-main">
-          <PhilosophyInputPanel
-            question={question}
-            selectedCodes={selectedCodes}
-            philosophers={philosophers}
-            loading={generating || loadingPhilosophers}
-            hasResult={!!resultItems.length}
-            onQuestionChange={setQuestion}
-            onSelectedCodesChange={setSelectedCodes}
-            onGenerate={handleGenerate}
-            onClear={handleClear}
-            t={tString}
-          />
-          <Typography.Text className="philosophy-generating-text">
-            {generating ? t('philosophy.generating') : ' '}
-          </Typography.Text>
-          <PhilosophyResultGrid
-            items={resultItems}
-            philosophers={philosophers}
-            loading={generating}
-            onCopy={handleCopy}
-            t={tString}
-          />
-        </main>
-        <aside className="philosophy-aside">
-          <PhilosophyHistoryList
-            sessions={history}
-            loading={loadingHistory}
-            selectedId={selectedSessionId}
-            onOpen={handleOpenHistory}
-            onDelete={handleDeleteHistory}
-            t={tString}
-            formatDate={formatDate}
-          />
-        </aside>
-      </div>
+      <PhilosophyModeTabs activeKey={activeMode} onChange={setActiveMode} t={tString} />
+
+      {activeMode === 'perspectives' ? (
+        <div className={isMobile ? 'philosophy-layout mobile' : 'philosophy-layout'}>
+          <main className="philosophy-main">
+            <PhilosophyInputPanel
+              question={question}
+              selectedCodes={selectedCodes}
+              philosophers={philosophers}
+              loading={generating || loadingPhilosophers}
+              hasResult={!!resultItems.length}
+              onQuestionChange={setQuestion}
+              onSelectedCodesChange={setSelectedCodes}
+              onGenerate={handleGenerate}
+              onClear={handleClear}
+              t={tString}
+            />
+            <Typography.Text className="philosophy-generating-text">
+              {generating ? t('philosophy.generating') : ' '}
+            </Typography.Text>
+            <PhilosophyResultGrid
+              items={resultItems}
+              philosophers={philosophers}
+              loading={generating}
+              onCopy={handleCopy}
+              t={tString}
+            />
+          </main>
+          <aside className="philosophy-aside">
+            <PhilosophyHistoryList
+              sessions={history}
+              loading={loadingHistory}
+              selectedId={selectedSessionId}
+              onOpen={handleOpenHistory}
+              onDelete={handleDeleteHistory}
+              t={tString}
+              formatDate={formatDate}
+            />
+          </aside>
+        </div>
+      ) : (
+        <CharacterChatPanel philosophers={philosophers} language={language} t={tString} />
+      )}
     </div>
   );
 }

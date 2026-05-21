@@ -39,6 +39,10 @@ public class Philosopher {
 
     private String status;
 
+    private String roleType;
+
+    private String responseLayout;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;

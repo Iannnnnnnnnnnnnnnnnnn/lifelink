@@ -13,6 +13,8 @@ public class PhilosophyResponseItem {
 
     private String philosopherName;
 
+    private String responseLayout;
+
     private String viewpoint;
 
     private String questionBack;
@@ -20,6 +22,14 @@ public class PhilosophyResponseItem {
     private String objection;
 
     private String summary;
+
+    private String understanding;
+
+    private String advice;
+
+    private String practice;
+
+    private String support;
 
     private String rawResponse;
 }
