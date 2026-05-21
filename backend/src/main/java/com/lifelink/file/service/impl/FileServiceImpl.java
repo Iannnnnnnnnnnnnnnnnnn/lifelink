@@ -160,13 +160,6 @@ public class FileServiceImpl implements FileService {
     }
 
     private String resolvePublicEndpoint() {
-        if (StringUtils.hasText(minioProperties.getPublicEndpoint())) {
-            return minioProperties.getPublicEndpoint().trim();
-        }
-        String endpoint = minioProperties.getEndpoint();
-        if (StringUtils.hasText(endpoint) && endpoint.contains("://minio:")) {
-            return DEFAULT_PUBLIC_ENDPOINT;
-        }
-        return endpoint;
+        return DEFAULT_PUBLIC_ENDPOINT;
     }
 }

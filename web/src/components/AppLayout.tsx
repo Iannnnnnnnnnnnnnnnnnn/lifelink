@@ -21,6 +21,7 @@ export function AppLayout() {
   const user = useAuthStore((state) => state.user);
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const logout = useAuthStore((state) => state.logout);
+  const fetchCurrentUser = useAuthStore((state) => state.fetchCurrentUser);
   const hasCoupleRelationship = useRelationshipThemeStore((state) => state.hasCoupleRelationship);
   const fetchRelationshipThemeStatus = useRelationshipThemeStore((state) => state.fetchRelationshipThemeStatus);
   const [searchKeyword, setSearchKeyword] = useState('');
@@ -59,6 +60,12 @@ export function AppLayout() {
       fetchRelationshipThemeStatus();
     }
   }, [fetchRelationshipThemeStatus, isAuthenticated]);
+
+  useEffect(() => {
+    if (isAuthenticated && !user) {
+      fetchCurrentUser().catch(() => undefined);
+    }
+  }, [fetchCurrentUser, isAuthenticated, user]);
 
   const themeClassName = hasCoupleRelationship ? 'theme-colorful' : 'theme-grayscale';
   const menuItems: MenuProps['items'] = [

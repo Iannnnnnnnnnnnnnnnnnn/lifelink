@@ -36,7 +36,6 @@ lifelink:
     expiration: ${LIFELINK_JWT_EXPIRATION:604800000}
   minio:
     endpoint: ${LIFELINK_MINIO_ENDPOINT:http://minio:9000}
-    public-endpoint: ${LIFELINK_MINIO_PUBLIC_ENDPOINT:http://47.97.202.182}
     access-key: ${MINIO_ROOT_USER:lifelink_minio}
     secret-key: ${MINIO_ROOT_PASSWORD:change-me}
     bucket: ${LIFELINK_MINIO_BUCKET:lifelink}
