@@ -151,7 +151,9 @@ public class FileServiceImpl implements FileService {
     }
 
     private String buildFileUrl(String bucket, String objectKey) {
-        String endpoint = minioProperties.getEndpoint();
+        String endpoint = StringUtils.hasText(minioProperties.getPublicEndpoint())
+                ? minioProperties.getPublicEndpoint()
+                : minioProperties.getEndpoint();
         if (endpoint.endsWith("/")) {
             return endpoint + bucket + "/" + objectKey;
         }

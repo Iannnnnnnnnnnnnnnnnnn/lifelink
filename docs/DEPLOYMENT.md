@@ -33,6 +33,7 @@ Update at least these values:
 - `MINIO_ROOT_PASSWORD`
 - `LIFELINK_JWT_SECRET`
 - `LIFELINK_MINIO_ENDPOINT`
+- `LIFELINK_MINIO_PUBLIC_ENDPOINT`
 
 `VITE_API_BASE_URL` defaults to an empty value. In that mode, the frontend calls `/api/...` on the same origin and Nginx proxies requests to the backend container. For a separate API domain, set it to that origin, for example:
 
@@ -68,7 +69,23 @@ docker compose -f docker-compose.prod.yml exec -T postgres psql -U lifelink -d l
 
 ## MinIO URL Note
 
-The current backend stores uploaded file URLs using `lifelink.minio.endpoint`. If this is set to `http://minio:9000`, containers can reach MinIO but browsers outside Docker may not. For production, set `LIFELINK_MINIO_ENDPOINT` to a URL reachable by both backend and browser, such as a public MinIO domain.
+The backend connects to MinIO using `lifelink.minio.endpoint`, but stores uploaded file URLs using `lifelink.minio.public-endpoint`.
+
+For Docker production, keep the internal endpoint as the Compose service name:
+
+```env
+LIFELINK_MINIO_ENDPOINT=http://minio:9000
+```
+
+Set the public endpoint to a browser-reachable domain:
+
+```env
+LIFELINK_MINIO_PUBLIC_ENDPOINT=http://47.97.202.182
+```
+
+The frontend Nginx template proxies `/lifelink/` to MinIO, so URLs like `http://47.97.202.182/lifelink/daily/2026/05/xxx.jpg` can be served from the same public host.
+
+New uploads will use the public URL. Existing rows in `file_resources.file_url`, `daily_post_images.file_url`, `anniversaries.background_url`, and `relationship_timeline_events.cover_url` must be updated separately if they already contain `http://minio:9000`.
 
 ## Health Checks
 
