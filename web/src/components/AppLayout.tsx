@@ -1,5 +1,5 @@
 import { CalendarOutlined, DollarOutlined, HeartOutlined, HomeOutlined, LogoutOutlined, MenuOutlined, ReadOutlined, TeamOutlined, ThunderboltOutlined, UserOutlined } from '@ant-design/icons';
-import { Avatar, Button, Drawer, Grid, Input, Layout, Menu, Space, Typography } from 'antd';
+import { Avatar, Button, Drawer, Dropdown, Grid, Input, Layout, Menu, Space, Typography } from 'antd';
 import type { MenuProps } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
@@ -9,6 +9,7 @@ import { useAppStore } from '../store/appStore';
 import { useAuthStore } from '../store/authStore';
 import { useRelationshipThemeStore } from '../store/relationshipThemeStore';
 import { FloatingStickers } from './decorations/FloatingStickers';
+import { getAvatarInitial } from '../utils/avatar';
 
 const { Header, Content, Sider } = Layout;
 const { useBreakpoint } = Grid;
@@ -29,7 +30,9 @@ export function AppLayout() {
   const screens = useBreakpoint();
   const isMobile = !screens.md;
 
-  const selectedKey = location.pathname.startsWith('/relationships')
+  const selectedKey = location.pathname.startsWith('/profile')
+    ? '/profile'
+    : location.pathname.startsWith('/relationships')
     ? '/relationships'
     : location.pathname.startsWith('/daily')
       ? '/daily'
@@ -44,6 +47,10 @@ export function AppLayout() {
   const handleLogout = () => {
     logout();
     navigate('/login');
+  };
+
+  const handleOpenProfile = () => {
+    navigate('/profile');
   };
 
   const handleGlobalSearch = (value: string) => {
@@ -75,6 +82,15 @@ export function AppLayout() {
       label: t('menu.home'),
       onClick: () => {
         navigate('/');
+        setMobileMenuOpen(false);
+      },
+    },
+    {
+      key: '/profile',
+      icon: <UserOutlined />,
+      label: t('profile.title'),
+      onClick: () => {
+        navigate('/profile');
         setMobileMenuOpen(false);
       },
     },
@@ -124,6 +140,29 @@ export function AppLayout() {
       },
     },
   ];
+
+  const userMenuItems: MenuProps['items'] = [
+    {
+      key: 'profile',
+      icon: <UserOutlined />,
+      label: t('profile.title'),
+    },
+    {
+      key: 'logout',
+      icon: <LogoutOutlined />,
+      label: t('auth.logout'),
+    },
+  ];
+
+  const handleUserMenuClick: MenuProps['onClick'] = ({ key }) => {
+    if (key === 'profile') {
+      handleOpenProfile();
+      return;
+    }
+    if (key === 'logout') {
+      handleLogout();
+    }
+  };
 
   const brand = (
     <div className="brand">
@@ -189,10 +228,18 @@ export function AppLayout() {
           />
           <Space className="header-actions">
             <LanguageSwitcher />
-            <Space className="user-chip">
-              <Avatar size="small" icon={<UserOutlined />} />
-              <Typography.Text>{user?.username}</Typography.Text>
-            </Space>
+            <Dropdown menu={{ items: userMenuItems, onClick: handleUserMenuClick }} trigger={['hover']}>
+              <button type="button" className="user-chip user-chip-button" onClick={handleOpenProfile}>
+                <Avatar
+                  size="small"
+                  src={user?.avatarUrl || undefined}
+                  className={user?.avatarUrl ? undefined : 'user-avatar-fallback'}
+                >
+                  {getAvatarInitial(user?.username)}
+                </Avatar>
+                <Typography.Text>{user?.username}</Typography.Text>
+              </button>
+            </Dropdown>
             <Button icon={<LogoutOutlined />} onClick={handleLogout} className="logout-button">
               {t('auth.logout')}
             </Button>

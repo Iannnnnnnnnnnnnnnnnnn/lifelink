@@ -1,0 +1,243 @@
+.user-chip-button {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  color: inherit;
+  cursor: pointer;
+  font: inherit;
+}
+
+.user-chip-button:hover {
+  border-color: #ffd1df;
+  background: #fff7fa;
+}
+
+.user-avatar-fallback,
+.profile-avatar-fallback {
+  background: linear-gradient(135deg, #ff8fb3, #8ccfff);
+  color: #ffffff;
+  font-weight: 700;
+}
+
+.profile-page {
+  padding-bottom: 18px;
+}
+
+.profile-hero-card,
+.profile-detail-card {
+  overflow: hidden;
+  border-radius: 20px;
+}
+
+.profile-hero-card {
+  background:
+    linear-gradient(135deg, rgba(255, 255, 255, 0.94), rgba(255, 245, 249, 0.94)),
+    radial-gradient(circle at 88% 10%, rgba(140, 207, 255, 0.28), transparent 32%);
+}
+
+.profile-hero {
+  display: flex;
+  align-items: center;
+  gap: 24px;
+}
+
+.profile-hero-copy {
+  min-width: 0;
+  flex: 1;
+}
+
+.profile-hero-copy h2 {
+  margin: 4px 0 8px;
+}
+
+.profile-hero-copy .ant-typography {
+  margin-bottom: 0;
+}
+
+.profile-eyebrow {
+  color: #e45f8c;
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.profile-meta {
+  margin-top: 14px;
+}
+
+.profile-edit-button {
+  flex-shrink: 0;
+  border-radius: 999px;
+}
+
+.avatar-uploader {
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+}
+
+.avatar-uploader .ant-upload {
+  display: block;
+}
+
+.avatar-upload-trigger {
+  position: relative;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 138px;
+  height: 138px;
+  padding: 0;
+  border: 0;
+  border-radius: 50%;
+  background: transparent;
+  cursor: pointer;
+}
+
+.avatar-upload-trigger:disabled {
+  cursor: not-allowed;
+}
+
+.profile-avatar-image,
+.profile-avatar-fallback {
+  border: 5px solid rgba(255, 255, 255, 0.92);
+  box-shadow: 0 18px 36px rgba(229, 95, 140, 0.18);
+}
+
+.avatar-upload-mask {
+  position: absolute;
+  inset: 5px;
+  display: inline-flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  border-radius: 50%;
+  color: #ffffff;
+  background: rgba(22, 32, 51, 0.58);
+  font-size: 13px;
+  font-weight: 700;
+  opacity: 0;
+  transition: opacity 0.2s ease;
+}
+
+.avatar-upload-trigger:hover .avatar-upload-mask,
+.avatar-upload-trigger:focus-visible .avatar-upload-mask {
+  opacity: 1;
+}
+
+.avatar-uploader-actions {
+  justify-content: center;
+}
+
+.profile-detail-card .ant-card-head {
+  min-height: 52px;
+}
+
+.profile-detail-card .ant-card-head-title {
+  font-weight: 700;
+}
+
+.profile-info-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 12px;
+}
+
+.profile-info-item {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  min-height: 78px;
+  padding: 14px;
+  border: 1px solid rgba(236, 224, 232, 0.9);
+  border-radius: 16px;
+  background: rgba(255, 250, 252, 0.72);
+}
+
+.profile-info-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 34px;
+  height: 34px;
+  flex: 0 0 34px;
+  border-radius: 12px;
+  color: #d94f7f;
+  background: #ffeaf1;
+}
+
+.profile-info-content {
+  display: flex;
+  min-width: 0;
+  flex: 1;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.profile-info-value {
+  overflow-wrap: anywhere;
+  color: #172033;
+  font-weight: 700;
+}
+
+.profile-edit-form {
+  margin-top: 12px;
+}
+
+.theme-grayscale .user-avatar-fallback,
+.theme-grayscale .profile-avatar-fallback {
+  background: linear-gradient(135deg, #9aa3af, #d0d5dd);
+  color: #ffffff;
+}
+
+.theme-grayscale .profile-hero-card {
+  background: rgba(255, 255, 255, 0.92);
+}
+
+.theme-grayscale .profile-eyebrow,
+.theme-grayscale .profile-info-icon {
+  color: #667085;
+}
+
+.theme-grayscale .profile-info-icon {
+  background: #eef0f3;
+}
+
+@media (max-width: 768px) {
+  .profile-hero {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+  }
+
+  .profile-edit-button {
+    width: 100%;
+  }
+
+  .profile-meta {
+    justify-content: center;
+  }
+}
+
+@media (max-width: 576px) {
+  .avatar-upload-trigger {
+    width: 126px;
+    height: 126px;
+  }
+
+  .avatar-upload-trigger .ant-avatar {
+    width: 116px !important;
+    height: 116px !important;
+    line-height: 116px !important;
+  }
+
+  .avatar-upload-mask {
+    opacity: 1;
+  }
+
+  .profile-hero-card .ant-card-body,
+  .profile-detail-card .ant-card-body {
+    padding: 18px;
+  }
+}

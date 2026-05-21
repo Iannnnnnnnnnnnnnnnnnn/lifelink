@@ -1,7 +1,7 @@
 {
   "app": {
     "name": "LifeLink",
-    "title": "LifeLink Web",
+    "title": "LifeLink",
     "subtitle": "关系生活助手",
     "headerSubtitle": "把关系、日常、代办和账本放在一起",
     "language": "语言"
@@ -232,6 +232,32 @@
     "emailPlaceholder": "请输入邮箱",
     "phonePlaceholder": "请输入手机号",
     "confirmPasswordPlaceholder": "请再次输入密码"
+  },
+  "profile": {
+    "title": "个人主页",
+    "subtitle": "管理你的基础个人信息",
+    "personalInfo": "个人信息",
+    "avatar": "头像",
+    "changeAvatar": "更换头像",
+    "uploadAvatar": "上传头像",
+    "previewAvatar": "预览头像",
+    "editProfile": "编辑资料",
+    "username": "用户名",
+    "email": "邮箱",
+    "phone": "手机号",
+    "phoneInvalid": "请输入正确的手机号",
+    "userId": "用户 ID",
+    "status": "状态",
+    "createdAt": "注册时间",
+    "updatedAt": "更新时间",
+    "saveSuccess": "个人资料已更新",
+    "avatarUploadSuccess": "头像上传成功",
+    "avatarUploadFailed": "头像上传失败",
+    "invalidImageType": "只能上传 JPG、PNG 或 WebP 图片",
+    "imageTooLarge": "图片大小不能超过 {{size}}MB",
+    "basicInfo": "基础信息",
+    "security": "账号安全",
+    "changePassword": "修改密码"
   },
   "home": {
     "title": "首页",

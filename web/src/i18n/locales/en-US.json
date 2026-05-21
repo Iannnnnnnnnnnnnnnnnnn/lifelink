@@ -1,7 +1,7 @@
 {
   "app": {
     "name": "LifeLink",
-    "title": "LifeLink Web",
+    "title": "LifeLink",
     "subtitle": "Relationship life hub",
     "headerSubtitle": "Relationships, daily posts, todos, and finance in one place",
     "language": "Language"
@@ -232,6 +232,32 @@
     "emailPlaceholder": "Email",
     "phonePlaceholder": "Phone",
     "confirmPasswordPlaceholder": "Confirm password"
+  },
+  "profile": {
+    "title": "Profile",
+    "subtitle": "Manage your basic personal information",
+    "personalInfo": "Personal Information",
+    "avatar": "Avatar",
+    "changeAvatar": "Change Avatar",
+    "uploadAvatar": "Upload Avatar",
+    "previewAvatar": "Preview Avatar",
+    "editProfile": "Edit Profile",
+    "username": "Username",
+    "email": "Email",
+    "phone": "Phone",
+    "phoneInvalid": "Please enter a valid phone number",
+    "userId": "User ID",
+    "status": "Status",
+    "createdAt": "Joined At",
+    "updatedAt": "Updated At",
+    "saveSuccess": "Profile updated successfully",
+    "avatarUploadSuccess": "Avatar uploaded successfully",
+    "avatarUploadFailed": "Failed to upload avatar",
+    "invalidImageType": "Only JPG, PNG or WebP images are allowed",
+    "imageTooLarge": "Image size must be less than {{size}}MB",
+    "basicInfo": "Basic Info",
+    "security": "Account Security",
+    "changePassword": "Change Password"
   },
   "home": {
     "title": "Home",

@@ -23,6 +23,7 @@ import './styles/animations.css';
 import './styles/stickers.css';
 import './styles/ui-polish.css';
 import './styles/responsive.css';
+import './styles/profile.css';
 
 function AppProviders() {
   const { i18n } = useTranslation();

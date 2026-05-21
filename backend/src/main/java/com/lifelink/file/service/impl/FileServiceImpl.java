@@ -20,8 +20,10 @@ import org.springframework.web.multipart.MultipartFile;
 import java.io.InputStream;
 import java.time.LocalDateTime;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Locale;
+import java.util.Map;
 import java.util.Set;
 import java.util.UUID;
 
@@ -33,6 +35,13 @@ public class FileServiceImpl implements FileService {
     private static final String DEFAULT_PUBLIC_ENDPOINT = "http://47.97.202.182";
     private static final Set<String> ALLOWED_EXTENSIONS = new HashSet<String>(Arrays.asList("jpg", "jpeg", "png", "webp"));
     private static final Set<String> ALLOWED_CONTENT_TYPES = new HashSet<String>(Arrays.asList("image/jpeg", "image/png", "image/webp"));
+    private static final Map<String, String> EXTENSIONS_BY_CONTENT_TYPE = new HashMap<String, String>();
+
+    static {
+        EXTENSIONS_BY_CONTENT_TYPE.put("image/jpeg", "jpg");
+        EXTENSIONS_BY_CONTENT_TYPE.put("image/png", "png");
+        EXTENSIONS_BY_CONTENT_TYPE.put("image/webp", "webp");
+    }
 
     private final MinioClient minioClient;
     private final MinioProperties minioProperties;
@@ -41,6 +50,16 @@ public class FileServiceImpl implements FileService {
     @Override
     @Transactional
     public FileUploadResponse uploadDailyImage(MultipartFile file, Long userId) {
+        return uploadImage(file, userId, "daily");
+    }
+
+    @Override
+    @Transactional
+    public FileUploadResponse uploadAvatarImage(MultipartFile file, Long userId) {
+        return uploadImage(file, userId, "avatars");
+    }
+
+    private FileUploadResponse uploadImage(MultipartFile file, Long userId, String category) {
         if (file == null || file.isEmpty()) {
             throw new BusinessException(400, "File is required");
         }
@@ -49,17 +68,14 @@ public class FileServiceImpl implements FileService {
         }
 
         String originalName = file.getOriginalFilename();
-        String extension = extractExtension(originalName);
-        if (!ALLOWED_EXTENSIONS.contains(extension)) {
-            throw new BusinessException(400, "Only jpg, jpeg, png, webp are allowed");
-        }
-
-        String contentType = file.getContentType();
-        if (!StringUtils.hasText(contentType) || !ALLOWED_CONTENT_TYPES.contains(contentType.toLowerCase(Locale.ROOT))) {
+        validateOriginalExtension(originalName);
+        String contentType = normalizeContentType(file.getContentType());
+        if (!StringUtils.hasText(contentType) || !ALLOWED_CONTENT_TYPES.contains(contentType)) {
             throw new BusinessException(400, "Unsupported image content type");
         }
 
-        String objectKey = buildObjectKey(extension);
+        String extension = EXTENSIONS_BY_CONTENT_TYPE.get(contentType);
+        String objectKey = buildObjectKey(category, userId, extension);
         String bucket = minioProperties.getBucket();
         ensureBucket(bucket);
 
@@ -128,18 +144,32 @@ public class FileServiceImpl implements FileService {
                 + "}";
     }
 
-    private String extractExtension(String originalName) {
+    private void validateOriginalExtension(String originalName) {
         if (!StringUtils.hasText(originalName) || !originalName.contains(".")) {
-            throw new BusinessException(400, "Invalid file name");
+            return;
         }
         String extension = originalName.substring(originalName.lastIndexOf('.') + 1).toLowerCase(Locale.ROOT);
-        if (!StringUtils.hasText(extension)) {
-            throw new BusinessException(400, "Invalid file extension");
+        if (StringUtils.hasText(extension) && !ALLOWED_EXTENSIONS.contains(extension)) {
+            throw new BusinessException(400, "Only jpg, jpeg, png, webp are allowed");
         }
-        return extension;
     }
 
-    private String buildObjectKey(String extension) {
+    private String normalizeContentType(String contentType) {
+        if (!StringUtils.hasText(contentType)) {
+            return null;
+        }
+        return contentType.toLowerCase(Locale.ROOT);
+    }
+
+    private String buildObjectKey(String category, Long userId, String extension) {
+        if ("avatars".equals(category)) {
+            return "avatars/"
+                    + userId
+                    + "/"
+                    + UUID.randomUUID()
+                    + "."
+                    + extension;
+        }
         LocalDateTime now = LocalDateTime.now();
         return "daily/"
                 + now.getYear()

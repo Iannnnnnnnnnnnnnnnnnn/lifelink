@@ -14,7 +14,6 @@ import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.context.annotation.Import;
 import org.springframework.http.MediaType;
-import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.test.web.servlet.MockMvc;
 
 import java.time.LocalDateTime;
@@ -50,7 +49,7 @@ class SecurityConfigTest {
     private JwtUtil jwtUtil;
 
     @MockBean
-    private UserDetailsService userDetailsService;
+    private CustomUserDetailsService userDetailsService;
 
     @BeforeEach
     void setUp() {
@@ -61,6 +60,7 @@ class SecurityConfigTest {
                 "13800000000",
                 null,
                 "ACTIVE",
+                LocalDateTime.now(),
                 LocalDateTime.now()
         );
         when(userService.register(any())).thenReturn(user);

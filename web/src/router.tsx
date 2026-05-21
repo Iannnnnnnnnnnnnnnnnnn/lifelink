@@ -18,6 +18,7 @@ import { JoinRelationship } from './pages/JoinRelationship';
 import { RelationshipFinance } from './pages/RelationshipFinance';
 import { CalendarPage } from './pages/calendar/CalendarPage';
 import { Login } from './pages/Login';
+import { ProfilePage } from './pages/profile/ProfilePage';
 import { RelationshipDetail } from './pages/RelationshipDetail';
 import { RelationshipList } from './pages/RelationshipList';
 import { RelationshipTimelinePage } from './pages/RelationshipTimelinePage';
@@ -46,6 +47,10 @@ export const router = createBrowserRouter([
           {
             path: 'search',
             element: <SearchPage />,
+          },
+          {
+            path: 'profile',
+            element: <ProfilePage />,
           },
           {
             path: '403',
