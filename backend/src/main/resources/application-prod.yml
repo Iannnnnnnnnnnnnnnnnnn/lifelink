@@ -40,9 +40,12 @@ lifelink:
     secret-key: ${MINIO_ROOT_PASSWORD:change-me}
     bucket: ${LIFELINK_MINIO_BUCKET:lifelink}
   ai:
+    enabled: ${AI_ENABLED:false}
     provider: ${AI_PROVIDER:mock}
+    base-url: ${AI_BASE_URL:https://api.deepseek.com/v1}
     api-key: ${AI_API_KEY:}
-    model: ${AI_MODEL:gpt-4o-mini}
-    timeout-seconds: ${AI_TIMEOUT_SECONDS:30}
-    max-output-tokens: ${AI_MAX_OUTPUT_TOKENS:800}
-    base-url: ${AI_BASE_URL:https://api.openai.com/v1/chat/completions}
+    model: ${AI_MODEL:deepseek-v4-flash}
+    timeout-seconds: ${AI_TIMEOUT_SECONDS:60}
+    max-tokens: ${AI_MAX_TOKENS:1200}
+    temperature: ${AI_TEMPERATURE:0.7}
+    mock: ${AI_MOCK:true}
