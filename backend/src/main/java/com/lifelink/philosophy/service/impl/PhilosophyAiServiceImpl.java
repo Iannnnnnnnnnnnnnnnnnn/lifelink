@@ -23,6 +23,7 @@ public class PhilosophyAiServiceImpl implements PhilosophyAiService {
 
     private final AiChatService aiChatService;
     private final ObjectMapper objectMapper;
+    private final PhilosopherPersonaPromptBuilder promptBuilder;
 
     @Override
     public PhilosophyResponseItem generate(String question, Philosopher philosopher, String language) {
@@ -33,10 +34,8 @@ public class PhilosophyAiServiceImpl implements PhilosophyAiService {
             return buildCrisisCounselorItem(philosopher, language);
         }
         AiChatResult result = aiChatService.chat(new AiChatRequest(
-                isCounselor(philosopher) ? buildCounselorSystemPrompt(language) : buildSystemPrompt(language),
-                isCounselor(philosopher)
-                        ? buildCounselorUserPrompt(safeQuestion, language)
-                        : buildUserPrompt(safeQuestion, philosopher, language),
+                promptBuilder.buildMultiPerspectiveSystemPrompt(philosopher, language),
+                promptBuilder.buildMultiPerspectiveUserPrompt(safeQuestion, philosopher, language),
                 null,
                 null,
                 true
@@ -244,39 +243,61 @@ public class PhilosophyAiServiceImpl implements PhilosophyAiService {
         String text = content == null ? "" : content.toLowerCase();
         return text.contains("自杀")
                 || text.contains("不想活")
+                || text.contains("活不下去")
                 || text.contains("结束生命")
+                || text.contains("想死")
+                || text.contains("去死")
                 || text.contains("伤害自己")
+                || text.contains("自残")
+                || text.contains("割腕")
+                || text.contains("跳楼")
+                || text.contains("吃药")
                 || text.contains("伤害别人")
+                || text.contains("杀了他")
+                || text.contains("杀了她")
+                || text.contains("报复社会")
                 || text.contains("suicide")
                 || text.contains("kill myself")
+                || text.contains("want to die")
+                || text.contains("end my life")
                 || text.contains("self harm")
                 || text.contains("self-harm")
                 || text.contains("hurt myself")
-                || text.contains("hurt others");
+                || text.contains("cut myself")
+                || text.contains("overdose")
+                || text.contains("jump off")
+                || text.contains("hurt others")
+                || text.contains("kill him")
+                || text.contains("kill her");
     }
 
     private PhilosophyResponseItem buildCrisisCounselorItem(Philosopher philosopher, String language) {
         boolean zh = ZH_CN.equals(language);
-        String message = zh
-                ? "我很在意你现在的安全。如果你有伤害自己或他人的冲动，请先不要一个人扛着，立刻联系身边可信的人，或者拨打当地紧急电话/危机干预热线。你现在最重要的不是把所有问题想清楚，而是先让自己处在安全的地方。"
-                : "I’m really concerned about your safety right now. If you feel at risk of hurting yourself or someone else, please contact a trusted person nearby or call local emergency services or a crisis hotline immediately. The priority is not to solve everything at once, but to keep you safe right now.";
+        String understanding = zh
+                ? "我很在意你现在的安全。听起来你可能正在承受很强烈、很痛苦的情绪。请你先不要一个人扛着，也不要立刻做任何伤害自己或他人的事。"
+                : "I’m really concerned about your safety right now. It sounds like you may be carrying something very painful and overwhelming. Please do not stay alone with this, and do not take any immediate action to hurt yourself or anyone else.";
+        String advice = zh
+                ? "我建议你现在马上做三件事：1. 立刻联系身边一个可信的人，让他/她陪在你身边。2. 如果你觉得自己可能马上失控，请立即拨打当地紧急电话或危机热线。3. 尽量离开可能让你伤害自己的物品或环境，先去一个有人、相对安全的地方。"
+                : "I suggest doing three things right now: 1. Contact a trusted person nearby and ask them to stay with you. 2. If you feel you might lose control or be in immediate danger, call local emergency services or a crisis hotline now. 3. Move away from anything you could use to harm yourself and go to a safer place with other people around.";
+        String practice = zh
+                ? "现在先不要独处。请把手机拿在手边，马上联系一个能真实陪到你的人，或直接拨打当地紧急电话。"
+                : "Please do not stay alone right now. Keep your phone with you, contact someone who can be with you, or call local emergency services immediately.";
+        String support = zh
+                ? "现在最重要的不是想清楚全部问题，而是先保证你是安全的。"
+                : "The priority right now is not to solve everything at once. The priority is to keep you safe.";
         PhilosophyResponseItem item = new PhilosophyResponseItem();
         item.setPhilosopherCode(philosopher.getCode());
         item.setPhilosopherName(resolveName(philosopher, language));
         item.setResponseLayout(LAYOUT_COUNSELOR_CARD);
-        item.setUnderstanding(message);
-        item.setAdvice(zh
-                ? "请立刻把自己移到更安全的地方，并联系一个此刻能到你身边的人。"
-                : "Please move to a safer place now and contact someone who can be with you immediately.");
-        item.setPractice(zh
-                ? "现在先放下危险物品，拨打当地紧急电话或危机热线。"
-                : "Put away anything dangerous and call local emergency services or a crisis hotline now.");
-        item.setSupport(zh ? "先保证安全，我们再慢慢处理后面的事。" : "Stay safe first; everything else can come after that.");
+        item.setUnderstanding(understanding);
+        item.setAdvice(advice);
+        item.setPractice(practice);
+        item.setSupport(support);
         item.setViewpoint(item.getUnderstanding());
         item.setQuestionBack(item.getAdvice());
         item.setObjection(item.getPractice());
         item.setSummary(item.getSupport());
-        item.setRawResponse("{\"understanding\":\"" + item.getUnderstanding() + "\"}");
+        item.setRawResponse("{\"understanding\":\"" + item.getUnderstanding() + "\",\"advice\":\"" + item.getAdvice() + "\",\"practice\":\"" + item.getPractice() + "\",\"support\":\"" + item.getSupport() + "\"}");
         return item;
     }
 

@@ -358,20 +358,37 @@ public class PhilosophyChatServiceImpl implements PhilosophyChatService {
         String text = content == null ? "" : content.toLowerCase();
         return text.contains("自杀")
                 || text.contains("不想活")
+                || text.contains("活不下去")
                 || text.contains("结束生命")
+                || text.contains("想死")
+                || text.contains("去死")
                 || text.contains("伤害自己")
+                || text.contains("自残")
+                || text.contains("割腕")
+                || text.contains("跳楼")
+                || text.contains("吃药")
                 || text.contains("伤害别人")
+                || text.contains("杀了他")
+                || text.contains("杀了她")
+                || text.contains("报复社会")
                 || text.contains("suicide")
                 || text.contains("kill myself")
+                || text.contains("want to die")
+                || text.contains("end my life")
                 || text.contains("self harm")
                 || text.contains("self-harm")
                 || text.contains("hurt myself")
-                || text.contains("hurt others");
+                || text.contains("cut myself")
+                || text.contains("overdose")
+                || text.contains("jump off")
+                || text.contains("hurt others")
+                || text.contains("kill him")
+                || text.contains("kill her");
     }
 
     private String crisisReply(String language) {
         return ZH_CN.equals(language)
-                ? "我很在意你现在的安全。如果你有伤害自己或他人的冲动，请先不要一个人扛着，立刻联系身边可信的人，或者拨打当地紧急电话/危机干预热线。你现在最重要的不是把所有问题想清楚，而是先让自己处在安全的地方。"
-                : "I’m really concerned about your safety right now. If you feel at risk of hurting yourself or someone else, please contact a trusted person nearby or call local emergency services or a crisis hotline immediately. The priority is not to solve everything at once, but to keep you safe right now.";
+                ? "我很在意你现在的安全。听起来你可能正在承受很强烈、很痛苦的情绪。请你先不要一个人扛着，也不要立刻做任何伤害自己或他人的事。\n\n我建议你现在马上做三件事：\n1. 立刻联系身边一个可信的人，让他/她陪在你身边。\n2. 如果你觉得自己可能马上失控，请立即拨打当地紧急电话或危机热线。\n3. 尽量离开可能让你伤害自己的物品或环境，先去一个有人、相对安全的地方。\n\n现在最重要的不是把所有问题想清楚，而是先保证你是安全的。"
+                : "I’m really concerned about your safety right now. It sounds like you may be carrying something very painful and overwhelming. Please do not stay alone with this, and do not take any immediate action to hurt yourself or anyone else.\n\nI suggest doing three things right now:\n1. Contact a trusted person nearby and ask them to stay with you.\n2. If you feel you might lose control or be in immediate danger, call local emergency services or a crisis hotline now.\n3. Move away from anything you could use to harm yourself and go to a safer place with other people around.\n\nThe priority right now is not to solve everything at once. The priority is to keep you safe.";
     }
 }
