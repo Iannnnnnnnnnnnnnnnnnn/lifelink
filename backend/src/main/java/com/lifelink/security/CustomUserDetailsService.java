@@ -20,6 +20,15 @@ public class CustomUserDetailsService implements UserDetailsService {
         User user = userMapper.selectOne(new LambdaQueryWrapper<User>()
                 .eq(User::getUsername, username)
                 .last("LIMIT 1"));
+        return toLoginUser(user);
+    }
+
+    public UserDetails loadUserById(Long userId) throws UsernameNotFoundException {
+        User user = userMapper.selectById(userId);
+        return toLoginUser(user);
+    }
+
+    private UserDetails toLoginUser(User user) {
         if (user == null) {
             throw new UsernameNotFoundException("User not found");
         }

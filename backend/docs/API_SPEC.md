@@ -55,7 +55,8 @@ Response:
     "phone": "13800000000",
     "avatarUrl": null,
     "status": "ACTIVE",
-    "createdAt": "2026-05-08T16:00:00"
+    "createdAt": "2026-05-08T16:00:00",
+    "updatedAt": "2026-05-08T16:00:00"
   }
 }
 ```
@@ -91,7 +92,8 @@ Response:
       "phone": "13800000000",
       "avatarUrl": null,
       "status": "ACTIVE",
-      "createdAt": "2026-05-08T16:00:00"
+      "createdAt": "2026-05-08T16:00:00",
+      "updatedAt": "2026-05-08T16:00:00"
     }
   }
 }
@@ -100,7 +102,7 @@ Response:
 ## Current User
 
 - Method: `GET`
-- Path: `/api/user/me`
+- Path: `/api/users/me` (`/api/user/me` remains compatible)
 - Auth: Required
 - Header: `Authorization: Bearer <token>`
 - Description: Returns current logged-in user profile.
@@ -118,7 +120,57 @@ Response:
     "phone": "13800000000",
     "avatarUrl": null,
     "status": "ACTIVE",
-    "createdAt": "2026-05-08T16:00:00"
+    "createdAt": "2026-05-08T16:00:00",
+    "updatedAt": "2026-05-08T16:00:00"
+  }
+}
+```
+
+## Update Current User
+
+- Method: `PUT`
+- Path: `/api/users/me` (`/api/user/me` remains compatible)
+- Auth: Required
+- Header: `Authorization: Bearer <token>`
+- Description: Updates the current user's basic profile. Password, status, id, and creation time cannot be changed here.
+
+Request:
+
+```json
+{
+  "username": "alice",
+  "email": "alice@example.com",
+  "phone": "13800000000"
+}
+```
+
+Rules:
+
+- `username` is required, length 3-50.
+- `email` must be a valid email when provided.
+- `phone` is optional and uses basic phone format validation.
+- `username`, `email`, and `phone` must be unique except for the current user.
+
+## Upload Current User Avatar
+
+- Method: `POST`
+- Path: `/api/users/me/avatar` (`/api/user/me/avatar` remains compatible)
+- Auth: Required
+- Content-Type: `multipart/form-data`
+- Description: Uploads an avatar image to MinIO, updates `users.avatar_url`, and returns the latest URL.
+
+Request:
+
+- `file`: jpg, jpeg, png, or webp image, up to 5MB.
+
+Response:
+
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": {
+    "avatarUrl": "https://example.com/lifelink/avatars/1/avatar.png"
   }
 }
 ```
@@ -883,3 +935,45 @@ Automatic milestone generation currently covers:
 - completed `HIGH` priority todo
 - daily post comment count first reaching 5
 - daily post with uploaded images
+
+## Life Calendar
+
+Life Calendar aggregates relationship-space todos, anniversaries, daily posts, transactions, holidays, solar terms, and custom calendar events. All relationship-scoped endpoints require the current user to be an active member of the relationship.
+
+### Get Month Calendar
+
+- Method: `GET`
+- Path: `/api/calendar/month`
+- Auth: Required
+- Query: `relationshipId`, `year`, `month`
+- Description: Returns one month of aggregated calendar days for the relationship.
+
+### Get Day Calendar
+
+- Method: `GET`
+- Path: `/api/calendar/day`
+- Auth: Required
+- Query: `relationshipId`, `date` in `yyyy-MM-dd`.
+- Description: Returns one day's aggregated calendar detail.
+
+### Create Calendar Event
+
+- Method: `POST`
+- Path: `/api/calendar/events`
+- Auth: Required
+- Body: `relationshipId`, `title`, `description`, `eventType`, `startTime`, `endTime`, `allDay`, `repeatType`, `reminderMinutes`, `color`.
+- Description: Creates a user-defined calendar event in a relationship space.
+
+### Update Calendar Event
+
+- Method: `PUT`
+- Path: `/api/calendar/events/{eventId}`
+- Auth: Required
+- Description: Creator can update the event. Relationship `OWNER` and `ADMIN` can update any event in the space.
+
+### Delete Calendar Event
+
+- Method: `DELETE`
+- Path: `/api/calendar/events/{eventId}`
+- Auth: Required
+- Description: Soft deletes the event by setting `calendar_events.status` to `DELETED`.

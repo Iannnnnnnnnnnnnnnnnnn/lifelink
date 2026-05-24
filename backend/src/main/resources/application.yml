@@ -40,3 +40,15 @@ lifelink:
     bucket: lifelink
   cors:
     allowed-origins: http://localhost:5173,http://127.0.0.1:5173
+  ai:
+    enabled: ${AI_ENABLED:false}
+    provider: ${AI_PROVIDER:mock}
+    base-url: ${AI_BASE_URL:https://api.deepseek.com/v1}
+    api-key: ${AI_API_KEY:}
+    model: ${AI_MODEL:deepseek-v4-flash}
+    timeout-seconds: ${AI_TIMEOUT_SECONDS:60}
+    max-tokens: ${AI_MAX_TOKENS:1200}
+    temperature: ${AI_TEMPERATURE:0.7}
+    mock: ${AI_MOCK:true}
+    chat-context-messages: ${AI_CHAT_CONTEXT_MESSAGES:16}
+    chat-max-user-message-length: ${AI_CHAT_MAX_USER_MESSAGE_LENGTH:2000}

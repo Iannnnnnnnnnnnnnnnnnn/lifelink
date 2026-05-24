@@ -4,9 +4,10 @@ import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useParams } from 'react-router-dom';
 import { getMyActivities, getRelationshipActivities, SpaceActivity } from '../api/activity';
-import { getActivityIcon, getActivityTag, getActivityText } from '../utils/activity';
+import { getActivityIcon, getActivityTag, getActivityText, shouldShowActivityContent } from '../utils/activity';
 import { EmptyState } from '../components/decorations/EmptyState';
 import { ErrorState } from '../components/common/ErrorState';
+import { formatDateTime } from '../utils/date';
 import { getPageErrorType, PageErrorType } from '../utils/error';
 
 const activityOptions = [
@@ -20,7 +21,7 @@ const activityOptions = [
 ];
 
 export function ActivityTimeline() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const params = useParams();
   const relationshipId = params.relationshipId ? Number(params.relationshipId) : undefined;
   const [items, setItems] = useState<SpaceActivity[]>([]);
@@ -90,7 +91,7 @@ export function ActivityTimeline() {
                         <Avatar src={item.actorAvatarUrl}>{item.actorUsername?.[0]}</Avatar>
                         <div>
                           <Typography.Text strong>{item.actorUsername || t('activity.someone')}</Typography.Text>
-                          <div className="activity-meta">{item.createdAt}</div>
+                          <div className="activity-meta">{formatDateTime(item.createdAt, t, i18n.resolvedLanguage)}</div>
                         </div>
                       </div>
                       <Space wrap>
@@ -99,7 +100,7 @@ export function ActivityTimeline() {
                       </Space>
                     </div>
                     <Typography.Paragraph className="activity-text">{getActivityText(item, t)}</Typography.Paragraph>
-                    {item.content && <Typography.Text type="secondary">{item.content}</Typography.Text>}
+                    {item.content && shouldShowActivityContent(item.activityType) && <Typography.Text type="secondary">{item.content}</Typography.Text>}
                   </Card>
                 ),
               }))}

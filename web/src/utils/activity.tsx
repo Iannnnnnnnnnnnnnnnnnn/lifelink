@@ -2,6 +2,22 @@ import type { TFunction } from 'i18next';
 import { CalendarOutlined, CheckSquareOutlined, EditOutlined, HomeOutlined, UserAddOutlined } from '@ant-design/icons';
 import { SpaceActivity } from '../api/activity';
 
+const translatedActivityTypes = new Set([
+  'RELATIONSHIP_CREATED',
+  'MEMBER_JOINED',
+  'MEMBER_LEFT',
+  'MEMBER_REMOVED',
+  'MEMBER_ROLE_UPDATED',
+  'OWNER_TRANSFERRED',
+  'RELATIONSHIP_DELETED',
+  'DAILY_POST_CREATED',
+  'DAILY_POST_COMMENTED',
+  'TODO_CREATED',
+  'TODO_COMPLETED',
+  'TODO_REOPENED',
+  'ANNIVERSARY_CREATED',
+]);
+
 function metadataText(activity: SpaceActivity, key: string) {
   const value = activity.metadata?.[key];
   return typeof value === 'string' || typeof value === 'number' ? String(value) : undefined;
@@ -43,6 +59,10 @@ export function getActivityText(activity: SpaceActivity, t: TFunction) {
 
 export function getActivityTag(activityType: string, t: TFunction) {
   return t(`activity.types.${activityType}`, { defaultValue: activityType });
+}
+
+export function shouldShowActivityContent(activityType: string) {
+  return !translatedActivityTypes.has(activityType);
 }
 
 export function getActivityIcon(activityType: string) {

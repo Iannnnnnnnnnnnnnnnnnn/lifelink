@@ -10,6 +10,8 @@ interface AuthState {
   login: (payload: LoginResponse) => void;
   logout: () => void;
   fetchCurrentUser: () => Promise<void>;
+  setUser: (user: UserProfile) => void;
+  updateUser: (user: Partial<UserProfile>) => void;
 }
 
 const initialToken = localStorage.getItem(TOKEN_STORAGE_KEY);
@@ -41,6 +43,17 @@ export const useAuthStore = create<AuthState>((set) => ({
       user: response.data.data,
       isAuthenticated: true,
     });
+  },
+  setUser: (user) => {
+    set({
+      user,
+      isAuthenticated: true,
+    });
+  },
+  updateUser: (user) => {
+    set((state) => ({
+      user: state.user ? { ...state.user, ...user } : null,
+    }));
   },
 }));
 

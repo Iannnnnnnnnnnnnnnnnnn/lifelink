@@ -19,6 +19,8 @@ import {
 import type { ApiResult } from '../api/request';
 import { EmptyState } from '../components/decorations/EmptyState';
 import { ErrorState } from '../components/common/ErrorState';
+import { formatDateTime } from '../utils/date';
+import { getTodoPriorityColor, getTodoPriorityLabel, getTodoStatusColor, getTodoStatusLabel } from '../utils/display';
 import { getPageErrorType, PageErrorType } from '../utils/error';
 
 interface TodoFormValues {
@@ -29,7 +31,7 @@ interface TodoFormValues {
 }
 
 export function SpaceTodoList() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const params = useParams();
   const relationshipId = Number(params.relationshipId);
   const [todos, setTodos] = useState<SpaceTodo[]>([]);
@@ -198,15 +200,15 @@ export function SpaceTodoList() {
                     <Typography.Text strong delete={todo.status === 'DONE'}>
                       {todo.title}
                     </Typography.Text>
-                    <Tag color={todo.priority === 'HIGH' ? 'red' : todo.priority === 'LOW' ? 'default' : 'blue'}>{todo.priority}</Tag>
-                    <Tag color={todo.status === 'DONE' ? 'green' : 'gold'}>{todo.status}</Tag>
+                    <Tag color={getTodoPriorityColor(todo.priority)}>{getTodoPriorityLabel(t, todo.priority)}</Tag>
+                    <Tag color={getTodoStatusColor(todo.status)}>{getTodoStatusLabel(t, todo.status)}</Tag>
                   </Space>
                 }
                 description={
                   <Space direction="vertical" size={4}>
                     <Typography.Text type="secondary">{todo.content || t('todo.noContent')}</Typography.Text>
                     <Typography.Text type="secondary">
-                      {todo.createdByUsername || '-'} · {t('common.due')}: {todo.dueTime || '-'}
+                      {todo.createdByUsername || t('common.notAvailable')} · {t('common.due')}: {formatDateTime(todo.dueTime, t, i18n.resolvedLanguage)}
                     </Typography.Text>
                   </Space>
                 }
@@ -228,9 +230,9 @@ export function SpaceTodoList() {
           <Form.Item name="priority" label={t('todo.priority')} initialValue="NORMAL">
             <Select
               options={[
-                { value: 'LOW', label: 'LOW' },
-                { value: 'NORMAL', label: 'NORMAL' },
-                { value: 'HIGH', label: 'HIGH' },
+                { value: 'LOW', label: getTodoPriorityLabel(t, 'LOW') },
+                { value: 'NORMAL', label: getTodoPriorityLabel(t, 'NORMAL') },
+                { value: 'HIGH', label: getTodoPriorityLabel(t, 'HIGH') },
               ]}
             />
           </Form.Item>

@@ -6,4 +6,6 @@ import org.springframework.web.multipart.MultipartFile;
 public interface FileService {
 
     FileUploadResponse uploadDailyImage(MultipartFile file, Long userId);
+
+    FileUploadResponse uploadAvatarImage(MultipartFile file, Long userId);
 }

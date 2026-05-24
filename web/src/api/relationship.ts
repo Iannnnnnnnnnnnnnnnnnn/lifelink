@@ -1,6 +1,6 @@
 import { ApiResult, request } from './request';
 
-export type RelationshipType = 'COUPLE' | 'FAMILY' | 'FRIEND' | 'ROOMMATE' | 'CUSTOM';
+export type RelationshipType = 'COUPLE' | 'FAMILY' | 'FRIEND' | 'TEAM' | 'OTHER' | 'ROOMMATE' | 'CUSTOM';
 
 export interface CreateRelationshipRequest {
   name: string;

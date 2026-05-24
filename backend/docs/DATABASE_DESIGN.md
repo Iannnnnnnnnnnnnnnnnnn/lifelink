@@ -376,3 +376,57 @@ Relationship timeline initialization SQL:
 ```text
 docs/sql/init_relationship_timeline_events.sql
 ```
+
+## calendar_events
+
+Stores user-created Life Calendar events only. Existing todos, anniversaries, daily posts, and transactions are aggregated from their original tables.
+
+```sql
+CREATE TABLE IF NOT EXISTS calendar_events (
+    id BIGSERIAL PRIMARY KEY,
+    relationship_id BIGINT NOT NULL,
+    title VARCHAR(100) NOT NULL,
+    description TEXT,
+    event_type VARCHAR(30) NOT NULL DEFAULT 'CUSTOM',
+    start_time TIMESTAMP NOT NULL,
+    end_time TIMESTAMP,
+    all_day BOOLEAN NOT NULL DEFAULT false,
+    repeat_type VARCHAR(30) NOT NULL DEFAULT 'NONE',
+    reminder_minutes INT,
+    color VARCHAR(30),
+    created_by BIGINT NOT NULL,
+    updated_by BIGINT,
+    status VARCHAR(20) NOT NULL DEFAULT 'ACTIVE',
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+`event_type` supports `CUSTOM`, `REMINDER`, `PLAN`, `APPOINTMENT`, and `OTHER`.
+`repeat_type` supports `NONE`, `DAILY`, `WEEKLY`, `MONTHLY`, and `YEARLY`; the first version only expands `NONE` events in calendar aggregation.
+
+## holiday_calendar
+
+Stores configurable festivals, solar terms, legal holidays, and adjusted workdays. Legal holidays and workday adjustments should be maintained as data instead of Java constants.
+
+```sql
+CREATE TABLE IF NOT EXISTS holiday_calendar (
+    id BIGSERIAL PRIMARY KEY,
+    date DATE NOT NULL,
+    name_zh VARCHAR(100) NOT NULL,
+    name_en VARCHAR(100),
+    type VARCHAR(30) NOT NULL,
+    lunar_date VARCHAR(50),
+    is_holiday BOOLEAN NOT NULL DEFAULT false,
+    is_workday BOOLEAN NOT NULL DEFAULT false,
+    description_zh TEXT,
+    description_en TEXT,
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
+);
+```
+
+Life Calendar initialization SQL:
+
+```text
+docs/sql/init_holiday_calendar.sql
+```

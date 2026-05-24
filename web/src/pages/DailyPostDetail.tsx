@@ -2,11 +2,12 @@ import { DeleteOutlined, HeartFilled, HeartOutlined, MessageOutlined, SendOutlin
 import { Avatar, Button, Card, Descriptions, Form, Image, Input, List, message, Popconfirm, Space, Tag, Typography } from 'antd';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   commentDailyPost,
   DailyPostComment,
   DailyPostDetail as DailyPostDetailType,
+  deleteDailyPost,
   deleteDailyPostComment,
   getDailyPostComments,
   getDailyPostDetail,
@@ -16,6 +17,9 @@ import {
 import { EmptyState } from '../components/common/EmptyState';
 import { ErrorState } from '../components/common/ErrorState';
 import { PageLoading } from '../components/common/PageLoading';
+import { useAuthStore } from '../store/authStore';
+import { formatDateTime } from '../utils/date';
+import { getVisibilityLabel } from '../utils/display';
 import { getPageErrorType, PageErrorType } from '../utils/error';
 
 interface CommentFormValues {
@@ -23,9 +27,11 @@ interface CommentFormValues {
 }
 
 export function DailyPostDetail() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const params = useParams();
+  const navigate = useNavigate();
   const postId = Number(params.id);
+  const currentUser = useAuthStore((state) => state.user);
   const [post, setPost] = useState<DailyPostDetailType | null>(null);
   const [comments, setComments] = useState<DailyPostComment[]>([]);
   const [loadingPost, setLoadingPost] = useState(false);
@@ -103,6 +109,17 @@ export function DailyPostDetail() {
     }
   };
 
+  const handleDeletePost = async () => {
+    if (!post) return;
+    try {
+      await deleteDailyPost(post.id);
+      messageApi.success(t('daily.deleteSuccess'));
+      navigate('/daily');
+    } catch (error) {
+      messageApi.error(t('daily.deleteFailed'));
+    }
+  };
+
   useEffect(() => {
     loadPost();
     loadComments();
@@ -132,9 +149,18 @@ export function DailyPostDetail() {
   return (
     <Space direction="vertical" size={16} className="page-wide">
       {contextHolder}
-      <div>
-        <Typography.Title level={2}>{t('daily.detail')}</Typography.Title>
-        <Typography.Text type="secondary">{post?.relationshipName || '-'}</Typography.Text>
+      <div className="page-heading">
+        <div>
+          <Typography.Title level={2}>{t('daily.detail')}</Typography.Title>
+          <Typography.Text type="secondary">{post?.relationshipName || '-'}</Typography.Text>
+        </div>
+        {post && currentUser?.id === post.userId && (
+          <Popconfirm title={t('daily.deleteConfirm')} okText={t('common.confirm')} cancelText={t('common.cancel')} onConfirm={handleDeletePost}>
+            <Button danger icon={<DeleteOutlined />}>
+              {t('common.delete')}
+            </Button>
+          </Popconfirm>
+        )}
       </div>
       <Card>
         <Typography.Paragraph className="daily-content">{post?.content || '-'}</Typography.Paragraph>
@@ -164,9 +190,9 @@ export function DailyPostDetail() {
           <Descriptions.Item label={t('daily.author')}>{post?.username || '-'}</Descriptions.Item>
           <Descriptions.Item label={t('daily.relationship')}>{post?.relationshipName || '-'}</Descriptions.Item>
           <Descriptions.Item label={t('daily.mood')}>{post?.mood ? <Tag color="blue">{post.mood}</Tag> : '-'}</Descriptions.Item>
-          <Descriptions.Item label={t('daily.visibility')}>{post?.visibility || '-'}</Descriptions.Item>
-          <Descriptions.Item label={t('daily.createdAt')}>{post?.createdAt || '-'}</Descriptions.Item>
-          <Descriptions.Item label={t('daily.updatedAt')}>{post?.updatedAt || '-'}</Descriptions.Item>
+          <Descriptions.Item label={t('daily.visibility')}>{getVisibilityLabel(t, post?.visibility)}</Descriptions.Item>
+          <Descriptions.Item label={t('daily.createdAt')}>{formatDateTime(post?.createdAt, t, i18n.resolvedLanguage)}</Descriptions.Item>
+          <Descriptions.Item label={t('daily.updatedAt')}>{formatDateTime(post?.updatedAt, t, i18n.resolvedLanguage)}</Descriptions.Item>
         </Descriptions>
       </Card>
 
@@ -204,7 +230,7 @@ export function DailyPostDetail() {
                 title={
                   <Space wrap>
                     <Typography.Text strong>{comment.username || '-'}</Typography.Text>
-                    <Typography.Text type="secondary">{comment.createdAt}</Typography.Text>
+                    <Typography.Text type="secondary">{formatDateTime(comment.createdAt, t, i18n.resolvedLanguage)}</Typography.Text>
                   </Space>
                 }
                 description={<Typography.Paragraph className="daily-comment-content">{comment.content}</Typography.Paragraph>}

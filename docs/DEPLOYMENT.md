@@ -74,6 +74,17 @@ docker compose -f docker-compose.prod.yml exec -T postgres psql -U lifelink -d l
 
 ## MinIO URL Note
 
+The backend connects to MinIO using `lifelink.minio.endpoint`, but stores uploaded file URLs with the fixed public host `http://47.97.202.182`. This keeps uploaded image URLs browser-reachable even when the backend talks to MinIO through Docker's internal service name.
+
+For Docker production, keep the internal endpoint as the Compose service name:
+
+```env
+LIFELINK_MINIO_ENDPOINT=http://minio:9000
+```
+
+The frontend Nginx template proxies `/lifelink/` to MinIO, so URLs like `http://47.97.202.182/lifelink/daily/2026/05/xxx.jpg` can be served from the same public host.
+
+New uploads will use the public URL. Existing rows in `file_resources.file_url`, `anniversaries.background_url`, and `relationship_timeline_events.cover_url` must be updated separately if they already contain `http://minio:9000`.
 The current backend stores uploaded file URLs using `lifelink.minio.endpoint`. If this is set to `http://minio:9000`, containers can reach MinIO but HTTPS pages in browsers may not be able to load those files. For production, set `LIFELINK_MINIO_ENDPOINT` to an HTTPS URL reachable by both backend and browser, such as `https://files.example.com`.
 
 ## Health Checks

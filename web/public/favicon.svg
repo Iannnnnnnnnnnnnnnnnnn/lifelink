@@ -1,0 +1,19 @@
+<svg width="64" height="64" viewBox="0 0 64 64" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="LifeLink">
+  <defs>
+    <linearGradient id="bg" x1="10" y1="8" x2="56" y2="58" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FFE0EB"/>
+      <stop offset="0.52" stop-color="#FFD7A8"/>
+      <stop offset="1" stop-color="#BFE7FF"/>
+    </linearGradient>
+    <linearGradient id="mark" x1="18" y1="18" x2="48" y2="47" gradientUnits="userSpaceOnUse">
+      <stop stop-color="#FF5F91"/>
+      <stop offset="1" stop-color="#2589FF"/>
+    </linearGradient>
+  </defs>
+  <rect x="5" y="5" width="54" height="54" rx="18" fill="url(#bg)"/>
+  <path d="M31.8 47.4C24.2 41.2 18 35.7 18 28.3C18 23.6 21.3 20 25.8 20C28.3 20 30.6 21.2 32 23.1C33.4 21.2 35.7 20 38.2 20C42.7 20 46 23.6 46 28.3C46 35.7 39.8 41.2 32.2 47.4L32 47.6L31.8 47.4Z" fill="white"/>
+  <path d="M24 33.2C27.7 29.4 36.3 29.4 40 33.2" fill="none" stroke="url(#mark)" stroke-width="4" stroke-linecap="round"/>
+  <circle cx="24" cy="33.2" r="4" fill="#FF5F91"/>
+  <circle cx="40" cy="33.2" r="4" fill="#2589FF"/>
+  <path d="M31.2 18.5V42.5" stroke="url(#mark)" stroke-width="3.4" stroke-linecap="round" opacity="0.88"/>
+</svg>

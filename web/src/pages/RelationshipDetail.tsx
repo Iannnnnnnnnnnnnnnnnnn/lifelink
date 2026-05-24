@@ -23,10 +23,12 @@ import { ErrorState } from '../components/common/ErrorState';
 import { PageLoading } from '../components/common/PageLoading';
 import { useAuthStore } from '../store/authStore';
 import { useRelationshipThemeStore } from '../store/relationshipThemeStore';
+import { formatDateTime } from '../utils/date';
+import { getRelationshipTypeLabel, getRoleColor, getRoleLabel, getStatusLabel } from '../utils/display';
 import { getPageErrorType, PageErrorType } from '../utils/error';
 
 export function RelationshipDetail() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const params = useParams();
   const navigate = useNavigate();
   const relationshipId = Number(params.id);
@@ -173,9 +175,7 @@ export function RelationshipDetail() {
   }, [relationshipId]);
 
   const renderRole = (role: string) => {
-    const color = role === 'OWNER' ? 'gold' : role === 'ADMIN' ? 'blue' : 'default';
-    const label = role === 'OWNER' ? t('member.owner') : role === 'ADMIN' ? t('member.admin') : t('member.member');
-    return <Tag color={color}>{label}</Tag>;
+    return <Tag color={getRoleColor(role)}>{getRoleLabel(t, role)}</Tag>;
   };
 
   const columns: ColumnsType<RelationshipMember> = [
@@ -191,7 +191,7 @@ export function RelationshipDetail() {
     },
     { title: t('member.nickname'), dataIndex: 'nickname', render: (value) => value || '-' },
     { title: t('member.role'), dataIndex: 'role', render: renderRole },
-    { title: t('relationship.joinedAt'), dataIndex: 'joinedAt' },
+    { title: t('relationship.joinedAt'), dataIndex: 'joinedAt', render: (value) => formatDateTime(value, t, i18n.resolvedLanguage) },
     {
       title: t('common.edit'),
       key: 'actions',
@@ -278,7 +278,7 @@ export function RelationshipDetail() {
           type="success"
           showIcon
           message={`${t('relationship.inviteCode')}: ${invite.inviteCode}`}
-          description={`${t('relationship.expiresAt')}: ${invite.expireAt}`}
+          description={`${t('relationship.expiresAt')}: ${formatDateTime(invite.expireAt, t, i18n.resolvedLanguage)}`}
         />
       )}
 
@@ -325,6 +325,17 @@ export function RelationshipDetail() {
                     </Card>
                   </Col>
                   <Col xs={24} md={12}>
+                    <Card className="action-card" hoverable onClick={() => navigate(`/relationships/${relationshipId}/calendar`)}>
+                      <Space align="start">
+                        <CalendarOutlined className="action-icon" />
+                        <div>
+                          <Typography.Title level={4}>{t('relationship.viewCalendar')}</Typography.Title>
+                          <Typography.Text type="secondary">{t('relationship.calendarEntryDescription')}</Typography.Text>
+                        </div>
+                      </Space>
+                    </Card>
+                  </Col>
+                  <Col xs={24} md={12}>
                     <Card className="action-card" hoverable onClick={() => navigate(`/relationships/${relationshipId}/anniversaries`)}>
                       <Space align="start">
                         <CalendarOutlined className="action-icon" />
@@ -350,10 +361,10 @@ export function RelationshipDetail() {
                 <Card title={t('relationship.relationshipInfo')} loading={loading}>
                   <Descriptions bordered column={1}>
                     <Descriptions.Item label={t('relationship.name')}>{detail?.name || '-'}</Descriptions.Item>
-                    <Descriptions.Item label={t('relationship.type')}>{detail?.type || '-'}</Descriptions.Item>
-                    <Descriptions.Item label={t('relationship.yourRole')}>{detail?.currentUserRole || '-'}</Descriptions.Item>
-                    <Descriptions.Item label={t('relationship.status')}>{detail?.status || '-'}</Descriptions.Item>
-                    <Descriptions.Item label={t('relationship.createdAt')}>{detail?.createdAt || '-'}</Descriptions.Item>
+                    <Descriptions.Item label={t('relationship.type')}>{getRelationshipTypeLabel(t, detail?.type)}</Descriptions.Item>
+                    <Descriptions.Item label={t('relationship.yourRole')}>{getRoleLabel(t, detail?.currentUserRole)}</Descriptions.Item>
+                    <Descriptions.Item label={t('relationship.status')}>{getStatusLabel(t, detail?.status)}</Descriptions.Item>
+                    <Descriptions.Item label={t('relationship.createdAt')}>{formatDateTime(detail?.createdAt, t, i18n.resolvedLanguage)}</Descriptions.Item>
                   </Descriptions>
                 </Card>
               </Space>

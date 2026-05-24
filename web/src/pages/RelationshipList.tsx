@@ -6,10 +6,12 @@ import { useNavigate } from 'react-router-dom';
 import { getRelationships, RelationshipSummary } from '../api/relationship';
 import { EmptyState } from '../components/decorations/EmptyState';
 import { ErrorState } from '../components/common/ErrorState';
+import { formatDateTime } from '../utils/date';
+import { getRelationshipTypeLabel, getRoleLabel } from '../utils/display';
 import { getPageErrorType, PageErrorType } from '../utils/error';
 
 export function RelationshipList() {
-  const { t } = useTranslation();
+  const { t, i18n } = useTranslation();
   const navigate = useNavigate();
   const [relationships, setRelationships] = useState<RelationshipSummary[]>([]);
   const [loading, setLoading] = useState(false);
@@ -82,11 +84,11 @@ export function RelationshipList() {
             >
               <Space direction="vertical" size={10}>
                 <Space>
-                  <Tag color="blue">{relationship.type}</Tag>
-                  <Tag>{relationship.currentUserRole}</Tag>
+                  <Tag color="blue">{getRelationshipTypeLabel(t, relationship.type)}</Tag>
+                  <Tag>{getRoleLabel(t, relationship.currentUserRole)}</Tag>
                 </Space>
                 <Typography.Text type="secondary">
-                  {t('relationship.createdAt')}: {relationship.createdAt}
+                  {t('relationship.createdAt')}: {formatDateTime(relationship.createdAt, t, i18n.resolvedLanguage)}
                 </Typography.Text>
                 <Typography.Paragraph type="secondary" ellipsis={{ rows: 2 }}>
                   {relationship.description || t('common.noDescription')}

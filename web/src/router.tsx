@@ -16,7 +16,10 @@ import { FinanceTransactionList } from './pages/FinanceTransactionList';
 import { Home } from './pages/Home';
 import { JoinRelationship } from './pages/JoinRelationship';
 import { RelationshipFinance } from './pages/RelationshipFinance';
+import { CalendarPage } from './pages/calendar/CalendarPage';
 import { Login } from './pages/Login';
+import { PhilosophyPage } from './pages/philosophy/PhilosophyPage';
+import { ProfilePage } from './pages/profile/ProfilePage';
 import { RelationshipDetail } from './pages/RelationshipDetail';
 import { RelationshipList } from './pages/RelationshipList';
 import { RelationshipTimelinePage } from './pages/RelationshipTimelinePage';
@@ -45,6 +48,10 @@ export const router = createBrowserRouter([
           {
             path: 'search',
             element: <SearchPage />,
+          },
+          {
+            path: 'profile',
+            element: <ProfilePage />,
           },
           {
             path: '403',
@@ -77,6 +84,10 @@ export const router = createBrowserRouter([
           {
             path: 'relationships/:relationshipId/timeline',
             element: <RelationshipTimelinePage />,
+          },
+          {
+            path: 'relationships/:relationshipId/calendar',
+            element: <CalendarPage />,
           },
           {
             path: 'relationships/:relationshipId/anniversaries',
@@ -125,6 +136,10 @@ export const router = createBrowserRouter([
           {
             path: 'finance/create',
             element: <FinanceCreateTransaction />,
+          },
+          {
+            path: 'philosophy',
+            element: <PhilosophyPage />,
           },
           {
             path: '*',
