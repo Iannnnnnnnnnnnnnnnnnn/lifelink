@@ -40,6 +40,12 @@ Update at least these values:
 VITE_API_BASE_URL=https://api.example.com
 ```
 
+`LIFELINK_CORS_ALLOWED_ORIGINS` can stay empty when the frontend and API are on the same origin. If they are on different domains, set it to the HTTPS frontend origin list:
+
+```env
+LIFELINK_CORS_ALLOWED_ORIGINS=https://example.com,https://www.example.com
+```
+
 ## Start
 
 From the repository root:
@@ -51,7 +57,7 @@ docker compose -f docker-compose.prod.yml --env-file .env up -d --build
 Open:
 
 ```text
-http://localhost
+https://example.com
 ```
 
 If `WEB_PORT` is changed, use that port instead.
@@ -68,14 +74,14 @@ docker compose -f docker-compose.prod.yml exec -T postgres psql -U lifelink -d l
 
 ## MinIO URL Note
 
-The current backend stores uploaded file URLs using `lifelink.minio.endpoint`. If this is set to `http://minio:9000`, containers can reach MinIO but browsers outside Docker may not. For production, set `LIFELINK_MINIO_ENDPOINT` to a URL reachable by both backend and browser, such as a public MinIO domain.
+The current backend stores uploaded file URLs using `lifelink.minio.endpoint`. If this is set to `http://minio:9000`, containers can reach MinIO but HTTPS pages in browsers may not be able to load those files. For production, set `LIFELINK_MINIO_ENDPOINT` to an HTTPS URL reachable by both backend and browser, such as `https://files.example.com`.
 
 ## Health Checks
 
 Backend health:
 
 ```bash
-curl http://localhost/api/health
+curl https://example.com/api/health
 ```
 
 Container status:

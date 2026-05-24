@@ -190,7 +190,7 @@
     "baseUrl": "Base URL",
     "result": "Result",
     "backendFailed": "Backend request failed",
-    "cannotConnectHealth": "Cannot connect to http://localhost:8081/api/health",
+    "cannotConnectHealth": "Cannot connect to /api/health",
     "username": "Username",
     "email": "Email",
     "phone": "Phone",

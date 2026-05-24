@@ -190,7 +190,7 @@
     "baseUrl": "基础地址",
     "result": "结果",
     "backendFailed": "后端请求失败",
-    "cannotConnectHealth": "无法连接到 http://localhost:8081/api/health",
+    "cannotConnectHealth": "无法连接到 /api/health",
     "username": "用户名",
     "email": "邮箱",
     "phone": "手机号",

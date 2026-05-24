@@ -9,7 +9,7 @@ export interface ApiResult<T> {
 }
 
 export const TOKEN_STORAGE_KEY = 'lifelink_token';
-const API_BASE_URL = import.meta.env.VITE_API_BASE_URL ?? 'http://localhost:8081';
+const API_BASE_URL = import.meta.env.VITE_API_BASE_URL || '';
 
 export const request = axios.create({
   baseURL: API_BASE_URL,
