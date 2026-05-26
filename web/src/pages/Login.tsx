@@ -9,6 +9,7 @@ import { login } from '../api/auth';
 import { useAuthStore } from '../store/authStore';
 import { FloatingStickers } from '../components/decorations/FloatingStickers';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
+import { SiteFooter } from '../components/SiteFooter';
 
 interface LoginFormValues {
   account: string;
@@ -44,30 +45,33 @@ export function Login() {
       <div className="auth-language">
         <LanguageSwitcher />
       </div>
-      <Card className="auth-card">
-        <div className="auth-brand">
-          <div className="auth-brand-mark">
-            <HeartOutlined />
+      <div className="auth-content">
+        <Card className="auth-card">
+          <div className="auth-brand">
+            <div className="auth-brand-mark">
+              <HeartOutlined />
+            </div>
+            <Typography.Title level={2}>LifeLink</Typography.Title>
+            <Typography.Text type="secondary">{t('ui.lifeSlogan')}</Typography.Text>
           </div>
-          <Typography.Title level={2}>LifeLink</Typography.Title>
-          <Typography.Text type="secondary">{t('ui.lifeSlogan')}</Typography.Text>
-        </div>
-        <Typography.Title level={3}>{t('auth.login')}</Typography.Title>
-        <Form layout="vertical" onFinish={handleSubmit}>
-          <Form.Item name="account" label={t('auth.account')} rules={[{ required: true, message: t('auth.accountRequired') }]}>
-            <Input prefix={<UserOutlined />} placeholder={t('auth.accountPlaceholder')} />
-          </Form.Item>
-          <Form.Item name="password" label={t('auth.password')} rules={[{ required: true, message: t('auth.passwordRequired') }]}>
-            <Input.Password prefix={<LockOutlined />} placeholder={t('auth.passwordPlaceholder')} />
-          </Form.Item>
-          <Button type="primary" htmlType="submit" loading={submitting} block>
-            {t('auth.login')}
-          </Button>
-        </Form>
-        <Typography.Paragraph className="auth-link">
-          {t('auth.noAccount')} <Link to="/register">{t('auth.register')}</Link>
-        </Typography.Paragraph>
-      </Card>
+          <Typography.Title level={3}>{t('auth.login')}</Typography.Title>
+          <Form layout="vertical" onFinish={handleSubmit}>
+            <Form.Item name="account" label={t('auth.account')} rules={[{ required: true, message: t('auth.accountRequired') }]}>
+              <Input prefix={<UserOutlined />} placeholder={t('auth.accountPlaceholder')} />
+            </Form.Item>
+            <Form.Item name="password" label={t('auth.password')} rules={[{ required: true, message: t('auth.passwordRequired') }]}>
+              <Input.Password prefix={<LockOutlined />} placeholder={t('auth.passwordPlaceholder')} />
+            </Form.Item>
+            <Button type="primary" htmlType="submit" loading={submitting} block>
+              {t('auth.login')}
+            </Button>
+          </Form>
+          <Typography.Paragraph className="auth-link">
+            {t('auth.noAccount')} <Link to="/register">{t('auth.register')}</Link>
+          </Typography.Paragraph>
+        </Card>
+      </div>
+      <SiteFooter className="auth-footer" />
     </div>
   );
 }

@@ -21,6 +21,10 @@ body {
   min-height: 100vh;
 }
 
+.app-main-layout {
+  min-width: 0;
+}
+
 .app-sider {
   background: #ffffff;
   border-right: 1px solid #edf0f5;
@@ -94,10 +98,58 @@ body {
 }
 
 .app-content {
+  flex: 1 0 auto;
   display: flex;
   justify-content: center;
   padding: 28px;
   background: #f4f7fb;
+}
+
+.app-footer {
+  position: relative;
+  z-index: 1;
+  padding: 14px 24px 18px;
+  background: transparent;
+}
+
+.site-footer {
+  width: 100%;
+}
+
+.site-footer-content {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: center;
+  gap: 8px 14px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 12px;
+  line-height: 1.5;
+  text-align: center;
+}
+
+.site-footer-copyright {
+  color: rgba(0, 0, 0, 0.45);
+}
+
+.police-beian-link {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  color: rgba(0, 0, 0, 0.45);
+  font-size: 12px;
+  text-decoration: none;
+}
+
+.police-beian-link:hover {
+  color: rgba(0, 0, 0, 0.75);
+}
+
+.police-beian-icon {
+  width: 16px;
+  height: 16px;
+  flex: 0 0 16px;
+  object-fit: contain;
 }
 
 .home-page {
@@ -258,11 +310,28 @@ body {
 
 .auth-page {
   display: flex;
-  align-items: center;
-  justify-content: center;
+  flex-direction: column;
+  align-items: stretch;
+  justify-content: flex-start;
   min-height: 100vh;
   padding: 24px;
   background: #f5f7fb;
+}
+
+.auth-content {
+  position: relative;
+  z-index: 1;
+  display: flex;
+  flex: 1 0 auto;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+}
+
+.auth-footer {
+  position: relative;
+  z-index: 1;
+  padding-top: 16px;
 }
 
 .auth-card {
@@ -288,6 +357,11 @@ body {
 
   .app-content {
     padding: 16px;
+  }
+
+  .site-footer-content {
+    flex-direction: column;
+    gap: 4px;
   }
 
   .app-header {

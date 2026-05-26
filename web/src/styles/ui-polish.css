@@ -189,7 +189,7 @@ body {
 
 .auth-page {
   position: relative;
-  overflow: hidden;
+  overflow-x: hidden;
   background:
     radial-gradient(circle at 12% 16%, rgba(255, 201, 220, 0.62), transparent 28%),
     radial-gradient(circle at 88% 12%, rgba(205, 232, 255, 0.72), transparent 30%),

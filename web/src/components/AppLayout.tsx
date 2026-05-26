@@ -5,13 +5,14 @@ import { useTranslation } from 'react-i18next';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { LanguageSwitcher } from './LanguageSwitcher';
+import { SiteFooter } from './SiteFooter';
 import { useAppStore } from '../store/appStore';
 import { useAuthStore } from '../store/authStore';
 import { useRelationshipThemeStore } from '../store/relationshipThemeStore';
 import { FloatingStickers } from './decorations/FloatingStickers';
 import { getAvatarInitial } from '../utils/avatar';
 
-const { Header, Content, Sider } = Layout;
+const { Header, Content, Footer, Sider } = Layout;
 const { useBreakpoint } = Grid;
 
 export function AppLayout() {
@@ -216,7 +217,7 @@ export function AppLayout() {
         {brand}
         {menu}
       </Drawer>
-      <Layout>
+      <Layout className="app-main-layout">
         <Header className="app-header">
           {isMobile && (
             <Button
@@ -259,6 +260,9 @@ export function AppLayout() {
         <Content className="app-content">
           <Outlet />
         </Content>
+        <Footer className="app-footer">
+          <SiteFooter />
+        </Footer>
       </Layout>
     </Layout>
   );
