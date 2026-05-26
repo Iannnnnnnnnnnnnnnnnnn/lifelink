@@ -32,7 +32,6 @@ import java.util.UUID;
 public class FileServiceImpl implements FileService {
 
     private static final long MAX_FILE_SIZE = 5L * 1024L * 1024L;
-    private static final String DEFAULT_PUBLIC_ENDPOINT = "http://47.97.202.182";
     private static final Set<String> ALLOWED_EXTENSIONS = new HashSet<String>(Arrays.asList("jpg", "jpeg", "png", "webp"));
     private static final Set<String> ALLOWED_CONTENT_TYPES = new HashSet<String>(Arrays.asList("image/jpeg", "image/png", "image/webp"));
     private static final Map<String, String> EXTENSIONS_BY_CONTENT_TYPE = new HashMap<String, String>();
@@ -190,6 +189,12 @@ public class FileServiceImpl implements FileService {
     }
 
     private String resolvePublicEndpoint() {
-        return DEFAULT_PUBLIC_ENDPOINT;
+        if (StringUtils.hasText(minioProperties.getPublicEndpoint())) {
+            return minioProperties.getPublicEndpoint().trim();
+        }
+        if (StringUtils.hasText(minioProperties.getEndpoint())) {
+            return minioProperties.getEndpoint().trim();
+        }
+        throw new BusinessException(500, "MinIO endpoint is not configured");
     }
 }
