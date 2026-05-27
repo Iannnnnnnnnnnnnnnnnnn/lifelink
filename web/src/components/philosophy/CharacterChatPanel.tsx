@@ -22,6 +22,10 @@ interface CharacterChatPanelProps {
   t: (key: string, options?: Record<string, unknown>) => string;
 }
 
+function isHandledRequestError(error: unknown) {
+  return Boolean((error as { __lifelinkHandled?: boolean })?.__lifelinkHandled);
+}
+
 export function CharacterChatPanel({ philosophers, language, t }: CharacterChatPanelProps) {
   const screens = Grid.useBreakpoint();
   const isMobile = !screens.lg;
@@ -46,7 +50,9 @@ export function CharacterChatPanel({ philosophers, language, t }: CharacterChatP
       const response = await getChatSessions({ page: 1, size: 20 });
       setSessions(response.data.data);
     } catch (error) {
-      messageApi.error(t('philosophy.loadChatFailed'));
+      if (!isHandledRequestError(error)) {
+        messageApi.error(t('philosophy.loadChatFailed'));
+      }
     } finally {
       setLoadingSessions(false);
     }
@@ -63,7 +69,9 @@ export function CharacterChatPanel({ philosophers, language, t }: CharacterChatP
       setCurrentSession(response.data.data);
       setHistoryOpen(false);
     } catch (error) {
-      messageApi.error(t('philosophy.loadChatFailed'));
+      if (!isHandledRequestError(error)) {
+        messageApi.error(t('philosophy.loadChatFailed'));
+      }
     } finally {
       setLoadingDetail(false);
     }
@@ -77,7 +85,9 @@ export function CharacterChatPanel({ philosophers, language, t }: CharacterChatP
       setNewChatOpen(false);
       await loadSessions();
     } catch (error) {
-      messageApi.error(t('message.operationFailed'));
+      if (!isHandledRequestError(error)) {
+        messageApi.error(t('message.operationFailed'));
+      }
     } finally {
       setCreating(false);
     }
@@ -92,7 +102,9 @@ export function CharacterChatPanel({ philosophers, language, t }: CharacterChatP
       }
       await loadSessions();
     } catch (error) {
-      messageApi.error(t('message.operationFailed'));
+      if (!isHandledRequestError(error)) {
+        messageApi.error(t('message.operationFailed'));
+      }
     }
   };
 
@@ -117,7 +129,9 @@ export function CharacterChatPanel({ philosophers, language, t }: CharacterChatP
       });
       await loadSessions();
     } catch (error) {
-      messageApi.error(t('philosophy.sendFailed'));
+      if (!isHandledRequestError(error)) {
+        messageApi.error(t('philosophy.sendFailed'));
+      }
     } finally {
       setSending(false);
     }

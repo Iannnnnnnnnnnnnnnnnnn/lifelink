@@ -42,6 +42,9 @@ lifelink:
     bucket: ${LIFELINK_MINIO_BUCKET:lifelink}
   cors:
     allowed-origins: ${LIFELINK_CORS_ALLOWED_ORIGINS:}
+  feature:
+    philosophy:
+      allowed-phones: ${LIFELINK_PHILOSOPHY_ALLOWED_PHONES:${LIFELINK_PSYCHOLOGY_TEACHER_ALLOWED_PHONES:}}
   ai:
     enabled: ${AI_ENABLED:false}
     provider: ${AI_PROVIDER:mock}

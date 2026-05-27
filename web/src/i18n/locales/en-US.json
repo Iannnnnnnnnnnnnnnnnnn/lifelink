@@ -669,6 +669,7 @@
     "deleteConfirm": "Are you sure you want to delete this dialogue?",
     "deleteSuccess": "Deleted successfully",
     "generateFailed": "Generation failed. Please try again later.",
+    "accessDenied": "Philosophy dialogues are not available for this account yet",
     "modePerspectives": "Perspectives",
     "modeChat": "Character Chat",
     "characterChat": "Character Chat",

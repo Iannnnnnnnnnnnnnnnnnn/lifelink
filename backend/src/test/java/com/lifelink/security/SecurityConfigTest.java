@@ -5,6 +5,7 @@ import com.lifelink.common.HealthController;
 import com.lifelink.user.controller.AuthController;
 import com.lifelink.user.controller.UserController;
 import com.lifelink.user.dto.LoginResponse;
+import com.lifelink.user.dto.UserFeaturesResponse;
 import com.lifelink.user.dto.UserProfileResponse;
 import com.lifelink.user.service.UserService;
 import org.junit.jupiter.api.BeforeEach;
@@ -60,6 +61,7 @@ class SecurityConfigTest {
                 "13800000000",
                 null,
                 "ACTIVE",
+                new UserFeaturesResponse(false),
                 LocalDateTime.now(),
                 LocalDateTime.now()
         );

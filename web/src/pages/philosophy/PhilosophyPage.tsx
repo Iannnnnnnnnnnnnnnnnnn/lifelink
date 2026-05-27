@@ -18,6 +18,10 @@ import { PhilosophyInputPanel } from '../../components/philosophy/PhilosophyInpu
 import { PhilosophyModeTabs } from '../../components/philosophy/PhilosophyModeTabs';
 import { PhilosophyResultGrid } from '../../components/philosophy/PhilosophyResultGrid';
 
+function isHandledRequestError(error: unknown) {
+  return Boolean((error as { __lifelinkHandled?: boolean })?.__lifelinkHandled);
+}
+
 export function PhilosophyPage() {
   const { t, i18n } = useTranslation();
   const screens = Grid.useBreakpoint();
@@ -63,7 +67,11 @@ export function PhilosophyPage() {
   };
 
   useEffect(() => {
-    loadPhilosophers().catch(() => messageApi.error(tString('message.operationFailed')));
+    loadPhilosophers().catch((error) => {
+      if (!isHandledRequestError(error)) {
+        messageApi.error(tString('message.operationFailed'));
+      }
+    });
   }, [language]);
 
   useEffect(() => {
@@ -90,7 +98,9 @@ export function PhilosophyPage() {
       setCurrentSession(response.data.data);
       await loadHistory();
     } catch (error) {
-      messageApi.error(tString('philosophy.generateFailed'));
+      if (!isHandledRequestError(error)) {
+        messageApi.error(tString('philosophy.generateFailed'));
+      }
     } finally {
       setGenerating(false);
     }
@@ -110,7 +120,9 @@ export function PhilosophyPage() {
       setQuestion(session.question);
       setSelectedCodes(session.responses.map((item) => item.philosopherCode));
     } catch (error) {
-      messageApi.error(tString('message.operationFailed'));
+      if (!isHandledRequestError(error)) {
+        messageApi.error(tString('message.operationFailed'));
+      }
     }
   };
 
@@ -123,7 +135,9 @@ export function PhilosophyPage() {
       }
       await loadHistory();
     } catch (error) {
-      messageApi.error(tString('message.operationFailed'));
+      if (!isHandledRequestError(error)) {
+        messageApi.error(tString('message.operationFailed'));
+      }
     }
   };
 

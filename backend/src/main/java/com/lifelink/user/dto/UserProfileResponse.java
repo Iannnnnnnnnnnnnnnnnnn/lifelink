@@ -23,6 +23,8 @@ public class UserProfileResponse {
 
     private String status;
 
+    private UserFeaturesResponse features;
+
     private LocalDateTime createdAt;
 
     private LocalDateTime updatedAt;

@@ -8,7 +8,7 @@ import java.util.List;
 
 public interface PhilosophyService {
 
-    List<PhilosopherResponse> listPhilosophers(String language);
+    List<PhilosopherResponse> listPhilosophers(String language, Long userId);
 
     PhilosophySessionResponse createSession(CreatePhilosophySessionRequest request, Long userId);
 

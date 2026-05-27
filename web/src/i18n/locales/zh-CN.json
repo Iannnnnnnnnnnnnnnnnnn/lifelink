@@ -669,6 +669,7 @@
     "deleteConfirm": "确定删除这条思想对话吗？",
     "deleteSuccess": "删除成功",
     "generateFailed": "生成失败，请稍后重试",
+    "accessDenied": "思想对话功能暂未对当前账号开放",
     "modePerspectives": "多视角",
     "modeChat": "人物对话",
     "characterChat": "人物对话",

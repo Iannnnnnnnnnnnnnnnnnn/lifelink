@@ -14,6 +14,7 @@ import { getAvatarInitial } from '../utils/avatar';
 
 const { Header, Content, Footer, Sider } = Layout;
 const { useBreakpoint } = Grid;
+type MenuItem = Required<MenuProps>['items'][number];
 
 export function AppLayout() {
   const navigate = useNavigate();
@@ -30,6 +31,7 @@ export function AppLayout() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const screens = useBreakpoint();
   const isMobile = !screens.md;
+  const philosophyEnabled = Boolean(user?.features?.philosophyEnabled);
 
   const selectedKey = location.pathname.startsWith('/profile')
     ? '/profile'
@@ -78,7 +80,7 @@ export function AppLayout() {
   }, [fetchCurrentUser, isAuthenticated, user]);
 
   const themeClassName = hasCoupleRelationship ? 'theme-colorful' : 'theme-grayscale';
-  const menuItems: MenuProps['items'] = [
+  const menuItems: MenuItem[] = [
     {
       key: '/',
       icon: <HomeOutlined />,
@@ -142,7 +144,7 @@ export function AppLayout() {
         setMobileMenuOpen(false);
       },
     },
-    {
+    ...(philosophyEnabled ? [{
       key: '/philosophy',
       icon: <BulbOutlined />,
       label: t('menu.philosophy'),
@@ -150,7 +152,7 @@ export function AppLayout() {
         navigate('/philosophy');
         setMobileMenuOpen(false);
       },
-    },
+    }] : []),
   ];
 
   const userMenuItems: MenuProps['items'] = [

@@ -7,6 +7,9 @@ export interface UserProfile {
   phone?: string | null;
   avatarUrl?: string | null;
   status: string;
+  features?: {
+    philosophyEnabled?: boolean;
+  };
   createdAt?: string;
   updatedAt?: string;
 }

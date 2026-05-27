@@ -4,12 +4,14 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.lifelink.common.BusinessException;
 import com.lifelink.file.dto.FileUploadResponse;
 import com.lifelink.file.service.FileService;
+import com.lifelink.philosophy.service.PhilosophyAccessService;
 import com.lifelink.security.JwtUtil;
 import com.lifelink.user.dto.AvatarUploadResponse;
 import com.lifelink.user.dto.LoginRequest;
 import com.lifelink.user.dto.LoginResponse;
 import com.lifelink.user.dto.RegisterRequest;
 import com.lifelink.user.dto.UpdateUserProfileRequest;
+import com.lifelink.user.dto.UserFeaturesResponse;
 import com.lifelink.user.dto.UserProfileResponse;
 import com.lifelink.user.entity.User;
 import com.lifelink.user.mapper.UserMapper;
@@ -38,6 +40,8 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     private final JwtUtil jwtUtil;
+
+    private final PhilosophyAccessService philosophyAccessService;
 
     @Override
     @Transactional
@@ -192,6 +196,7 @@ public class UserServiceImpl implements UserService {
                 user.getPhone(),
                 user.getAvatarUrl(),
                 user.getStatus(),
+                new UserFeaturesResponse(philosophyAccessService.canAccess(user.getId())),
                 user.getCreatedAt(),
                 user.getUpdatedAt()
         );

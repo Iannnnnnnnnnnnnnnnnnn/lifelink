@@ -34,6 +34,7 @@ Update at least these values:
 - `LIFELINK_JWT_SECRET`
 - `LIFELINK_MINIO_ENDPOINT`
 - `LIFELINK_MINIO_PUBLIC_ENDPOINT`
+- `LIFELINK_PHILOSOPHY_ALLOWED_PHONES`
 
 `VITE_API_BASE_URL` defaults to an empty value. In that mode, the frontend calls `/api/...` on the same origin and Nginx proxies requests to the backend container. For a separate API domain, set it to that origin, for example:
 
@@ -46,6 +47,8 @@ VITE_API_BASE_URL=https://api.example.com
 ```env
 LIFELINK_CORS_ALLOWED_ORIGINS=https://example.com,https://www.example.com
 ```
+
+`LIFELINK_PHILOSOPHY_ALLOWED_PHONES` controls access to the Philosophy Dialogues module. Leave it empty to disable the module for all users, or set a comma-separated phone allowlist in production.
 
 ## Start
 

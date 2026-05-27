@@ -28,8 +28,11 @@ public class PhilosophyController {
     private final PhilosophyService philosophyService;
 
     @GetMapping("/philosophers")
-    public Result<List<PhilosopherResponse>> listPhilosophers(@RequestParam(required = false) String language) {
-        return Result.success(philosophyService.listPhilosophers(language));
+    public Result<List<PhilosopherResponse>> listPhilosophers(
+            @RequestParam(required = false) String language,
+            @AuthenticationPrincipal LoginUser loginUser
+    ) {
+        return Result.success(philosophyService.listPhilosophers(language, loginUser.getId()));
     }
 
     @PostMapping("/sessions")

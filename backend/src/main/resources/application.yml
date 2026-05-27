@@ -41,6 +41,9 @@ lifelink:
     bucket: lifelink
   cors:
     allowed-origins: http://localhost:5173,http://127.0.0.1:5173
+  feature:
+    philosophy:
+      allowed-phones: ${LIFELINK_PHILOSOPHY_ALLOWED_PHONES:${LIFELINK_PSYCHOLOGY_TEACHER_ALLOWED_PHONES:}}
   ai:
     enabled: ${AI_ENABLED:false}
     provider: ${AI_PROVIDER:mock}

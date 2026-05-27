@@ -5,6 +5,7 @@ import { AnniversaryDetail } from './pages/AnniversaryDetail';
 import { AnniversaryList } from './pages/AnniversaryList';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { PublicOnlyRoute } from './components/PublicOnlyRoute';
+import { PhilosophyFeatureRoute } from './components/PhilosophyFeatureRoute';
 import { CreateAnniversary } from './pages/CreateAnniversary';
 import { CreateRelationship } from './pages/CreateRelationship';
 import { CreateDailyPost } from './pages/CreateDailyPost';
@@ -18,7 +19,6 @@ import { JoinRelationship } from './pages/JoinRelationship';
 import { RelationshipFinance } from './pages/RelationshipFinance';
 import { CalendarPage } from './pages/calendar/CalendarPage';
 import { Login } from './pages/Login';
-import { PhilosophyPage } from './pages/philosophy/PhilosophyPage';
 import { ProfilePage } from './pages/profile/ProfilePage';
 import { RelationshipDetail } from './pages/RelationshipDetail';
 import { RelationshipList } from './pages/RelationshipList';
@@ -139,7 +139,7 @@ export const router = createBrowserRouter([
           },
           {
             path: 'philosophy',
-            element: <PhilosophyPage />,
+            element: <PhilosophyFeatureRoute />,
           },
           {
             path: '*',
