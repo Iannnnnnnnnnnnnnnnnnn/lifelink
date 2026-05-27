@@ -1,4 +1,4 @@
-import { CalendarOutlined, CheckSquareOutlined, ClockCircleOutlined, DollarOutlined, ReloadOutlined, ShareAltOutlined, ThunderboltOutlined, UserOutlined } from '@ant-design/icons';
+import { CalendarOutlined, CheckSquareOutlined, ClockCircleOutlined, DollarOutlined, HeartOutlined, ReloadOutlined, ShareAltOutlined, ThunderboltOutlined, UserOutlined } from '@ant-design/icons';
 import { Alert, Avatar, Button, Card, Col, Descriptions, Empty, Input, message, Modal, Popconfirm, Row, Space, Table, Tabs, Tag, Typography } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useEffect, useState } from 'react';
@@ -346,6 +346,19 @@ export function RelationshipDetail() {
                       </Space>
                     </Card>
                   </Col>
+                  {detail?.type === 'COUPLE' && (
+                    <Col xs={24} md={12}>
+                      <Card className="action-card" hoverable onClick={() => navigate('/cycle-care')}>
+                        <Space align="start">
+                          <HeartOutlined className="action-icon" />
+                          <div>
+                            <Typography.Title level={4}>{t('relationship.viewCycleCare')}</Typography.Title>
+                            <Typography.Text type="secondary">{t('relationship.cycleCareEntryDescription')}</Typography.Text>
+                          </div>
+                        </Space>
+                      </Card>
+                    </Col>
+                  )}
                   <Col xs={24} md={12}>
                     <Card className="action-card" hoverable onClick={() => navigate(`/relationships/${relationshipId}/finance`)}>
                       <Space align="start">

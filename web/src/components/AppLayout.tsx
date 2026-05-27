@@ -43,6 +43,8 @@ export function AppLayout() {
         ? '/activities'
       : location.pathname.startsWith('/anniversaries')
         ? '/anniversaries'
+      : location.pathname.startsWith('/cycle-care')
+        ? '/cycle-care'
       : location.pathname.startsWith('/finance')
         ? '/finance'
       : location.pathname.startsWith('/philosophy')
@@ -132,6 +134,15 @@ export function AppLayout() {
       label: t('menu.anniversaries'),
       onClick: () => {
         navigate('/anniversaries');
+        setMobileMenuOpen(false);
+      },
+    },
+    {
+      key: '/cycle-care',
+      icon: <HeartOutlined />,
+      label: t('menu.cycleCare'),
+      onClick: () => {
+        navigate('/cycle-care');
         setMobileMenuOpen(false);
       },
     },

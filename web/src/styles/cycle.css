@@ -1,0 +1,68 @@
+.cycle-page {
+  width: 100%;
+}
+
+.cycle-space-select {
+  min-width: 220px;
+}
+
+.cycle-summary-card {
+  height: 100%;
+}
+
+.cycle-summary-card .ant-card-body {
+  min-height: 190px;
+}
+
+.cycle-card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 42px;
+  height: 42px;
+  border-radius: 8px;
+  background: #fff0f3;
+  color: #d9365f;
+  font-size: 22px;
+}
+
+.cycle-card-icon-blue {
+  background: #eaf3ff;
+  color: #1677ff;
+}
+
+.cycle-card-icon-orange {
+  background: #fff7e6;
+  color: #d46b08;
+}
+
+.cycle-advice-item {
+  min-height: 132px;
+  padding: 14px;
+  border: 1px solid #edf0f5;
+  border-radius: 8px;
+  background: #fbfcff;
+}
+
+.cycle-advice-item .ant-typography {
+  margin-bottom: 0;
+}
+
+.cycle-warning-list {
+  width: 100%;
+}
+
+.cycle-profile-meta {
+  display: block;
+  margin-top: 16px;
+}
+
+.form-full-width {
+  width: 100%;
+}
+
+@media (max-width: 767px) {
+  .cycle-space-select {
+    width: 100%;
+  }
+}

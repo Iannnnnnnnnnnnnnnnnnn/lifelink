@@ -42,54 +42,63 @@ public class CycleCareWarningService {
         }
         Long userId = profile.getUserId();
         Long loverSpaceId = profile.getDefaultLoverSpaceId();
+        boolean shareWithPartner = !PRIVATE_SHARE.equals(profile.getShareLevel());
         if (prediction != null && prediction.getPredictedNextStartDate() != null) {
             long daysToNext = ChronoUnit.DAYS.between(today, prediction.getPredictedNextStartDate());
             if (daysToNext == 2) {
                 createWarning(userId, loverSpaceId, "PERIOD_COMING_SOON", today, "LOW",
                         "预计生理期快到了",
-                        "预计生理期快到了，可以提前准备一下，也给自己留一点更从容的节奏。");
+                        "预计生理期快到了，可以提前准备一下，也给自己留一点更从容的节奏。",
+                        shareWithPartner);
             }
             if (daysToNext == 0) {
                 createWarning(userId, loverSpaceId, "PERIOD_EXPECTED_TODAY", today, "LOW",
                         "今天可能需要多照顾自己一点",
-                        "今天可能是预计生理期开始日。预测不一定准确，可以结合身体感受继续观察。");
+                        "今天可能是预计生理期开始日。预测不一定准确，可以结合身体感受继续观察。",
+                        shareWithPartner);
             }
             if (daysToNext <= -7 && noPeriodAfter(records, prediction.getPredictedNextStartDate())) {
                 createWarning(userId, loverSpaceId, "PERIOD_LATE", today, "MEDIUM",
                         "这次周期可能有些推迟",
-                        "本次周期可能有些推迟。如果近期压力、作息、饮食变化较大，可能会影响周期；如果持续异常，建议咨询医生。");
+                        "本次周期可能有些推迟。如果近期压力、作息、饮食变化较大，可能会影响周期；如果持续异常，建议咨询医生。",
+                        shareWithPartner);
             }
         }
         for (CyclePeriodRecord record : records) {
             if (record.getStartDate() != null && isLongPeriod(record, today)) {
                 createWarning(userId, record.getLoverSpaceId(), "LONG_PERIOD", today, "HIGH",
                         "这次出血持续时间较长",
-                        "这次出血持续时间较长，建议关注身体状态；如持续不适或出血较多，建议咨询医生。");
+                        "这次出血持续时间较长，建议关注身体状态；如持续不适或出血较多，建议咨询医生。",
+                        shareWithPartner);
             }
         }
         for (CycleDailyLog log : logs) {
             if (FLOW_VERY_HEAVY.equals(log.getFlowLevel())) {
                 createWarning(userId, log.getLoverSpaceId(), "VERY_HEAVY_FLOW", log.getLogDate(), "HIGH",
                         "今天记录的经量偏多",
-                        "如果出血量明显多于平时，或短时间内频繁更换卫生用品，建议及时咨询医生。");
+                        "如果出血量明显多于平时，或短时间内频繁更换卫生用品，建议及时咨询医生。",
+                        shareWithPartner);
             }
             if (log.getPainLevel() != null && log.getPainLevel() >= 8) {
                 createWarning(userId, log.getLoverSpaceId(), "SEVERE_PAIN", log.getLogDate(), "HIGH",
                         "今天记录的疼痛程度较高",
-                        "疼痛程度较高，建议休息、保暖；如果疼痛剧烈或反复出现，建议咨询医生。");
+                        "疼痛程度较高，建议休息、保暖；如果疼痛剧烈或反复出现，建议咨询医生。",
+                        shareWithPartner);
             }
             if (isBleedingBetweenPeriods(profile, records, log)) {
                 createWarning(userId, log.getLoverSpaceId(), "BLEEDING_BETWEEN_PERIODS", log.getLogDate(), "MEDIUM",
                         "出现非经期出血记录",
-                        "出现非经期出血，建议关注是否持续；如反复出现，建议咨询医生。");
+                        "出现非经期出血，建议关注是否持续；如反复出现，建议咨询医生。",
+                        shareWithPartner);
             }
             if (hasFeverOrSick(log)) {
                 createWarning(userId, log.getLoverSpaceId(), "FEVER_OR_SICK", log.getLogDate(), "HIGH",
                         "记录到发热或明显不适",
-                        "如果发热并伴随明显不适，请及时寻求专业帮助。");
+                        "如果发热并伴随明显不适，请及时寻求专业帮助。",
+                        shareWithPartner);
             }
         }
-        createIrregularCycleWarnings(userId, loverSpaceId, records);
+        createIrregularCycleWarnings(userId, loverSpaceId, records, shareWithPartner);
     }
 
     public List<CycleWarning> listActiveWarnings(Long userId) {
@@ -114,7 +123,7 @@ public class CycleCareWarningService {
         warningMapper.updateById(warning);
     }
 
-    private void createIrregularCycleWarnings(Long userId, Long loverSpaceId, List<CyclePeriodRecord> records) {
+    private void createIrregularCycleWarnings(Long userId, Long loverSpaceId, List<CyclePeriodRecord> records, boolean shareWithPartner) {
         for (int i = 0; i + 1 < records.size(); i++) {
             CyclePeriodRecord current = records.get(i);
             CyclePeriodRecord previous = records.get(i + 1);
@@ -125,7 +134,8 @@ public class CycleCareWarningService {
             if (length > 0 && (length < 21 || length > 35)) {
                 createWarning(userId, current.getLoverSpaceId() == null ? loverSpaceId : current.getLoverSpaceId(), "IRREGULAR_CYCLE", current.getStartDate(), "MEDIUM",
                         "本次周期与常见范围有差异",
-                        "本次周期与常见范围有差异，建议继续记录；如果多次出现明显不规律，建议咨询医生。");
+                        "本次周期与常见范围有差异，建议继续记录；如果多次出现明显不规律，建议咨询医生。",
+                        shareWithPartner);
                 return;
             }
         }
@@ -158,7 +168,7 @@ public class CycleCareWarningService {
                 && (symptoms.toLowerCase().contains("fever") || symptoms.toLowerCase().contains("sick"));
     }
 
-    private void createWarning(Long userId, Long loverSpaceId, String type, LocalDate date, String severity, String title, String message) {
+    private void createWarning(Long userId, Long loverSpaceId, String type, LocalDate date, String severity, String title, String message, boolean shareWithPartner) {
         if (exists(userId, type, date)) {
             return;
         }
@@ -185,20 +195,19 @@ public class CycleCareWarningService {
                 loverSpaceId,
                 Map.of("warningType", type, "warningDate", date.toString())
         );
-        createPartnerCareNotificationIfAllowed(warning);
+        createPartnerCareNotificationIfAllowed(warning, shareWithPartner);
     }
 
     private boolean exists(Long userId, String type, LocalDate date) {
         Long count = warningMapper.selectCount(new LambdaQueryWrapper<CycleWarning>()
                 .eq(CycleWarning::getUserId, userId)
                 .eq(CycleWarning::getWarningType, type)
-                .eq(CycleWarning::getWarningDate, date)
-                .eq(CycleWarning::getStatus, ACTIVE_STATUS));
+                .eq(CycleWarning::getWarningDate, date));
         return count != null && count > 0;
     }
 
-    private void createPartnerCareNotificationIfAllowed(CycleWarning warning) {
-        if (warning.getLoverSpaceId() == null || isPrivateWarning(warning)) {
+    private void createPartnerCareNotificationIfAllowed(CycleWarning warning, boolean shareWithPartner) {
+        if (!shareWithPartner || warning.getLoverSpaceId() == null) {
             return;
         }
         List<RelationshipMember> members = relationshipPermissionService.listActiveMembers(warning.getLoverSpaceId());
@@ -219,7 +228,4 @@ public class CycleCareWarningService {
         }
     }
 
-    private boolean isPrivateWarning(CycleWarning warning) {
-        return PRIVATE_SHARE.equals(warning.getStatus());
-    }
 }

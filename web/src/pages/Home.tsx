@@ -219,6 +219,7 @@ export function Home() {
           <QuickActionCard icon={<ReadOutlined />} title={t('dashboard.createDaily')} description={t('dashboard.createDailyDesc')} onClick={() => navigate('/daily/create')} />
           <QuickActionCard icon={<CheckSquareOutlined />} title={t('dashboard.createTodo')} description={t('dashboard.createTodoDesc')} onClick={() => navigate(relationships[0] ? `/relationships/${relationships[0].id}/todos` : '/relationships')} />
           <QuickActionCard icon={<CalendarOutlined />} title={t('dashboard.createAnniversary')} description={t('dashboard.createAnniversaryDesc')} onClick={() => navigate('/anniversaries/create')} />
+          <QuickActionCard icon={<HeartOutlined />} title={t('dashboard.cycleCare')} description={t('dashboard.cycleCareDesc')} onClick={() => navigate('/cycle-care')} />
           <QuickActionCard icon={<PlusOutlined />} title={t('dashboard.createSpace')} description={t('dashboard.createSpaceDesc')} onClick={() => navigate('/relationships/create')} />
           <QuickActionCard icon={<UsergroupAddOutlined />} title={t('dashboard.joinSpace')} description={t('dashboard.joinSpaceDesc')} onClick={() => navigate('/relationships/join')} />
           <QuickActionCard icon={<ThunderboltOutlined />} title={t('dashboard.viewActivities')} description={t('dashboard.viewActivitiesDesc')} onClick={() => navigate('/activities')} />

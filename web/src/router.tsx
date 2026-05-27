@@ -9,6 +9,7 @@ import { PhilosophyFeatureRoute } from './components/PhilosophyFeatureRoute';
 import { CreateAnniversary } from './pages/CreateAnniversary';
 import { CreateRelationship } from './pages/CreateRelationship';
 import { CreateDailyPost } from './pages/CreateDailyPost';
+import { CycleCarePage } from './pages/CycleCarePage';
 import { DailyPostDetail } from './pages/DailyPostDetail';
 import { DailyTimeline } from './pages/DailyTimeline';
 import { FinanceCreateTransaction } from './pages/FinanceCreateTransaction';
@@ -124,6 +125,10 @@ export const router = createBrowserRouter([
           {
             path: 'daily/:id',
             element: <DailyPostDetail />,
+          },
+          {
+            path: 'cycle-care',
+            element: <CycleCarePage />,
           },
           {
             path: 'finance',
