@@ -2,8 +2,8 @@
   "app": {
     "name": "LifeLink",
     "title": "LifeLink",
-    "subtitle": "Relationship space",
-    "headerSubtitle": "Relationships deserve space",
+    "subtitle": "",
+    "headerSubtitle": "",
     "language": "Language"
   },
   "common": {
@@ -169,7 +169,7 @@
   "dashboard": {
     "title": "Dashboard",
     "heroTitle": "LifeLink",
-    "slogan": "Important relationships deserve a clearer life.",
+    "slogan": " ",
     "enterMySpace": "Enter My Space",
     "overview": "Today",
     "quickActions": "Quick Actions",
@@ -194,8 +194,8 @@
     "createAnniversary": "Create Anniversary",
     "createAnniversaryDesc": "Important day",
     "cycleCare": "Cycle Care",
-    "cycleCareDesc": "On for your couple space",
-    "cycleCareLockedDesc": "Available after a couple space",
+    "cycleCareDesc": "",
+    "cycleCareLockedDesc": "",
     "cycleCareReady": "On",
     "createCoupleSpace": "Create Couple Space",
     "viewActivities": "View Activities",
@@ -311,7 +311,7 @@
   },
   "relationship": {
     "title": "Relationships",
-    "spacesJoined": "A shared place for two lives.",
+    "spacesJoined": "",
     "create": "Create",
     "join": "Join",
     "detail": "Relationship Detail",
@@ -665,11 +665,11 @@
   },
   "cycle": {
     "title": "Cycle Care",
-    "subtitle": "Visible only when allowed.",
+    "subtitle": "",
     "loadFailed": "Failed to load cycle care",
-    "accessDenied": "Available after a couple space.",
+    "accessDenied": "",
     "createCoupleSpace": "Create Couple Space",
-    "enabledForCouple": "On for your couple space",
+    "enabledForCouple": "",
     "selectLoverSpace": "Select couple space",
     "profileSaved": "Cycle profile saved",
     "saveFailed": "Save failed. Please try again later.",

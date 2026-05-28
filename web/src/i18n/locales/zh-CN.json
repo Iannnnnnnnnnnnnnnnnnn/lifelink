@@ -2,8 +2,8 @@
   "app": {
     "name": "LifeLink",
     "title": "LifeLink",
-    "subtitle": "关系空间",
-    "headerSubtitle": "关系有自己的空间",
+    "subtitle": "",
+    "headerSubtitle": "",
     "language": "语言"
   },
   "common": {
@@ -169,7 +169,7 @@
   "dashboard": {
     "title": "首页",
     "heroTitle": "LifeLink",
-    "slogan": "重要的关系，值得更清晰的生活。",
+    "slogan": " ",
     "enterMySpace": "进入我的空间",
     "overview": "今天",
     "quickActions": "快捷操作",
@@ -194,8 +194,8 @@
     "createAnniversary": "创建纪念日",
     "createAnniversaryDesc": "重要日子",
     "cycleCare": "周期关怀",
-    "cycleCareDesc": "已为恋人空间开启",
-    "cycleCareLockedDesc": "创建恋人空间后可用",
+    "cycleCareDesc": "",
+    "cycleCareLockedDesc": "",
     "cycleCareReady": "已开启",
     "createCoupleSpace": "创建恋人空间",
     "viewActivities": "查看动态",
@@ -310,8 +310,8 @@
     "status": "状态"
   },
   "relationship": {
-    "title": "关系空间",
-    "spacesJoined": "两个人，也可以有共同位置。",
+    "title": "小世界",
+    "spacesJoined": "",
     "create": "创建空间",
     "join": "加入空间",
     "detail": "关系详情",
@@ -665,11 +665,11 @@
   },
   "cycle": {
     "title": "周期关怀",
-    "subtitle": "被允许后，才会被看见。",
+    "subtitle": "",
     "loadFailed": "加载周期关怀失败",
-    "accessDenied": "创建恋人空间后可用。",
+    "accessDenied": "",
     "createCoupleSpace": "创建恋人空间",
-    "enabledForCouple": "已为恋人空间开启",
+    "enabledForCouple": "",
     "selectLoverSpace": "选择恋人空间",
     "profileSaved": "周期档案已保存",
     "saveFailed": "保存失败，请稍后重试",
