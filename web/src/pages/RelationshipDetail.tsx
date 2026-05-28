@@ -348,7 +348,7 @@ export function RelationshipDetail() {
                   </Col>
                   {detail?.type === 'COUPLE' && (
                     <Col xs={24} md={12}>
-                      <Card className="action-card" hoverable onClick={() => navigate('/cycle-care')}>
+                      <Card className="action-card relationship-cycle-card" hoverable onClick={() => navigate('/cycle-care')}>
                         <Space align="start">
                           <HeartOutlined className="action-icon" />
                           <div>

@@ -169,7 +169,7 @@ export function CycleDailyReportPage() {
     return (
       <div className="page-wide cycle-page">
         {contextHolder}
-        <Card>
+        <Card className="cycle-locked-card">
           <Empty
             image={Empty.PRESENTED_IMAGE_SIMPLE}
             description={access.reason === 'NO_LOVER_SPACE' ? t('cycle.accessDenied') : access.reason || t('cycle.accessDenied')}

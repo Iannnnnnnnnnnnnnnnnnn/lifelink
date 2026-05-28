@@ -172,7 +172,7 @@ body {
 .dashboard-action-card:active,
 .dashboard-anniversary-card:active {
   box-shadow: var(--ll-shadow-sm);
-  transform: translateY(-1px) scale(0.99);
+  transform: translateY(0) scale(0.985);
 }
 
 .ant-btn {
@@ -189,6 +189,7 @@ body {
   background: var(--ll-primary-hover);
   border-color: var(--ll-primary-hover);
   box-shadow: 0 10px 22px rgba(47, 111, 237, 0.14);
+  transform: translateY(-2px);
 }
 
 .ant-btn-default:not(:disabled):not(.ant-btn-disabled):hover,
@@ -196,6 +197,7 @@ body {
   border-color: rgba(47, 111, 237, 0.24);
   color: var(--ll-primary);
   background: rgba(47, 111, 237, 0.04);
+  transform: translateY(-2px);
 }
 
 .ant-btn-link {
@@ -207,6 +209,7 @@ body {
 .ant-btn-link:not(:disabled):not(.ant-btn-disabled):hover {
   color: var(--ll-primary-hover);
   background: rgba(47, 111, 237, 0.06);
+  transform: translateY(-2px);
 }
 
 .ant-btn:not(:disabled):not(.ant-btn-disabled):active {
@@ -310,6 +313,22 @@ body {
 
 .action-icon {
   margin-top: 1px;
+}
+
+.relationship-cycle-card {
+  border-color: rgba(183, 119, 151, 0.2);
+  background:
+    radial-gradient(circle at 88% 12%, rgba(211, 154, 175, 0.16), transparent 32%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(251, 246, 249, 0.9));
+}
+
+.relationship-cycle-card .action-icon {
+  color: #9f607a;
+}
+
+.relationship-cycle-card:hover {
+  border-color: rgba(183, 119, 151, 0.28);
+  box-shadow: 0 18px 46px rgba(154, 95, 122, 0.12);
 }
 
 .auth-page {

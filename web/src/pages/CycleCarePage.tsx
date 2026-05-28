@@ -472,7 +472,7 @@ export function CycleCarePage() {
     return (
       <div className="page-wide cycle-page">
         {contextHolder}
-        <Card>
+        <Card className="cycle-locked-card">
           <Empty
             image={Empty.PRESENTED_IMAGE_SIMPLE}
             description={access.reason === 'NO_LOVER_SPACE' ? t('cycle.accessDenied') : access.reason || t('cycle.accessDenied')}
@@ -493,6 +493,7 @@ export function CycleCarePage() {
         <div>
           <Typography.Title level={2}>{t('cycle.title')}</Typography.Title>
           <Typography.Text type="secondary">{t('cycle.subtitle')}</Typography.Text>
+          <Tag className="cycle-live-tag">{t('cycle.enabledForCouple')}</Tag>
         </div>
         <Space wrap>
           <Select
@@ -515,7 +516,7 @@ export function CycleCarePage() {
 
       <Row gutter={[16, 16]}>
         <Col xs={24} lg={8}>
-          <Card className="cycle-summary-card">
+          <Card className="cycle-summary-card cycle-summary-card-live">
             <Space direction="vertical" size={8}>
               <span className="cycle-card-icon"><HeartOutlined /></span>
               <Typography.Text type="secondary">{t('cycle.currentPhase')}</Typography.Text>
@@ -530,7 +531,7 @@ export function CycleCarePage() {
           </Card>
         </Col>
         <Col xs={24} lg={8}>
-          <Card className="cycle-summary-card">
+          <Card className="cycle-summary-card cycle-summary-card-live">
             <Space direction="vertical" size={8}>
               <span className="cycle-card-icon cycle-card-icon-blue"><CalendarOutlined /></span>
               <Typography.Text type="secondary">{t('cycle.daysToNextPeriod')}</Typography.Text>
@@ -542,7 +543,7 @@ export function CycleCarePage() {
           </Card>
         </Col>
         <Col xs={24} lg={8}>
-          <Card className="cycle-summary-card">
+          <Card className="cycle-summary-card cycle-summary-card-live">
             <Space direction="vertical" size={8}>
               <span className="cycle-card-icon cycle-card-icon-orange"><AlertOutlined /></span>
               <Typography.Text type="secondary">{t('cycle.activeWarnings')}</Typography.Text>
@@ -572,7 +573,7 @@ export function CycleCarePage() {
                         ['partnerAdvice', today?.partnerAdvice],
                       ].map(([key, value]) => (
                         <Col xs={24} md={12} key={key}>
-                          <div className="cycle-advice-item">
+                          <div className={`cycle-advice-item ${key === 'partnerAdvice' ? 'cycle-advice-item-partner' : ''}`}>
                             <Typography.Text strong>{t(`cycle.${key}`)}</Typography.Text>
                             <Typography.Paragraph>{value || '-'}</Typography.Paragraph>
                           </div>

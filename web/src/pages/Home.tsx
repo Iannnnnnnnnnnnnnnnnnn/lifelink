@@ -41,7 +41,6 @@ const initialLoading: Record<DashboardModule, boolean> = {
 export function Home() {
   const { t } = useTranslation();
   const navigate = useNavigate();
-  const user = useAuthStore((state) => state.user);
   const fetchCurrentUser = useAuthStore((state) => state.fetchCurrentUser);
   const [relationships, setRelationships] = useState<RelationshipSummary[]>([]);
   const [dailyPosts, setDailyPosts] = useState<DailyPost[]>([]);
@@ -162,9 +161,8 @@ export function Home() {
     <Space direction="vertical" size={20} className="home-page dashboard-page">
       {contextHolder}
       <DashboardHero
-        username={user?.username}
         onCreateDaily={() => navigate('/daily/create')}
-        onCreateSpace={() => navigate('/relationships/create')}
+        onOpenSpaces={() => navigate('/relationships')}
       />
 
       {Object.values(errors).some(Boolean) && (
@@ -223,9 +221,14 @@ export function Home() {
           <QuickActionCard icon={<ReadOutlined />} title={t('dashboard.createDaily')} description={t('dashboard.createDailyDesc')} onClick={() => navigate('/daily/create')} />
           <QuickActionCard icon={<CheckSquareOutlined />} title={t('dashboard.createTodo')} description={t('dashboard.createTodoDesc')} onClick={() => navigate(relationships[0] ? `/relationships/${relationships[0].id}/todos` : '/relationships')} />
           <QuickActionCard icon={<CalendarOutlined />} title={t('dashboard.createAnniversary')} description={t('dashboard.createAnniversaryDesc')} onClick={() => navigate('/anniversaries/create')} />
-          {hasCoupleRelationship && (
-            <QuickActionCard icon={<HeartOutlined />} title={t('dashboard.cycleCare')} description={t('dashboard.cycleCareDesc')} onClick={() => navigate('/cycle-care')} />
-          )}
+          <QuickActionCard
+            icon={<HeartOutlined />}
+            title={t('dashboard.cycleCare')}
+            description={hasCoupleRelationship ? t('dashboard.cycleCareDesc') : t('dashboard.cycleCareLockedDesc')}
+            meta={hasCoupleRelationship ? t('dashboard.cycleCareReady') : t('dashboard.createCoupleSpace')}
+            tone={hasCoupleRelationship ? 'couple' : 'locked'}
+            onClick={() => navigate(hasCoupleRelationship ? '/cycle-care' : '/relationships/create')}
+          />
           <QuickActionCard icon={<PlusOutlined />} title={t('dashboard.createSpace')} description={t('dashboard.createSpaceDesc')} onClick={() => navigate('/relationships/create')} />
           <QuickActionCard icon={<UsergroupAddOutlined />} title={t('dashboard.joinSpace')} description={t('dashboard.joinSpaceDesc')} onClick={() => navigate('/relationships/join')} />
           <QuickActionCard icon={<ThunderboltOutlined />} title={t('dashboard.viewActivities')} description={t('dashboard.viewActivitiesDesc')} onClick={() => navigate('/activities')} />

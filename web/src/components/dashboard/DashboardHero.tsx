@@ -4,12 +4,11 @@ import { useTranslation } from 'react-i18next';
 import { formatDashboardDate } from '../../utils/date';
 
 interface DashboardHeroProps {
-  username?: string;
   onCreateDaily: () => void;
-  onCreateSpace: () => void;
+  onOpenSpaces: () => void;
 }
 
-export function DashboardHero({ username, onCreateDaily, onCreateSpace }: DashboardHeroProps) {
+export function DashboardHero({ onCreateDaily, onOpenSpaces }: DashboardHeroProps) {
   const { t, i18n } = useTranslation();
   const currentDate = formatDashboardDate(new Date(), i18n.resolvedLanguage);
 
@@ -19,15 +18,15 @@ export function DashboardHero({ username, onCreateDaily, onCreateSpace }: Dashbo
         <Space wrap className="dashboard-hero-tags">
           <Tag icon={<CalendarOutlined />}>{currentDate}</Tag>
         </Space>
-        <Typography.Title level={1}>{t('dashboard.welcomeBack', { name: username || t('home.defaultUser') })}</Typography.Title>
+        <Typography.Title level={1}>{t('dashboard.heroTitle')}</Typography.Title>
         <Typography.Text>{t('dashboard.slogan')}</Typography.Text>
       </div>
       <Space wrap className="dashboard-hero-actions">
-        <Button type="primary" size="large" onClick={onCreateDaily}>
-          {t('dashboard.createDaily')}
+        <Button type="primary" size="large" onClick={onOpenSpaces}>
+          {t('dashboard.enterMySpace')}
         </Button>
-        <Button size="large" onClick={onCreateSpace}>
-          {t('dashboard.createSpace')}
+        <Button size="large" onClick={onCreateDaily}>
+          {t('dashboard.createDaily')}
         </Button>
       </Space>
     </section>
