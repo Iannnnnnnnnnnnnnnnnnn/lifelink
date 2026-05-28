@@ -4,7 +4,6 @@ import { useTranslation } from 'react-i18next';
 import { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { register } from '../api/auth';
-import { FloatingStickers } from '../components/decorations/FloatingStickers';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { SiteFooter } from '../components/SiteFooter';
 
@@ -52,7 +51,6 @@ export function Register() {
   return (
     <div className="auth-page">
       {contextHolder}
-      <FloatingStickers />
       <div className="auth-language">
         <LanguageSwitcher />
       </div>

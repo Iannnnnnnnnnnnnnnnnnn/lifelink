@@ -9,7 +9,6 @@ import { SiteFooter } from './SiteFooter';
 import { useAppStore } from '../store/appStore';
 import { useAuthStore } from '../store/authStore';
 import { useRelationshipThemeStore } from '../store/relationshipThemeStore';
-import { FloatingStickers } from './decorations/FloatingStickers';
 import { getAvatarInitial } from '../utils/avatar';
 
 const { Header, Content, Footer, Sider } = Layout;
@@ -212,7 +211,6 @@ export function AppLayout() {
 
   return (
     <Layout className={`app-shell ${themeClassName}`}>
-      <FloatingStickers />
       {!isMobile && (
         <Sider width={220} className="app-sider desktop-sider">
           {brand}

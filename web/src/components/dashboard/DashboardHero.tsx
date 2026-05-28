@@ -30,11 +30,6 @@ export function DashboardHero({ username, onCreateDaily, onCreateSpace }: Dashbo
           {t('dashboard.createSpace')}
         </Button>
       </Space>
-      <div className="dashboard-hero-stickers" aria-hidden="true">
-        <span>✨</span>
-        <span>💌</span>
-        <span>📅</span>
-      </div>
     </section>
   );
 }

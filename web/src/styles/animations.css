@@ -1,7 +1,7 @@
 @keyframes pageFadeUp {
   from {
     opacity: 0;
-    transform: translateY(10px);
+    transform: translateY(8px);
   }
   to {
     opacity: 1;
@@ -9,56 +9,49 @@
   }
 }
 
-@keyframes stickerFloat {
-  0%,
-  100% {
-    transform: translate3d(0, 0, 0) rotate(-3deg);
-  }
-  50% {
-    transform: translate3d(0, -12px, 0) rotate(4deg);
-  }
-}
-
-@keyframes softPulse {
-  0%,
-  100% {
-    transform: scale(1);
-  }
-  50% {
-    transform: scale(1.025);
-  }
-}
-
 .home-page,
 .page-wide,
 .page-narrow,
 .auth-card {
-  animation: pageFadeUp 260ms ease-out both;
+  animation: pageFadeUp 240ms cubic-bezier(0.2, 0, 0, 1) both;
 }
 
-.ant-card,
+.ant-card-hoverable,
 .anniversary-card,
 .activity-item-card,
 .relationship-card,
 .todo-list-item,
 .clickable-list-item {
-  transition: transform 180ms ease, box-shadow 180ms ease, border-color 180ms ease, background 180ms ease;
+  transition:
+    transform var(--ll-transition),
+    box-shadow var(--ll-transition),
+    border-color var(--ll-transition),
+    background var(--ll-transition);
 }
 
-.ant-card:hover,
+.ant-card-hoverable:hover,
 .anniversary-card:hover,
 .activity-item-card:hover,
 .relationship-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 16px 36px rgba(45, 59, 88, 0.1);
+  transform: translateY(-2px);
+  box-shadow: var(--ll-shadow-hover);
 }
 
 .ant-btn {
-  transition: transform 160ms ease, box-shadow 160ms ease, background 160ms ease, border-color 160ms ease;
+  transition:
+    transform var(--ll-transition-fast),
+    box-shadow var(--ll-transition-fast),
+    background var(--ll-transition-fast),
+    border-color var(--ll-transition-fast),
+    color var(--ll-transition-fast);
 }
 
 .ant-btn:not(:disabled):hover {
   transform: translateY(-1px);
+}
+
+.ant-btn:not(:disabled):active {
+  transform: scale(0.985);
 }
 
 @media (prefers-reduced-motion: reduce) {

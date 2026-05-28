@@ -1,21 +1,17 @@
 body {
-  background:
-    radial-gradient(circle at 8% 8%, rgba(255, 216, 229, 0.64), transparent 30%),
-    radial-gradient(circle at 92% 14%, rgba(207, 232, 255, 0.7), transparent 32%),
-    linear-gradient(135deg, #fff8fb 0%, #f4f9ff 48%, #fffaf2 100%);
+  background: linear-gradient(180deg, #fbfbfd 0%, var(--ll-bg) 100%);
 }
 
 .theme-colorful.app-shell,
-.theme-colorful .app-content {
-  background:
-    radial-gradient(circle at 12% 8%, rgba(255, 215, 232, 0.42), transparent 28%),
-    radial-gradient(circle at 88% 16%, rgba(206, 232, 255, 0.52), transparent 30%),
-    linear-gradient(135deg, #fff9fb 0%, #f4f9ff 52%, #fffaf2 100%);
+.theme-colorful .app-content,
+.theme-colorful .auth-page {
+  background: linear-gradient(180deg, #fbfbfd 0%, #f6f8fb 100%);
 }
 
 .theme-grayscale.app-shell,
-.theme-grayscale .app-content {
-  background: linear-gradient(135deg, #f0f1f3 0%, #f6f7f8 100%);
+.theme-grayscale .app-content,
+.theme-grayscale .auth-page {
+  background: linear-gradient(180deg, #fbfbfc 0%, var(--ll-bg) 100%);
 }
 
 .app-shell {
@@ -30,58 +26,85 @@ body {
 }
 
 .app-sider {
-  border-right: 1px solid rgba(230, 222, 232, 0.9);
-  background: rgba(255, 255, 255, 0.84);
-  backdrop-filter: blur(16px);
+  border-right: 1px solid var(--ll-border-soft);
+  background: rgba(255, 255, 255, 0.78);
+  backdrop-filter: saturate(180%) blur(20px);
 }
 
 .brand {
   height: 76px;
 }
 
-.brand-mark {
-  border-radius: 12px;
-  background: linear-gradient(135deg, #ffe0eb, #dff0ff);
-  box-shadow: 0 10px 22px rgba(255, 141, 177, 0.22);
+.brand-mark,
+.auth-brand-mark {
+  border: 1px solid rgba(47, 111, 237, 0.12);
+  background: var(--ll-primary-soft);
+  color: var(--ll-primary);
+  box-shadow: none;
 }
 
 .brand-icon {
-  color: #ff6f9f;
+  color: var(--ll-primary);
 }
 
 .app-menu .ant-menu-item {
   margin: 6px 0;
   padding-inline: 14px !important;
+  color: var(--ll-text-muted);
 }
 
 .app-menu .ant-menu-item:hover {
-  background: rgba(255, 235, 242, 0.72);
+  background: rgba(29, 29, 31, 0.04) !important;
+  color: var(--ll-text) !important;
   transform: translateX(2px);
 }
 
 .app-menu .ant-menu-item-selected {
-  background: linear-gradient(135deg, rgba(255, 224, 235, 0.94), rgba(223, 240, 255, 0.94)) !important;
-  color: #b93666 !important;
-  font-weight: 700;
+  background: var(--ll-primary-soft) !important;
+  color: var(--ll-text) !important;
+  font-weight: 650;
 }
 
 .app-menu .ant-menu-item-selected .anticon {
-  color: #e65f8f;
+  color: var(--ll-primary);
 }
 
 .app-header {
   background: rgba(255, 255, 255, 0.78);
-  box-shadow: 0 8px 22px rgba(45, 59, 88, 0.05);
+  box-shadow: 0 8px 24px rgba(29, 29, 31, 0.035);
+  backdrop-filter: saturate(180%) blur(20px);
+}
+
+.global-search .ant-input-group-wrapper,
+.global-search .ant-input-wrapper,
+.global-search .ant-input,
+.global-search .ant-input-group-addon,
+.global-search .ant-btn {
+  border-radius: var(--ll-radius-pill) !important;
 }
 
 .user-chip,
 .logout-button,
-.ant-select-selector {
-  border-radius: 8px !important;
+.ant-select-selector,
+.ant-input,
+.ant-input-affix-wrapper,
+.ant-picker,
+.ant-input-number,
+.ant-input-number-group-addon {
+  border-radius: var(--ll-radius-md) !important;
 }
 
 .user-chip {
-  background: rgba(255, 255, 255, 0.78);
+  background: rgba(255, 255, 255, 0.72);
+}
+
+.user-chip-button {
+  cursor: pointer;
+}
+
+.user-chip-button:hover {
+  border-color: rgba(47, 111, 237, 0.2);
+  background: #ffffff;
 }
 
 .app-content > * {
@@ -90,7 +113,7 @@ body {
 }
 
 .page-heading {
-  margin-bottom: 2px;
+  margin-bottom: 4px;
 }
 
 .page-heading h2 {
@@ -98,114 +121,209 @@ body {
 }
 
 .ant-card {
-  border-radius: 14px;
-  border-color: rgba(230, 233, 240, 0.88);
-  background: rgba(255, 255, 255, 0.9);
-  box-shadow: 0 12px 30px rgba(57, 66, 92, 0.07);
-  backdrop-filter: blur(10px);
+  border: 1px solid var(--ll-border-soft);
+  border-radius: var(--ll-radius-lg);
+  background: var(--ll-surface);
+  box-shadow: var(--ll-shadow-sm);
+  backdrop-filter: saturate(180%) blur(14px);
 }
 
 .ant-card-head {
-  border-bottom-color: rgba(237, 241, 247, 0.82);
+  min-height: 54px;
+  border-bottom-color: var(--ll-border-soft);
 }
 
-.welcome-card {
-  background:
-    linear-gradient(135deg, rgba(255, 255, 255, 0.88), rgba(255, 243, 248, 0.92)),
-    radial-gradient(circle at 90% 12%, rgba(137, 208, 255, 0.36), transparent 34%);
+.ant-card-head-title {
+  color: var(--ll-text);
+  font-weight: 650;
 }
 
-.welcome-card::after {
-  position: absolute;
-  right: 24px;
-  bottom: 16px;
-  content: "💌";
-  font-size: 42px;
-  opacity: 0.18;
-  animation: softPulse 7s ease-in-out infinite;
-}
-
-.ant-statistic-content-prefix {
-  color: #ff7fa7;
-}
-
+.ant-card-hoverable,
 .relationship-card,
-.action-card {
-  overflow: hidden;
+.action-card,
+.dashboard-stat-card,
+.dashboard-action-card,
+.dashboard-anniversary-card,
+.calendar-detail-item-clickable,
+.clickable-list-item,
+.todo-list-item {
+  transition:
+    transform var(--ll-transition),
+    box-shadow var(--ll-transition),
+    border-color var(--ll-transition),
+    background var(--ll-transition);
 }
 
+.ant-card-hoverable:hover,
+.relationship-card:hover,
+.action-card:hover,
+.dashboard-stat-card:hover,
+.dashboard-action-card:hover,
+.dashboard-anniversary-card:hover {
+  border-color: rgba(47, 111, 237, 0.16);
+  box-shadow: var(--ll-shadow-hover);
+  transform: translateY(-2px);
+}
+
+.ant-card-hoverable:active,
+.relationship-card:active,
+.action-card:active,
+.dashboard-stat-card:active,
+.dashboard-action-card:active,
+.dashboard-anniversary-card:active {
+  box-shadow: var(--ll-shadow-sm);
+  transform: translateY(-1px) scale(0.99);
+}
+
+.ant-btn {
+  border-radius: var(--ll-radius-pill) !important;
+  font-weight: 600;
+}
+
+.ant-btn-primary {
+  background: var(--ll-primary);
+  border-color: var(--ll-primary);
+}
+
+.ant-btn-primary:not(:disabled):not(.ant-btn-disabled):hover {
+  background: var(--ll-primary-hover);
+  border-color: var(--ll-primary-hover);
+  box-shadow: 0 10px 22px rgba(47, 111, 237, 0.14);
+}
+
+.ant-btn-default:not(:disabled):not(.ant-btn-disabled):hover,
+.ant-btn-dashed:not(:disabled):not(.ant-btn-disabled):hover {
+  border-color: rgba(47, 111, 237, 0.24);
+  color: var(--ll-primary);
+  background: rgba(47, 111, 237, 0.04);
+}
+
+.ant-btn-link {
+  color: var(--ll-primary);
+  font-weight: 600;
+}
+
+.ant-btn-text:not(:disabled):not(.ant-btn-disabled):hover,
+.ant-btn-link:not(:disabled):not(.ant-btn-disabled):hover {
+  color: var(--ll-primary-hover);
+  background: rgba(47, 111, 237, 0.06);
+}
+
+.ant-btn:not(:disabled):not(.ant-btn-disabled):active {
+  transform: scale(0.985);
+}
+
+.ant-tag {
+  border-radius: var(--ll-radius-pill);
+  border-color: var(--ll-border-soft);
+  background: rgba(247, 248, 250, 0.82);
+  color: var(--ll-text-muted);
+  font-weight: 560;
+}
+
+.ant-tabs .ant-tabs-tab {
+  transition: color var(--ll-transition-fast), background var(--ll-transition-fast);
+}
+
+.ant-tabs .ant-tabs-tab-btn {
+  font-weight: 600;
+}
+
+.ant-tabs .ant-tabs-ink-bar {
+  border-radius: var(--ll-radius-pill);
+  background: var(--ll-primary);
+}
+
+.ant-modal-content,
+.ant-drawer-content {
+  border-radius: var(--ll-radius-lg);
+  background: rgba(255, 255, 255, 0.96);
+}
+
+.ant-table-wrapper .ant-table,
+.ant-table-wrapper .ant-table-container {
+  border-radius: var(--ll-radius-md);
+}
+
+.ant-table-thead > tr > th {
+  background: rgba(247, 248, 250, 0.9) !important;
+  color: var(--ll-text-muted);
+  font-weight: 650;
+}
+
+.ant-table-tbody > tr > td {
+  border-bottom-color: var(--ll-border-soft);
+}
+
+.ant-table-tbody > tr.ant-table-row:hover > td {
+  background: rgba(47, 111, 237, 0.035) !important;
+}
+
+.welcome-card,
+.dashboard-hero-card,
+.philosophy-hero-card,
+.counselor-card,
+.counselor-profile-card {
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.96) 0%, rgba(247, 248, 250, 0.86) 100%);
+}
+
+.welcome-card::after,
 .relationship-card::before,
-.action-card::before {
-  position: absolute;
-  inset: 0 auto 0 0;
-  width: 4px;
-  content: "";
-  background: linear-gradient(180deg, #ff8fb3, #8ccfff);
-  opacity: 0.8;
+.action-card::before,
+.daily-card .ant-card-head-title::before,
+.anniversary-card::after,
+.dashboard-hero-card::before {
+  display: none !important;
+  content: none !important;
 }
 
-.daily-card {
-  border-radius: 16px;
-}
-
-.daily-card .ant-card-head-title::before {
-  margin-right: 8px;
-  content: "📝";
-}
-
-.todo-list-card {
-  border-radius: 16px;
-}
-
-.todo-list-item:hover {
-  background: rgba(255, 248, 251, 0.82);
-}
-
-.todo-list-item .ant-checkbox-wrapper {
-  margin-top: 2px;
-}
-
-.anniversary-card {
-  border-radius: 18px;
-}
-
-.anniversary-card::after {
-  position: absolute;
-  top: 14px;
-  right: 16px;
-  z-index: 1;
-  content: "📅";
-  font-size: 28px;
-  opacity: 0.34;
-}
-
-.activity-timeline-card .ant-timeline-item-tail {
-  border-inline-start-color: #ffd6e4;
-}
-
+.daily-card,
+.todo-list-card,
+.anniversary-card,
+.activity-timeline-card,
 .activity-item-card {
-  border-radius: 14px;
+  border-radius: var(--ll-radius-lg);
+}
+
+.daily-card .ant-card-head {
+  border-bottom-color: var(--ll-border-soft);
+}
+
+.todo-list-item:hover,
+.clickable-list-item:hover,
+.dashboard-list .dashboard-list-item:hover {
+  background: rgba(47, 111, 237, 0.035);
+}
+
+.todo-list-item:active,
+.clickable-list-item:active,
+.calendar-detail-item-clickable:active {
+  transform: scale(0.992);
+}
+
+.action-icon,
+.dashboard-stat-icon,
+.dashboard-action-icon,
+.ant-statistic-content-prefix {
+  color: var(--ll-primary);
+}
+
+.action-icon {
+  margin-top: 1px;
 }
 
 .auth-page {
   position: relative;
   overflow-x: hidden;
-  background:
-    radial-gradient(circle at 12% 16%, rgba(255, 201, 220, 0.62), transparent 28%),
-    radial-gradient(circle at 88% 12%, rgba(205, 232, 255, 0.72), transparent 30%),
-    linear-gradient(135deg, #fff7fb 0%, #f2f8ff 55%, #fffaf2 100%);
-}
-
-.auth-page .floating-stickers {
-  position: absolute;
+  background: linear-gradient(180deg, #fbfbfd 0%, #f6f8fb 100%);
 }
 
 .auth-card {
   position: relative;
   z-index: 1;
-  max-width: 440px;
-  border-radius: 20px;
-  padding: 4px;
+  max-width: 430px;
+  border-radius: var(--ll-radius-lg);
+  box-shadow: var(--ll-shadow-md);
 }
 
 .auth-brand {
@@ -220,11 +338,8 @@ body {
   width: 52px;
   height: 52px;
   margin-bottom: 10px;
-  border-radius: 16px;
-  background: linear-gradient(135deg, #ffe0eb, #dff0ff);
-  color: #ff6f9f;
+  border-radius: 18px;
   font-size: 24px;
-  box-shadow: 0 14px 28px rgba(255, 128, 172, 0.22);
 }
 
 .auth-language {
@@ -234,11 +349,34 @@ body {
   z-index: 2;
 }
 
+.finance-summary-grid .ant-col {
+  display: flex;
+}
+
+.finance-metric-card {
+  width: 100%;
+}
+
+.finance-metric-card .ant-statistic-title {
+  color: var(--ll-text-muted);
+  font-weight: 600;
+}
+
+.finance-metric-card .ant-statistic-content {
+  color: var(--ll-text);
+  font-size: 30px;
+  font-weight: 760;
+  letter-spacing: 0;
+}
+
 .theme-grayscale .brand-mark,
-.theme-grayscale .welcome-card,
-.theme-grayscale .relationship-card::before,
-.theme-grayscale .action-card::before {
-  filter: grayscale(0.8) saturate(0.45);
+.theme-grayscale .auth-brand-mark,
+.theme-grayscale .dashboard-hero-card,
+.theme-grayscale .dashboard-stat-icon,
+.theme-grayscale .dashboard-action-icon,
+.theme-grayscale .dashboard-anniversary-card,
+.theme-grayscale .anniversary-card {
+  filter: none;
 }
 
 @media (max-width: 720px) {
@@ -247,5 +385,9 @@ body {
     display: flex;
     justify-content: center;
     margin-bottom: 16px;
+  }
+
+  .page-heading h2 {
+    font-size: 28px;
   }
 }

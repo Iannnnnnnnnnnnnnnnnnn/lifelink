@@ -1,5 +1,5 @@
 .activity-timeline-card {
-  border-radius: 8px;
+  border-radius: var(--ll-radius-lg);
 }
 
 .activity-toolbar {
@@ -7,8 +7,8 @@
 }
 
 .activity-item-card {
-  border-color: #edf1f7;
-  box-shadow: 0 8px 20px rgba(45, 59, 88, 0.05);
+  border-color: var(--ll-border-soft);
+  box-shadow: var(--ll-shadow-sm);
 }
 
 .activity-item-head {
@@ -31,7 +31,7 @@
 }
 
 .activity-meta {
-  color: #667085;
+  color: var(--ll-text-muted);
   font-size: 13px;
 }
 

@@ -41,7 +41,7 @@ export function RelationshipList() {
       <div className="page-heading">
         <div>
           <Typography.Title level={2}>{t('relationship.title')}</Typography.Title>
-          <Typography.Text type="secondary">{t('relationship.spacesJoined')}.</Typography.Text>
+          <Typography.Text type="secondary">{t('relationship.spacesJoined')}</Typography.Text>
         </div>
         <Space>
           <Button icon={<UsergroupAddOutlined />} onClick={() => navigate('/relationships/join')}>
@@ -90,9 +90,11 @@ export function RelationshipList() {
                 <Typography.Text type="secondary">
                   {t('relationship.createdAt')}: {formatDateTime(relationship.createdAt, t, i18n.resolvedLanguage)}
                 </Typography.Text>
-                <Typography.Paragraph type="secondary" ellipsis={{ rows: 2 }}>
-                  {relationship.description || t('common.noDescription')}
-                </Typography.Paragraph>
+                {relationship.description && (
+                  <Typography.Paragraph type="secondary" ellipsis={{ rows: 2 }}>
+                    {relationship.description}
+                  </Typography.Paragraph>
+                )}
               </Space>
             </Card>
           ))}

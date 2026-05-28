@@ -1,5 +1,5 @@
 .philosophy-page {
-  animation: fadeIn 0.2s ease;
+  animation: pageFadeUp 240ms cubic-bezier(0.2, 0, 0, 1) both;
 }
 
 .philosophy-hero-card,
@@ -7,14 +7,14 @@
 .philosophy-history-card,
 .philosopher-card,
 .philosophy-empty-result {
-  border: 1px solid rgba(31, 41, 55, 0.07);
-  border-radius: 18px;
-  box-shadow: 0 18px 45px rgba(31, 41, 55, 0.06);
+  border: 1px solid var(--ll-border-soft);
+  border-radius: var(--ll-radius-lg);
+  box-shadow: var(--ll-shadow-sm);
 }
 
 .philosophy-hero-card {
   margin-bottom: 20px;
-  background: linear-gradient(135deg, #fffdf8 0%, #f7fbff 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #f6f8fb 100%);
 }
 
 .philosophy-hero-content {
@@ -30,9 +30,9 @@
   justify-content: center;
   width: 48px;
   height: 48px;
-  border-radius: 16px;
-  background: rgba(95, 124, 190, 0.12);
-  color: #526da8;
+  border-radius: 18px;
+  background: var(--ll-primary-soft);
+  color: var(--ll-primary);
   font-size: 24px;
 }
 
@@ -42,13 +42,13 @@
 
 .philosophy-hero-card p {
   margin-bottom: 0;
-  color: rgba(0, 0, 0, 0.56);
+  color: var(--ll-text-muted);
 }
 
 .philosophy-disclaimer {
-  border-radius: 12px;
-  background: rgba(82, 109, 168, 0.08);
-  border-color: rgba(82, 109, 168, 0.14);
+  border-radius: var(--ll-radius-md);
+  background: rgba(47, 111, 237, 0.06);
+  border-color: rgba(47, 111, 237, 0.12);
 }
 
 .philosophy-layout {
@@ -77,7 +77,7 @@
 }
 
 .philosophy-input-card textarea.ant-input {
-  border-radius: 14px;
+  border-radius: var(--ll-radius-md);
   font-size: 15px;
 }
 
@@ -86,7 +86,7 @@
 }
 
 .philosopher-selector .ant-select-selector {
-  border-radius: 14px !important;
+  border-radius: var(--ll-radius-md) !important;
   padding: 6px 10px !important;
 }
 
@@ -110,7 +110,7 @@
   display: block;
   min-height: 28px;
   padding: 8px 2px 0;
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--ll-text-subtle);
 }
 
 .philosophy-result-grid {
@@ -123,70 +123,70 @@
 .philosopher-card-loading {
   position: relative;
   overflow: hidden;
-  background: #ffffff;
+  background: rgba(255, 255, 255, 0.94);
 }
 
 .philosopher-card::before {
   content: "";
   position: absolute;
   inset: 0 0 auto;
-  height: 4px;
-  background: #8aa3d4;
+  height: 3px;
+  background: rgba(47, 111, 237, 0.48);
 }
 
 .philosopher-card-socrates::before,
 .philosopher-card-plato::before,
 .philosopher-card-aristotle::before {
-  background: #7fa7d6;
+  background: rgba(79, 127, 216, 0.5);
 }
 
 .philosopher-card-kant::before {
-  background: #9d92d1;
+  background: rgba(141, 124, 195, 0.5);
 }
 
 .philosopher-card-nietzsche::before {
-  background: #cc8f8f;
+  background: rgba(192, 107, 101, 0.45);
 }
 
 .philosopher-card-schopenhauer::before {
-  background: #8b8f9a;
+  background: rgba(120, 135, 157, 0.5);
 }
 
 .philosopher-card-confucius::before {
-  background: #d0a86e;
+  background: rgba(185, 138, 74, 0.5);
 }
 
 .philosopher-card-zhuangzi::before {
-  background: #82b89a;
+  background: rgba(94, 155, 116, 0.5);
 }
 
 .philosopher-card-psychology_teacher::before {
-  background: #79b7a2;
+  background: rgba(94, 155, 116, 0.52);
 }
 
 .counselor-card {
-  background: linear-gradient(135deg, #fffaf0 0%, #f3fbf7 58%, #f2f8ff 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #f7faf8 100%);
 }
 
 .counselor-card-disclaimer {
   margin: 4px 0 14px;
   padding: 9px 11px;
-  border-radius: 12px;
-  background: rgba(89, 150, 126, 0.1);
-  color: rgba(0, 0, 0, 0.58);
+  border-radius: var(--ll-radius-md);
+  background: rgba(94, 155, 116, 0.08);
+  color: var(--ll-text-muted);
   font-size: 12px;
   line-height: 1.55;
 }
 
 .counselor-advice-section {
   padding: 12px 14px;
-  border-left: 3px solid rgba(89, 150, 126, 0.34);
-  border-radius: 12px;
-  background: rgba(89, 150, 126, 0.08);
+  border-left: 3px solid rgba(94, 155, 116, 0.28);
+  border-radius: var(--ll-radius-md);
+  background: rgba(94, 155, 116, 0.06);
 }
 
 .counselor-support-bar {
-  background: rgba(248, 194, 112, 0.17);
+  background: rgba(183, 121, 31, 0.1);
 }
 
 .philosopher-card-header {
@@ -212,7 +212,7 @@
 .philosophy-section-label {
   display: block;
   margin-bottom: 6px;
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--ll-text-subtle);
   font-size: 12px;
 }
 
@@ -223,9 +223,9 @@
 
 .philosophy-question-back {
   padding: 12px 14px;
-  border-left: 3px solid rgba(82, 109, 168, 0.36);
-  border-radius: 12px;
-  background: rgba(82, 109, 168, 0.07);
+  border-left: 3px solid rgba(47, 111, 237, 0.24);
+  border-radius: var(--ll-radius-md);
+  background: rgba(47, 111, 237, 0.06);
 }
 
 .philosophy-summary-bar {
@@ -233,8 +233,8 @@
   gap: 6px;
   margin-top: 16px;
   padding: 12px 14px;
-  border-radius: 14px;
-  background: rgba(245, 180, 87, 0.14);
+  border-radius: var(--ll-radius-md);
+  background: rgba(183, 121, 31, 0.08);
 }
 
 .philosophy-empty-result {
@@ -242,7 +242,7 @@
   align-items: center;
   justify-content: center;
   min-height: 260px;
-  background: rgba(255, 255, 255, 0.72);
+  background: rgba(255, 255, 255, 0.82);
 }
 
 .philosophy-history-card {
@@ -318,9 +318,9 @@
 .chat-history-card,
 .chat-window-card,
 .philosopher-profile-card {
-  border: 1px solid rgba(31, 41, 55, 0.07);
-  border-radius: 18px;
-  box-shadow: 0 18px 45px rgba(31, 41, 55, 0.06);
+  border: 1px solid var(--ll-border-soft);
+  border-radius: var(--ll-radius-lg);
+  box-shadow: var(--ll-shadow-sm);
 }
 
 .chat-history-card,
@@ -334,11 +334,11 @@
 
 .chat-session-item {
   padding: 10px 6px !important;
-  border-radius: 12px;
+  border-radius: var(--ll-radius-md);
 }
 
 .chat-session-item.active {
-  background: rgba(82, 109, 168, 0.08);
+  background: var(--ll-primary-soft);
 }
 
 .chat-session-button {
@@ -365,7 +365,7 @@
   justify-content: space-between;
   gap: 14px;
   padding: 18px 20px 12px;
-  border-bottom: 1px solid rgba(31, 41, 55, 0.07);
+  border-bottom: 1px solid var(--ll-border-soft);
 }
 
 .chat-window-header h4 {
@@ -375,9 +375,9 @@
 .chat-disclaimer {
   margin: 12px 20px 0;
   padding: 10px 12px;
-  border-radius: 12px;
-  background: rgba(82, 109, 168, 0.08);
-  color: rgba(0, 0, 0, 0.62);
+  border-radius: var(--ll-radius-md);
+  background: rgba(47, 111, 237, 0.06);
+  color: var(--ll-text-muted);
   font-size: 12px;
   line-height: 1.5;
 }
@@ -411,27 +411,27 @@
 
 .chat-message-avatar {
   flex: 0 0 auto;
-  background: #7087b8;
+  background: var(--ll-primary);
 }
 
 .chat-message-bubble {
   max-width: min(72%, 620px);
   padding: 12px 14px;
-  border-radius: 18px;
+  border-radius: 20px;
   background: #ffffff;
-  box-shadow: 0 8px 22px rgba(31, 41, 55, 0.06);
+  box-shadow: var(--ll-shadow-sm);
   line-height: 1.72;
   white-space: pre-wrap;
 }
 
 .chat-message-row.user .chat-message-bubble {
-  background: #eaf3ff;
-  color: #17345f;
-  border-top-right-radius: 6px;
+  background: var(--ll-primary);
+  color: #ffffff;
+  border-top-right-radius: 8px;
 }
 
 .chat-message-row.assistant .chat-message-bubble {
-  border-top-left-radius: 6px;
+  border-top-left-radius: 8px;
 }
 
 .chat-message-bubble p {
@@ -440,19 +440,19 @@
 }
 
 .chat-message-bubble.thinking {
-  color: rgba(0, 0, 0, 0.45);
+  color: var(--ll-text-subtle);
 }
 
 .chat-input-box {
   display: flex;
   gap: 10px;
   padding: 14px 20px 18px;
-  border-top: 1px solid rgba(31, 41, 55, 0.07);
-  background: rgba(255, 255, 255, 0.82);
+  border-top: 1px solid var(--ll-border-soft);
+  background: rgba(255, 255, 255, 0.86);
 }
 
 .chat-input-box textarea.ant-input {
-  border-radius: 14px;
+  border-radius: var(--ll-radius-md);
 }
 
 .philosopher-profile-card h4 {
@@ -461,41 +461,41 @@
 
 .philosopher-profile-desc {
   margin: 16px 0 12px;
-  color: rgba(0, 0, 0, 0.62);
+  color: var(--ll-text-muted);
   line-height: 1.68;
 }
 
 .philosopher-avatar {
   color: #fff;
-  background: #7087b8;
+  background: var(--ll-primary);
 }
 
 .philosopher-avatar-nietzsche {
-  background: #b26c6c;
+  background: #9d6661;
 }
 
 .philosopher-avatar-confucius {
-  background: #b58a4f;
+  background: #927344;
 }
 
 .philosopher-avatar-zhuangzi {
-  background: #5d9d7b;
+  background: #5e8f73;
 }
 
 .philosopher-avatar-psychology_teacher,
 .counselor-chat-avatar {
   color: #fff;
-  background: #6fa890;
+  background: #668f78;
 }
 
 .counselor-profile-card {
-  background: linear-gradient(135deg, #fffaf0 0%, #f5fbf7 100%);
+  background: linear-gradient(180deg, #ffffff 0%, #f7faf8 100%);
 }
 
 .counselor-chat-row.assistant .chat-message-bubble {
   border-top-left-radius: 14px;
-  background: #fffaf2;
-  box-shadow: 0 8px 22px rgba(89, 150, 126, 0.1);
+  background: #fbfaf7;
+  box-shadow: var(--ll-shadow-sm);
   line-height: 1.78;
 }
 

@@ -35,10 +35,46 @@ function AppProviders() {
   return (
     <ConfigProvider
       locale={isEnglish ? enUS : zhCN}
+      wave={{ disabled: true }}
       theme={{
         token: {
-          colorPrimary: '#1677ff',
-          borderRadius: 6,
+          colorPrimary: '#2f6fed',
+          colorSuccess: '#4f9f6b',
+          colorWarning: '#b7791f',
+          colorError: '#d04444',
+          colorText: '#1d1d1f',
+          colorTextSecondary: '#6e6e73',
+          colorTextTertiary: '#86868b',
+          colorBgLayout: '#f7f8fa',
+          colorBgContainer: 'rgba(255, 255, 255, 0.92)',
+          colorBorder: 'rgba(0, 0, 0, 0.08)',
+          colorBorderSecondary: 'rgba(0, 0, 0, 0.06)',
+          borderRadius: 16,
+          borderRadiusLG: 22,
+          borderRadiusSM: 10,
+          controlHeight: 38,
+          controlHeightLG: 46,
+          fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif',
+        },
+        components: {
+          Button: {
+            borderRadius: 999,
+            controlHeight: 38,
+            controlHeightLG: 46,
+            primaryShadow: 'none',
+          },
+          Card: {
+            borderRadiusLG: 22,
+          },
+          Input: {
+            borderRadius: 14,
+          },
+          Select: {
+            borderRadius: 14,
+          },
+          Modal: {
+            borderRadiusLG: 24,
+          },
         },
       }}
     >

@@ -1,5 +1,5 @@
 .dashboard-page {
-  animation: pageFadeUp 280ms ease-out both;
+  animation: pageFadeUp 240ms cubic-bezier(0.2, 0, 0, 1) both;
 }
 
 .dashboard-hero-card {
@@ -7,47 +7,42 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  min-height: 230px;
+  min-height: 248px;
   overflow: hidden;
-  padding: 30px;
-  border: 1px solid rgba(255, 255, 255, 0.72);
-  border-radius: 24px;
-  background:
-    radial-gradient(circle at 88% 18%, rgba(255, 255, 255, 0.64), transparent 26%),
-    linear-gradient(135deg, rgba(255, 224, 235, 0.96), rgba(225, 242, 255, 0.94) 58%, rgba(255, 248, 225, 0.96));
-  box-shadow: 0 18px 48px rgba(91, 74, 105, 0.12);
-}
-
-.dashboard-hero-card::before {
-  position: absolute;
-  inset: auto -40px -70px auto;
-  width: 260px;
-  height: 260px;
-  border-radius: 999px;
-  background: rgba(255, 255, 255, 0.42);
-  content: "";
+  padding: 42px;
+  border: 1px solid var(--ll-border-soft);
+  border-radius: 30px;
+  background: linear-gradient(180deg, #ffffff 0%, #f6f8fb 100%);
+  box-shadow: var(--ll-shadow-md);
 }
 
 .dashboard-hero-copy {
   position: relative;
   z-index: 1;
-  max-width: 640px;
+  max-width: 680px;
 }
 
 .dashboard-hero-copy h1 {
-  margin: 12px 0 10px;
-  font-size: 38px;
-  line-height: 1.16;
+  margin: 18px 0 12px;
+  color: var(--ll-text);
+  font-size: clamp(36px, 6vw, 64px);
+  font-weight: 780;
+  line-height: 1.04;
+  letter-spacing: 0;
 }
 
 .dashboard-hero-copy .ant-typography {
+  color: var(--ll-text-muted);
   font-size: 16px;
+  line-height: 1.7;
 }
 
 .dashboard-hero-tags .ant-tag {
-  border-color: rgba(255, 255, 255, 0.64);
+  margin: 0;
+  border-color: var(--ll-border-soft);
   border-radius: 999px;
-  background: rgba(255, 255, 255, 0.58);
+  background: rgba(47, 111, 237, 0.06);
+  color: var(--ll-primary);
 }
 
 .dashboard-hero-actions {
@@ -55,51 +50,18 @@
   z-index: 1;
 }
 
-.dashboard-hero-stickers span {
-  position: absolute;
-  z-index: 0;
-  font-size: 34px;
-  opacity: 0.32;
-  animation: stickerFloat 9s ease-in-out infinite;
-}
-
-.dashboard-hero-stickers span:nth-child(1) {
-  top: 24px;
-  right: 28%;
-}
-
-.dashboard-hero-stickers span:nth-child(2) {
-  right: 10%;
-  bottom: 36px;
-  animation-delay: -3s;
-}
-
-.dashboard-hero-stickers span:nth-child(3) {
-  top: 42px;
-  right: 12%;
-  animation-delay: -6s;
-}
-
 .dashboard-soft-alert {
-  border-radius: 12px;
+  border-radius: var(--ll-radius-md);
 }
 
 .dashboard-section-heading {
   display: flex;
   align-items: center;
   gap: 8px;
-  margin-bottom: 12px;
-  color: #344054;
+  margin: 10px 0 14px;
+  color: var(--ll-text);
   font-size: 15px;
-  font-weight: 700;
-}
-
-.dashboard-section-heading::before {
-  width: 8px;
-  height: 8px;
-  border-radius: 99px;
-  background: linear-gradient(135deg, #ff8fb3, #8ccfff);
-  content: "";
+  font-weight: 650;
 }
 
 .dashboard-stat-card {
@@ -110,7 +72,8 @@
 .dashboard-stat-card .ant-card-body {
   display: flex;
   align-items: center;
-  gap: 16px;
+  gap: 18px;
+  min-height: 132px;
 }
 
 .dashboard-stat-icon,
@@ -121,18 +84,18 @@
   justify-content: center;
   width: 48px;
   height: 48px;
-  border-radius: 16px;
-  background: linear-gradient(135deg, #ffe2ed, #e1f2ff);
-  color: #d95081;
+  border-radius: 18px;
+  background: var(--ll-primary-soft);
+  color: var(--ll-primary);
   font-size: 22px;
-  box-shadow: 0 10px 24px rgba(255, 143, 179, 0.18);
+  box-shadow: none;
 }
 
 .dashboard-stat-value {
   margin: 2px 0;
-  color: #172033;
+  color: var(--ll-text);
   font-size: 32px;
-  font-weight: 800;
+  font-weight: 760;
   line-height: 1.1;
 }
 
@@ -151,6 +114,7 @@
   display: flex;
   align-items: flex-start;
   gap: 14px;
+  min-height: 126px;
 }
 
 .dashboard-action-card h4 {
@@ -165,12 +129,12 @@
   margin: 4px 0;
   padding: 12px;
   border-block-end: 0 !important;
-  border-radius: 12px;
+  border-radius: var(--ll-radius-md);
   cursor: pointer;
 }
 
 .dashboard-list .dashboard-list-item:hover {
-  background: rgba(255, 248, 251, 0.9);
+  background: rgba(47, 111, 237, 0.035);
 }
 
 .dashboard-thumb {
@@ -188,34 +152,34 @@
   position: relative;
   min-height: 180px;
   overflow: hidden;
-  border: 0;
-  border-radius: 18px;
-  background: linear-gradient(135deg, #ff8fb3, #8ccfff);
+  border: 1px solid var(--ll-border-soft);
+  border-radius: var(--ll-radius-lg);
+  background: linear-gradient(180deg, rgba(47, 111, 237, 0.72), rgba(29, 29, 31, 0.72));
   background-position: center;
   background-size: cover;
   color: #ffffff;
   cursor: pointer;
   text-align: left;
-  transition: transform 180ms ease, box-shadow 180ms ease;
+  transition: transform var(--ll-transition), box-shadow var(--ll-transition), border-color var(--ll-transition);
 }
 
 .dashboard-anniversary-card:hover {
-  transform: translateY(-3px);
-  box-shadow: 0 16px 34px rgba(45, 59, 88, 0.14);
+  transform: translateY(-2px);
+  box-shadow: var(--ll-shadow-hover);
 }
 
 .dashboard-anniversary-today {
-  background: linear-gradient(135deg, #ff7fa7, #ffd36e);
+  background: linear-gradient(180deg, rgba(47, 111, 237, 0.78), rgba(79, 159, 107, 0.68));
 }
 
 .dashboard-anniversary-passed {
-  background: linear-gradient(135deg, #8fa7ff, #a7e2d0);
+  background: linear-gradient(180deg, rgba(98, 106, 115, 0.74), rgba(79, 159, 107, 0.58));
 }
 
 .dashboard-anniversary-overlay {
   position: absolute;
   inset: 0;
-  background: linear-gradient(180deg, rgba(10, 20, 36, 0.12), rgba(10, 20, 36, 0.7));
+  background: linear-gradient(180deg, rgba(10, 20, 36, 0.1), rgba(10, 20, 36, 0.62));
 }
 
 .dashboard-anniversary-content {
@@ -242,14 +206,28 @@
 .dashboard-anniversary-content strong {
   display: block;
   font-size: 42px;
+  font-weight: 760;
   line-height: 1;
 }
 
-.theme-grayscale .dashboard-hero-card,
-.theme-grayscale .dashboard-stat-icon,
-.theme-grayscale .dashboard-action-icon,
-.theme-grayscale .dashboard-anniversary-card {
-  filter: grayscale(0.78) saturate(0.5);
+.dashboard-action-card:nth-child(1),
+.dashboard-stat-card:nth-child(1) {
+  animation-delay: 0ms;
+}
+
+.dashboard-action-card:nth-child(2),
+.dashboard-stat-card:nth-child(2) {
+  animation-delay: 40ms;
+}
+
+.dashboard-action-card:nth-child(3),
+.dashboard-stat-card:nth-child(3) {
+  animation-delay: 80ms;
+}
+
+.dashboard-action-card,
+.dashboard-stat-card {
+  animation: pageFadeUp 240ms cubic-bezier(0.2, 0, 0, 1) both;
 }
 
 @media (max-width: 1080px) {
@@ -264,11 +242,11 @@
     align-items: flex-start;
     flex-direction: column;
     min-height: auto;
-    padding: 22px;
+    padding: 28px 22px;
   }
 
   .dashboard-hero-copy h1 {
-    font-size: 28px;
+    font-size: 34px;
   }
 
   .dashboard-action-grid,

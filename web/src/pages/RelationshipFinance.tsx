@@ -61,10 +61,10 @@ export function RelationshipFinance() {
         </Space>
       </div>
 
-      <Row gutter={16}>
-        <Col xs={24} md={8}><Card><Statistic title={t('finance.income')} value={summary.totalIncome} precision={2} prefix={<DollarOutlined />} /></Card></Col>
-        <Col xs={24} md={8}><Card><Statistic title={t('finance.expense')} value={summary.totalExpense} precision={2} prefix={<DollarOutlined />} /></Card></Col>
-        <Col xs={24} md={8}><Card><Statistic title={t('finance.balance')} value={summary.balance} precision={2} prefix={<DollarOutlined />} /></Card></Col>
+      <Row gutter={[16, 16]} className="finance-summary-grid">
+        <Col xs={24} md={8}><Card className="finance-metric-card"><Statistic title={t('finance.income')} value={summary.totalIncome} precision={2} prefix={<DollarOutlined />} /></Card></Col>
+        <Col xs={24} md={8}><Card className="finance-metric-card"><Statistic title={t('finance.expense')} value={summary.totalExpense} precision={2} prefix={<DollarOutlined />} /></Card></Col>
+        <Col xs={24} md={8}><Card className="finance-metric-card"><Statistic title={t('finance.balance')} value={summary.balance} precision={2} prefix={<DollarOutlined />} /></Card></Col>
       </Row>
 
       <Card title={t('finance.transactions')}>

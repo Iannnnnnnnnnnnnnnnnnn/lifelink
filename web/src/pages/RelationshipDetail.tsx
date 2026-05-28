@@ -259,7 +259,7 @@ export function RelationshipDetail() {
       <div className="page-heading">
         <div>
           <Typography.Title level={2}>{detail?.name || t('relationship.detail')}</Typography.Title>
-          <Typography.Text type="secondary">{detail?.description || t('common.noDescription')}</Typography.Text>
+          {detail?.description && <Typography.Text type="secondary">{detail.description}</Typography.Text>}
         </div>
         <Space>
           <Button icon={<ReloadOutlined />} onClick={loadDetail} loading={loading}>

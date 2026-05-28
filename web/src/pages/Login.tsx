@@ -7,7 +7,6 @@ import { Link, useNavigate } from 'react-router-dom';
 import { ApiResult } from '../api/request';
 import { login } from '../api/auth';
 import { useAuthStore } from '../store/authStore';
-import { FloatingStickers } from '../components/decorations/FloatingStickers';
 import { LanguageSwitcher } from '../components/LanguageSwitcher';
 import { SiteFooter } from '../components/SiteFooter';
 
@@ -41,7 +40,6 @@ export function Login() {
   return (
     <div className="auth-page">
       {contextHolder}
-      <FloatingStickers />
       <div className="auth-language">
         <LanguageSwitcher />
       </div>
