@@ -16,6 +16,8 @@ import org.springframework.util.StringUtils;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 
@@ -27,6 +29,10 @@ public class CycleCareWarningService {
     public static final String DISMISSED_STATUS = "DISMISSED";
 
     private static final String PRIVATE_SHARE = "PRIVATE";
+    private static final String SUMMARY_SHARE = "SUMMARY";
+    private static final String FULL_SHARE = "FULL";
+    private static final String BASIC_SHARE = "BASIC";
+    private static final String DETAILED_SHARE = "DETAILED";
     private static final String FLOW_NONE = "NONE";
     private static final String FLOW_VERY_HEAVY = "VERY_HEAVY";
 
@@ -42,7 +48,7 @@ public class CycleCareWarningService {
         }
         Long userId = profile.getUserId();
         Long loverSpaceId = profile.getDefaultLoverSpaceId();
-        boolean shareWithPartner = !PRIVATE_SHARE.equals(profile.getShareLevel());
+        boolean shareWithPartner = canNotifyPartner(profile.getShareLevel());
         if (prediction != null && prediction.getPredictedNextStartDate() != null) {
             long daysToNext = ChronoUnit.DAYS.between(today, prediction.getPredictedNextStartDate());
             if (daysToNext == 2) {
@@ -85,6 +91,13 @@ public class CycleCareWarningService {
                         "疼痛程度较高，建议休息、保暖；如果疼痛剧烈或反复出现，建议咨询医生。",
                         shareWithPartner);
             }
+            if (log.getSleepHours() != null && log.getSleepHours() < 6
+                    && log.getPainLevel() != null && log.getPainLevel() >= 5) {
+                createWarning(userId, log.getLoverSpaceId(), "LOW_SLEEP_WITH_PAIN", log.getLogDate(), "MEDIUM",
+                        "睡眠偏少且疼痛较明显",
+                        "睡眠偏少并伴随疼痛，建议今天减少消耗、优先休息；如持续不适可咨询医生。",
+                        shareWithPartner);
+            }
             if (isBleedingBetweenPeriods(profile, records, log)) {
                 createWarning(userId, log.getLoverSpaceId(), "BLEEDING_BETWEEN_PERIODS", log.getLogDate(), "MEDIUM",
                         "出现非经期出血记录",
@@ -99,6 +112,7 @@ public class CycleCareWarningService {
             }
         }
         createIrregularCycleWarnings(userId, loverSpaceId, records, shareWithPartner);
+        createContinuedMoodWarning(userId, loverSpaceId, logs, shareWithPartner);
     }
 
     public List<CycleWarning> listActiveWarnings(Long userId) {
@@ -187,7 +201,7 @@ public class CycleCareWarningService {
         notificationService.createNotification(
                 userId,
                 null,
-                "CYCLE_WARNING",
+                notificationType(type),
                 title,
                 message,
                 "CYCLE_WARNING",
@@ -198,12 +212,84 @@ public class CycleCareWarningService {
         createPartnerCareNotificationIfAllowed(warning, shareWithPartner);
     }
 
+    private String notificationType(String warningType) {
+        if ("PERIOD_COMING_SOON".equals(warningType)) {
+            return "CYCLE_PERIOD_COMING";
+        }
+        if ("PERIOD_EXPECTED_TODAY".equals(warningType)) {
+            return "CYCLE_PERIOD_EXPECTED_TODAY";
+        }
+        if ("PERIOD_LATE".equals(warningType)) {
+            return "CYCLE_PERIOD_LATE";
+        }
+        if ("SEVERE_PAIN".equals(warningType)) {
+            return "CYCLE_WARNING_SEVERE_PAIN";
+        }
+        if ("VERY_HEAVY_FLOW".equals(warningType)) {
+            return "CYCLE_WARNING_HEAVY_FLOW";
+        }
+        if ("LONG_PERIOD".equals(warningType)) {
+            return "CYCLE_WARNING_LONG_PERIOD";
+        }
+        if ("MOOD_STRESS_CONTINUED".equals(warningType)) {
+            return "CYCLE_MOOD_SUPPORT_TIP";
+        }
+        return "CYCLE_WARNING";
+    }
+
     private boolean exists(Long userId, String type, LocalDate date) {
         Long count = warningMapper.selectCount(new LambdaQueryWrapper<CycleWarning>()
                 .eq(CycleWarning::getUserId, userId)
                 .eq(CycleWarning::getWarningType, type)
                 .eq(CycleWarning::getWarningDate, date));
         return count != null && count > 0;
+    }
+
+    private void createContinuedMoodWarning(Long userId, Long loverSpaceId, List<CycleDailyLog> logs, boolean shareWithPartner) {
+        if (logs == null || logs.size() < 3) {
+            return;
+        }
+        List<CycleDailyLog> sorted = new ArrayList<CycleDailyLog>(logs);
+        sorted.sort(Comparator.comparing(CycleDailyLog::getLogDate, Comparator.nullsLast(Comparator.reverseOrder())));
+        int streak = 0;
+        LocalDate latestStressDate = null;
+        LocalDate previousStressDate = null;
+        for (CycleDailyLog log : sorted) {
+            if (log.getLogDate() == null) {
+                continue;
+            }
+            if (isStressMood(log.getMood())) {
+                if (previousStressDate != null && !previousStressDate.minusDays(1).equals(log.getLogDate())) {
+                    streak = 0;
+                    latestStressDate = null;
+                }
+                streak++;
+                if (latestStressDate == null) {
+                    latestStressDate = log.getLogDate();
+                }
+                previousStressDate = log.getLogDate();
+                if (streak >= 3) {
+                    createWarning(userId, log.getLoverSpaceId() == null ? loverSpaceId : log.getLoverSpaceId(),
+                            "MOOD_STRESS_CONTINUED", latestStressDate, "MEDIUM",
+                            "连续多天情绪压力偏高",
+                            "连续多天记录到焦虑、烦躁或压力感。可以先放慢节奏，也可以和心理老师聊聊；本提醒不替代专业心理咨询。",
+                            shareWithPartner);
+                    return;
+                }
+            } else {
+                streak = 0;
+                latestStressDate = null;
+                previousStressDate = null;
+            }
+        }
+    }
+
+    private boolean isStressMood(String mood) {
+        if (!StringUtils.hasText(mood)) {
+            return false;
+        }
+        String value = mood.trim().toUpperCase();
+        return "ANXIOUS".equals(value) || "IRRITABLE".equals(value) || "STRESSED".equals(value) || "SAD".equals(value);
     }
 
     private void createPartnerCareNotificationIfAllowed(CycleWarning warning, boolean shareWithPartner) {
@@ -216,7 +302,7 @@ public class CycleCareWarningService {
                 notificationService.createNotification(
                         member.getUserId(),
                         warning.getUserId(),
-                        "CYCLE_PARTNER_CARE",
+                        "CYCLE_PARTNER_CARE_TIP",
                         "今天可能需要更多关心",
                         "对方今天可能需要更多关心，可以主动分担一些事情。",
                         "CYCLE_CARE",
@@ -226,6 +312,25 @@ public class CycleCareWarningService {
                 );
             }
         }
+    }
+
+    private boolean canNotifyPartner(String shareLevel) {
+        String value = normalizeShareLevel(shareLevel);
+        return SUMMARY_SHARE.equals(value) || FULL_SHARE.equals(value);
+    }
+
+    private String normalizeShareLevel(String shareLevel) {
+        if (!StringUtils.hasText(shareLevel)) {
+            return PRIVATE_SHARE;
+        }
+        String value = shareLevel.trim().toUpperCase();
+        if (BASIC_SHARE.equals(value)) {
+            return SUMMARY_SHARE;
+        }
+        if (DETAILED_SHARE.equals(value)) {
+            return FULL_SHARE;
+        }
+        return value;
     }
 
 }

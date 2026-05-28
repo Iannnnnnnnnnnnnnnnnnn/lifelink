@@ -137,7 +137,7 @@ export function AppLayout() {
         setMobileMenuOpen(false);
       },
     },
-    {
+    ...(hasCoupleRelationship ? [{
       key: '/cycle-care',
       icon: <HeartOutlined />,
       label: t('menu.cycleCare'),
@@ -145,7 +145,7 @@ export function AppLayout() {
         navigate('/cycle-care');
         setMobileMenuOpen(false);
       },
-    },
+    }] : []),
     {
       key: '/finance',
       icon: <DollarOutlined />,

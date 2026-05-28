@@ -17,6 +17,7 @@ function getIcon(item: CalendarDayItem) {
   if (item.type === 'TODO') return <CheckSquareOutlined />;
   if (item.type === 'TODO_DONE') return <CheckCircleOutlined />;
   if (item.type === 'ANNIVERSARY') return <HeartOutlined />;
+  if (item.type.startsWith('CYCLE_')) return <HeartOutlined />;
   if (item.type === 'DAILY_POST') return <ReadOutlined />;
   if (item.type === 'TRANSACTION') return <DollarOutlined />;
   return <CalendarOutlined />;

@@ -238,6 +238,10 @@ export function CalendarPage() {
       navigate(`/daily/${item.targetId}`);
     } else if (item.type === 'TRANSACTION') {
       navigate('/finance/transactions');
+    } else if (item.type === 'CYCLE_DAILY_REPORT') {
+      navigate('/cycle-care/daily');
+    } else if (item.type.startsWith('CYCLE_')) {
+      navigate('/cycle-care');
     } else if (item.type === 'CUSTOM_EVENT') {
       openEditEvent(item);
     }

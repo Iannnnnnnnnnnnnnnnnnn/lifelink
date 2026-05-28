@@ -48,7 +48,9 @@ public class CycleCareDailyAdvicePromptBuilder {
         payload.put("painLevel", log == null ? null : log.getPainLevel());
         payload.put("mood", log == null ? null : log.getMood());
         payload.put("symptoms", readSymptoms(log == null ? null : log.getSymptoms()));
-        payload.put("temperatureFeeling", log == null ? null : log.getTemperatureFeeling());
+        payload.put("sleepHours", log == null ? null : log.getSleepHours());
+        payload.put("waterCups", log == null ? null : log.getWaterCups());
+        payload.put("exerciseMinutes", log == null ? null : log.getExerciseMinutes());
         payload.put("appetite", log == null ? null : log.getAppetite());
         payload.put("noteSummary", sanitizeNote(log == null ? null : log.getNote()));
         payload.put("warningTypes", ruleDraft.getWarningTypes());

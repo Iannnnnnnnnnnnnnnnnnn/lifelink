@@ -2,6 +2,7 @@ import { ApiResult, request } from './request';
 
 export type CycleShareLevel = 'PRIVATE' | 'SUMMARY' | 'CALENDAR_ONLY' | 'FULL' | 'BASIC' | 'DETAILED';
 export type CycleFlowLevel = 'NONE' | 'LIGHT' | 'MEDIUM' | 'HEAVY' | 'VERY_HEAVY';
+export type CycleBloodColor = 'BRIGHT_RED' | 'DARK_RED' | 'BROWN' | 'PINK' | 'OTHER';
 
 export interface CycleCareAccess {
   enabled: boolean;
@@ -17,8 +18,10 @@ export interface CycleCareProfile {
   periodLength: number;
   lastPeriodStartDate?: string;
   reminderEnabled: boolean;
+  dailyAdviceEnabled: boolean;
   shareLevel: CycleShareLevel;
   timezone: string;
+  privacyNoteVisibleToPartner: boolean;
   createdAt: string;
   updatedAt: string;
 }
@@ -59,6 +62,9 @@ export interface CyclePeriodRecord {
   loverSpaceId?: number;
   startDate: string;
   endDate?: string;
+  flowSummary?: string;
+  painSummary?: string;
+  colorSummary?: string;
   cycleLengthSnapshot?: number;
   periodLengthSnapshot?: number;
   note?: string;
@@ -71,11 +77,20 @@ export interface CycleDailyLog {
   loverSpaceId?: number;
   logDate: string;
   flowLevel: CycleFlowLevel;
+  bloodColor?: CycleBloodColor;
   painLevel?: number;
   mood?: string;
   symptoms: string[];
   temperatureFeeling?: string;
   appetite?: string;
+  sleepHours?: number;
+  waterCups?: number;
+  exerciseMinutes?: number;
+  foodTags: string[];
+  medicationNote?: string;
+  dischargeNote?: string;
+  temperature?: number;
+  weight?: number;
   note?: string;
   createdAt: string;
   updatedAt: string;
@@ -113,20 +128,43 @@ export interface CycleDailyAdviceReport {
   updatedAt: string;
 }
 
+export interface CycleCalendarEvent {
+  id?: number;
+  type: string;
+  title: string;
+  date: string;
+  predicted: boolean;
+  loverSpaceId?: number;
+  metadata?: Record<string, unknown>;
+}
+
+export interface CyclePartnerSummary {
+  visible: boolean;
+  shareLevel: CycleShareLevel;
+  title?: string;
+  careAdvice?: string;
+  disclaimer?: string;
+}
+
 export interface UpsertCycleCareProfileRequest {
   defaultLoverSpaceId?: number;
   cycleLength?: number;
   periodLength?: number;
   lastPeriodStartDate?: string;
   reminderEnabled?: boolean;
+  dailyAdviceEnabled?: boolean;
   shareLevel?: CycleShareLevel;
   timezone?: string;
+  privacyNoteVisibleToPartner?: boolean;
 }
 
 export interface CreateCyclePeriodRecordRequest {
   loverSpaceId?: number;
   startDate: string;
   endDate?: string;
+  flowSummary?: string;
+  painSummary?: string;
+  colorSummary?: string;
   note?: string;
 }
 
@@ -135,12 +173,36 @@ export type UpdateCyclePeriodRecordRequest = CreateCyclePeriodRecordRequest;
 export interface UpsertCycleDailyLogRequest {
   loverSpaceId?: number;
   flowLevel?: CycleFlowLevel;
+  bloodColor?: CycleBloodColor;
   painLevel?: number;
   mood?: string;
   symptoms?: string[];
   temperatureFeeling?: string;
   appetite?: string;
+  sleepHours?: number;
+  waterCups?: number;
+  exerciseMinutes?: number;
+  foodTags?: string[];
+  medicationNote?: string;
+  dischargeNote?: string;
+  temperature?: number;
+  weight?: number;
   note?: string;
+}
+
+export interface CycleParseLogResult {
+  flowLevel?: CycleFlowLevel;
+  bloodColor?: CycleBloodColor;
+  painLevel?: number;
+  mood?: string;
+  sleepHours?: number;
+  waterCups?: number;
+  exerciseMinutes?: number;
+  symptoms: string[];
+  foodTags: string[];
+  note?: string;
+  ruleBased: boolean;
+  disclaimer?: string;
 }
 
 export function getCycleCareAccess() {
@@ -160,27 +222,31 @@ export function getCycleToday(loverSpaceId?: number) {
 }
 
 export function getCyclePeriodRecords(params?: { loverSpaceId?: number; page?: number; size?: number }) {
-  return request.get<ApiResult<CyclePeriodRecord[]>>('/api/cycle-care/period-records', { params });
+  return request.get<ApiResult<CyclePeriodRecord[]>>('/api/cycle-care/periods', { params });
 }
 
 export function createCyclePeriodRecord(data: CreateCyclePeriodRecordRequest) {
-  return request.post<ApiResult<CyclePeriodRecord>>('/api/cycle-care/period-records', data);
+  return request.post<ApiResult<CyclePeriodRecord>>('/api/cycle-care/periods', data);
 }
 
 export function updateCyclePeriodRecord(recordId: number, data: UpdateCyclePeriodRecordRequest) {
-  return request.put<ApiResult<CyclePeriodRecord>>(`/api/cycle-care/period-records/${recordId}`, data);
+  return request.put<ApiResult<CyclePeriodRecord>>(`/api/cycle-care/periods/${recordId}`, data);
 }
 
 export function deleteCyclePeriodRecord(recordId: number) {
-  return request.delete<ApiResult<void>>(`/api/cycle-care/period-records/${recordId}`);
+  return request.delete<ApiResult<void>>(`/api/cycle-care/periods/${recordId}`);
 }
 
 export function getCycleDailyLog(date: string) {
-  return request.get<ApiResult<CycleDailyLog | null>>(`/api/cycle-care/daily-logs/${date}`);
+  return request.get<ApiResult<CycleDailyLog | null>>(`/api/cycle-care/logs/${date}`);
 }
 
 export function upsertCycleDailyLog(date: string, data: UpsertCycleDailyLogRequest) {
-  return request.put<ApiResult<CycleDailyLog>>(`/api/cycle-care/daily-logs/${date}`, data);
+  return request.put<ApiResult<CycleDailyLog>>(`/api/cycle-care/logs/${date}`, data);
+}
+
+export function parseCycleLog(text: string) {
+  return request.post<ApiResult<CycleParseLogResult>>('/api/cycle-care/parse-log', { text });
 }
 
 export function getCycleWarnings() {
@@ -211,4 +277,16 @@ export function getLatestPartnerCycleDailyReport(spaceId: number) {
   return request.get<ApiResult<CycleDailyAdviceReport | null>>('/api/cycle-care/partner/daily-reports/latest', {
     params: { spaceId },
   });
+}
+
+export function getCycleCalendar(params?: { loverSpaceId?: number; year?: number; month?: number }) {
+  return request.get<ApiResult<CycleCalendarEvent[]>>('/api/cycle-care/calendar', { params });
+}
+
+export function getPartnerCycleCalendar(params: { spaceId: number; year?: number; month?: number }) {
+  return request.get<ApiResult<CycleCalendarEvent[]>>('/api/cycle-care/partner/calendar', { params });
+}
+
+export function getPartnerCycleSummary(spaceId: number) {
+  return request.get<ApiResult<CyclePartnerSummary>>('/api/cycle-care/partner/summary', { params: { spaceId } });
 }

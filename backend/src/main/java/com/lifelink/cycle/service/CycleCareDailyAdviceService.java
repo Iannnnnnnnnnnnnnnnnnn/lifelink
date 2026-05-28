@@ -152,7 +152,7 @@ public class CycleCareDailyAdviceService {
     }
 
     public CycleDailyAdviceReportResponse getLatestPartnerReport(Long loverSpaceId, Long userId) {
-        relationshipPermissionService.requireActiveRelationshipMember(loverSpaceId, userId);
+        accessService.requireActiveLoverSpaceMember(loverSpaceId, userId);
         List<RelationshipMember> members = relationshipPermissionService.listActiveMembers(loverSpaceId);
         Set<Long> activeUserIds = new HashSet<Long>();
         for (RelationshipMember member : members) {
@@ -177,6 +177,9 @@ public class CycleCareDailyAdviceService {
     }
 
     private GenerationResult generateScheduled(CycleCareProfile profile) {
+        if (!Boolean.TRUE.equals(profile.getDailyAdviceEnabled())) {
+            return GenerationResult.SKIPPED;
+        }
         if (!isActiveUser(profile.getUserId())) {
             return GenerationResult.SKIPPED;
         }
@@ -519,8 +522,10 @@ public class CycleCareDailyAdviceService {
         profile.setPeriodLength(source.getPeriodLength());
         profile.setLastPeriodStartDate(source.getLastPeriodStartDate());
         profile.setReminderEnabled(source.getReminderEnabled());
+        profile.setDailyAdviceEnabled(source.getDailyAdviceEnabled());
         profile.setShareLevel(normalizeShareLevel(source.getShareLevel()));
         profile.setTimezone(source.getTimezone());
+        profile.setPrivacyNoteVisibleToPartner(source.getPrivacyNoteVisibleToPartner());
         profile.setCreatedAt(source.getCreatedAt());
         profile.setUpdatedAt(source.getUpdatedAt());
         return profile;

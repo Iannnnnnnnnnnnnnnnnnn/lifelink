@@ -170,7 +170,10 @@ export function CycleDailyReportPage() {
       <div className="page-wide cycle-page">
         {contextHolder}
         <Card>
-          <Empty image={Empty.PRESENTED_IMAGE_SIMPLE} description={access.reason || t('cycle.accessDenied')}>
+          <Empty
+            image={Empty.PRESENTED_IMAGE_SIMPLE}
+            description={access.reason === 'NO_LOVER_SPACE' ? t('cycle.accessDenied') : access.reason || t('cycle.accessDenied')}
+          >
             <Button type="primary" onClick={() => navigate('/relationships/create')}>
               {t('cycle.createCoupleSpace')}
             </Button>

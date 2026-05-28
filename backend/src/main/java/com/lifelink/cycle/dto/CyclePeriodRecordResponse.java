@@ -20,6 +20,12 @@ public class CyclePeriodRecordResponse {
 
     private LocalDate endDate;
 
+    private String flowSummary;
+
+    private String painSummary;
+
+    private String colorSummary;
+
     private Integer cycleLengthSnapshot;
 
     private Integer periodLengthSnapshot;

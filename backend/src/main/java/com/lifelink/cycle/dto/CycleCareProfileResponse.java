@@ -26,9 +26,13 @@ public class CycleCareProfileResponse {
 
     private Boolean reminderEnabled;
 
+    private Boolean dailyAdviceEnabled;
+
     private String shareLevel;
 
     private String timezone;
+
+    private Boolean privacyNoteVisibleToPartner;
 
     private LocalDateTime createdAt;
 

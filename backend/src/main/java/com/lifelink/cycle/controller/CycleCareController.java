@@ -7,6 +7,8 @@ import com.lifelink.cycle.dto.CycleCareAccessResponse;
 import com.lifelink.cycle.dto.CycleCareProfileResponse;
 import com.lifelink.cycle.dto.CycleDailyAdviceReportResponse;
 import com.lifelink.cycle.dto.CycleDailyLogResponse;
+import com.lifelink.cycle.dto.CycleParseLogRequest;
+import com.lifelink.cycle.dto.CycleParseLogResponse;
 import com.lifelink.cycle.dto.CyclePartnerSummaryResponse;
 import com.lifelink.cycle.dto.CyclePeriodRecordResponse;
 import com.lifelink.cycle.dto.CycleTodayResponse;
@@ -15,6 +17,7 @@ import com.lifelink.cycle.dto.UpdateCyclePeriodRecordRequest;
 import com.lifelink.cycle.dto.UpdateCycleShareSettingsRequest;
 import com.lifelink.cycle.dto.UpsertCycleCareProfileRequest;
 import com.lifelink.cycle.dto.UpsertCycleDailyLogRequest;
+import com.lifelink.cycle.service.CycleCareCalendarService;
 import com.lifelink.cycle.service.CycleCareDailyAdviceService;
 import com.lifelink.cycle.service.CycleCareService;
 import com.lifelink.security.LoginUser;
@@ -43,6 +46,7 @@ public class CycleCareController {
 
     private final CycleCareService cycleCareService;
     private final CycleCareDailyAdviceService dailyAdviceService;
+    private final CycleCareCalendarService calendarService;
 
     @GetMapping("/access")
     public Result<CycleCareAccessResponse> getAccess(@AuthenticationPrincipal LoginUser loginUser) {
@@ -80,10 +84,24 @@ public class CycleCareController {
         return Result.success(cycleCareService.listPeriodRecords(loverSpaceId, page, size, loginUser.getId()));
     }
 
+    @GetMapping("/periods")
+    public Result<List<CyclePeriodRecordResponse>> listPeriods(@RequestParam(required = false) Long loverSpaceId,
+                                                               @RequestParam(defaultValue = "1") Integer page,
+                                                               @RequestParam(defaultValue = "20") Integer size,
+                                                               @AuthenticationPrincipal LoginUser loginUser) {
+        return listPeriodRecords(loverSpaceId, page, size, loginUser);
+    }
+
     @PostMapping("/period-records")
     public Result<CyclePeriodRecordResponse> createPeriodRecord(@Valid @RequestBody CreateCyclePeriodRecordRequest request,
                                                                 @AuthenticationPrincipal LoginUser loginUser) {
         return Result.success(cycleCareService.createPeriodRecord(request, loginUser.getId()));
+    }
+
+    @PostMapping("/periods")
+    public Result<CyclePeriodRecordResponse> createPeriod(@Valid @RequestBody CreateCyclePeriodRecordRequest request,
+                                                          @AuthenticationPrincipal LoginUser loginUser) {
+        return createPeriodRecord(request, loginUser);
     }
 
     @PutMapping("/period-records/{recordId}")
@@ -93,11 +111,24 @@ public class CycleCareController {
         return Result.success(cycleCareService.updatePeriodRecord(recordId, request, loginUser.getId()));
     }
 
+    @PutMapping("/periods/{recordId}")
+    public Result<CyclePeriodRecordResponse> updatePeriod(@PathVariable Long recordId,
+                                                          @Valid @RequestBody UpdateCyclePeriodRecordRequest request,
+                                                          @AuthenticationPrincipal LoginUser loginUser) {
+        return updatePeriodRecord(recordId, request, loginUser);
+    }
+
     @DeleteMapping("/period-records/{recordId}")
     public Result<Void> deletePeriodRecord(@PathVariable Long recordId,
                                            @AuthenticationPrincipal LoginUser loginUser) {
         cycleCareService.deletePeriodRecord(recordId, loginUser.getId());
         return Result.success();
+    }
+
+    @DeleteMapping("/periods/{recordId}")
+    public Result<Void> deletePeriod(@PathVariable Long recordId,
+                                     @AuthenticationPrincipal LoginUser loginUser) {
+        return deletePeriodRecord(recordId, loginUser);
     }
 
     @GetMapping("/daily-logs")
@@ -108,10 +139,24 @@ public class CycleCareController {
         return Result.success(cycleCareService.listDailyLogs(loverSpaceId, startDate, endDate, loginUser.getId()));
     }
 
+    @GetMapping("/logs")
+    public Result<List<CycleDailyLogResponse>> listLogs(@RequestParam(required = false) Long loverSpaceId,
+                                                        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+                                                        @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+                                                        @AuthenticationPrincipal LoginUser loginUser) {
+        return listDailyLogs(loverSpaceId, startDate, endDate, loginUser);
+    }
+
     @GetMapping("/daily-logs/{date}")
     public Result<CycleDailyLogResponse> getDailyLog(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
                                                      @AuthenticationPrincipal LoginUser loginUser) {
         return Result.success(cycleCareService.getDailyLog(date, loginUser.getId()));
+    }
+
+    @GetMapping("/logs/{date}")
+    public Result<CycleDailyLogResponse> getLog(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+                                                @AuthenticationPrincipal LoginUser loginUser) {
+        return getDailyLog(date, loginUser);
     }
 
     @PutMapping("/daily-logs/{date}")
@@ -119,6 +164,19 @@ public class CycleCareController {
                                                         @Valid @RequestBody UpsertCycleDailyLogRequest request,
                                                         @AuthenticationPrincipal LoginUser loginUser) {
         return Result.success(cycleCareService.upsertDailyLog(date, request, loginUser.getId()));
+    }
+
+    @PutMapping("/logs/{date}")
+    public Result<CycleDailyLogResponse> upsertLog(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+                                                   @Valid @RequestBody UpsertCycleDailyLogRequest request,
+                                                   @AuthenticationPrincipal LoginUser loginUser) {
+        return upsertDailyLog(date, request, loginUser);
+    }
+
+    @PostMapping("/parse-log")
+    public Result<CycleParseLogResponse> parseLog(@Valid @RequestBody CycleParseLogRequest request,
+                                                  @AuthenticationPrincipal LoginUser loginUser) {
+        return Result.success(cycleCareService.parseLogText(request.getText(), loginUser.getId()));
     }
 
     @GetMapping("/warnings")
@@ -168,7 +226,21 @@ public class CycleCareController {
                                                                       @RequestParam(required = false) Integer year,
                                                                       @RequestParam(required = false) Integer month,
                                                                       @AuthenticationPrincipal LoginUser loginUser) {
-        return Result.success(cycleCareService.getCalendarEvents(loverSpaceId, year, month, loginUser.getId()));
+        return Result.success(calendarService.getOwnerCalendarEvents(loverSpaceId, year, month, loginUser.getId()));
+    }
+
+    @GetMapping("/partner/calendar")
+    public Result<List<CycleCalendarEventResponse>> getPartnerCalendarEvents(@RequestParam Long spaceId,
+                                                                            @RequestParam(required = false) Integer year,
+                                                                            @RequestParam(required = false) Integer month,
+                                                                            @AuthenticationPrincipal LoginUser loginUser) {
+        return Result.success(calendarService.getPartnerCalendarEvents(spaceId, year, month, loginUser.getId()));
+    }
+
+    @GetMapping("/partner/summary")
+    public Result<CyclePartnerSummaryResponse> getPartnerSummaryV2(@RequestParam Long spaceId,
+                                                                   @AuthenticationPrincipal LoginUser loginUser) {
+        return Result.success(cycleCareService.getPartnerSummary(spaceId, loginUser.getId()));
     }
 
     @GetMapping("/partner-summary")

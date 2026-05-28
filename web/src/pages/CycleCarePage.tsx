@@ -42,6 +42,7 @@ import { useNavigate } from 'react-router-dom';
 import {
   createCyclePeriodRecord,
   CycleCareAccess,
+  CycleBloodColor,
   CycleCareProfile,
   CycleDailyLog,
   CycleFlowLevel,
@@ -58,6 +59,7 @@ import {
   updateCyclePeriodRecord,
   upsertCycleCareProfile,
   upsertCycleDailyLog,
+  parseCycleLog,
 } from '../api/cycleCare';
 import { getRelationships, type RelationshipSummary } from '../api/relationship';
 import { formatDate } from '../utils/date';
@@ -68,29 +70,46 @@ type ProfileFormValues = {
   periodLength?: number;
   lastPeriodStartDate?: Dayjs;
   reminderEnabled?: boolean;
+  dailyAdviceEnabled?: boolean;
   shareLevel?: CycleShareLevel;
+  privacyNoteVisibleToPartner?: boolean;
 };
 
 type DailyLogFormValues = {
   logDate: Dayjs;
   flowLevel: CycleFlowLevel;
+  bloodColor?: CycleBloodColor;
   painLevel?: number;
   mood?: string;
   symptoms?: string[];
   temperatureFeeling?: string;
   appetite?: string;
+  sleepHours?: number;
+  waterCups?: number;
+  exerciseMinutes?: number;
+  foodTags?: string[];
+  medicationNote?: string;
+  dischargeNote?: string;
+  temperature?: number;
+  weight?: number;
   note?: string;
 };
 
 type PeriodRecordFormValues = {
   startDate: Dayjs;
   endDate?: Dayjs;
+  flowSummary?: string;
+  painSummary?: string;
+  colorSummary?: string;
   note?: string;
 };
 
 const flowLevels: CycleFlowLevel[] = ['NONE', 'LIGHT', 'MEDIUM', 'HEAVY', 'VERY_HEAVY'];
+const bloodColors = ['BRIGHT_RED', 'DARK_RED', 'BROWN', 'PINK', 'OTHER'];
 const shareLevels: CycleShareLevel[] = ['PRIVATE', 'SUMMARY', 'CALENDAR_ONLY', 'FULL'];
+const moodOptions = ['CALM', 'HAPPY', 'TIRED', 'ANXIOUS', 'IRRITABLE', 'SAD', 'STRESSED'];
 const symptomOptions = ['cramps', 'headache', 'backache', 'tired', 'bloating', 'fever', 'sick'];
+const foodOptions = ['light', 'spicy', 'cold', 'sweet', 'protein', 'warm'];
 
 export function CycleCarePage() {
   const { t, i18n } = useTranslation();
@@ -112,6 +131,8 @@ export function CycleCarePage() {
   const [loading, setLoading] = useState(false);
   const [savingProfile, setSavingProfile] = useState(false);
   const [savingDailyLog, setSavingDailyLog] = useState(false);
+  const [parsingLog, setParsingLog] = useState(false);
+  const [naturalLogText, setNaturalLogText] = useState('');
   const [savingRecord, setSavingRecord] = useState(false);
   const [recordModalOpen, setRecordModalOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState<CyclePeriodRecord | null>(null);
@@ -132,11 +153,20 @@ export function CycleCarePage() {
     dailyForm.setFieldsValue({
       logDate: date,
       flowLevel: log?.flowLevel || 'NONE',
+      bloodColor: log?.bloodColor,
       painLevel: log?.painLevel ?? 0,
       mood: log?.mood,
       symptoms: log?.symptoms || [],
       temperatureFeeling: log?.temperatureFeeling,
       appetite: log?.appetite,
+      sleepHours: log?.sleepHours,
+      waterCups: log?.waterCups,
+      exerciseMinutes: log?.exerciseMinutes,
+      foodTags: log?.foodTags || [],
+      medicationNote: log?.medicationNote,
+      dischargeNote: log?.dischargeNote,
+      temperature: log?.temperature,
+      weight: log?.weight,
       note: log?.note,
     });
   };
@@ -177,7 +207,9 @@ export function CycleCarePage() {
         periodLength: profileData.periodLength,
         lastPeriodStartDate: profileData.lastPeriodStartDate ? dayjs(profileData.lastPeriodStartDate) : undefined,
         reminderEnabled: profileData.reminderEnabled,
+        dailyAdviceEnabled: profileData.dailyAdviceEnabled,
         shareLevel: profileData.shareLevel,
+        privacyNoteVisibleToPartner: profileData.privacyNoteVisibleToPartner,
       });
       await loadCycleData(loverSpaceId);
     } catch (error) {
@@ -210,8 +242,10 @@ export function CycleCarePage() {
         periodLength: values.periodLength,
         lastPeriodStartDate: values.lastPeriodStartDate?.format('YYYY-MM-DD'),
         reminderEnabled: values.reminderEnabled,
+        dailyAdviceEnabled: values.dailyAdviceEnabled,
         shareLevel: values.shareLevel,
         timezone: 'Asia/Shanghai',
+        privacyNoteVisibleToPartner: values.privacyNoteVisibleToPartner,
       });
       const nextProfile = response.data.data;
       setProfile(nextProfile);
@@ -246,11 +280,20 @@ export function CycleCarePage() {
       const response = await upsertCycleDailyLog(dateText, {
         loverSpaceId: selectedLoverSpaceId,
         flowLevel: values.flowLevel,
+        bloodColor: values.bloodColor,
         painLevel: values.painLevel,
         mood: values.mood,
         symptoms: values.symptoms,
         temperatureFeeling: values.temperatureFeeling,
         appetite: values.appetite,
+        sleepHours: values.sleepHours,
+        waterCups: values.waterCups,
+        exerciseMinutes: values.exerciseMinutes,
+        foodTags: values.foodTags,
+        medicationNote: values.medicationNote,
+        dischargeNote: values.dischargeNote,
+        temperature: values.temperature,
+        weight: values.weight,
         note: values.note,
       });
       setDailyLog(response.data.data);
@@ -260,6 +303,33 @@ export function CycleCarePage() {
       messageApi.error(t('cycle.saveFailed'));
     } finally {
       setSavingDailyLog(false);
+    }
+  };
+
+  const handleParseNaturalLog = async () => {
+    const text = naturalLogText.trim();
+    if (!text) return;
+    setParsingLog(true);
+    try {
+      const response = await parseCycleLog(text);
+      const parsed = response.data.data;
+      dailyForm.setFieldsValue({
+        flowLevel: parsed.flowLevel || dailyForm.getFieldValue('flowLevel') || 'NONE',
+        bloodColor: parsed.bloodColor,
+        painLevel: parsed.painLevel ?? dailyForm.getFieldValue('painLevel'),
+        mood: parsed.mood,
+        sleepHours: parsed.sleepHours,
+        waterCups: parsed.waterCups,
+        exerciseMinutes: parsed.exerciseMinutes,
+        symptoms: parsed.symptoms || [],
+        foodTags: parsed.foodTags || [],
+        note: parsed.note || text,
+      });
+      messageApi.success(t('cycle.parseApplied'));
+    } catch (error) {
+      messageApi.error(t('cycle.parseFailed'));
+    } finally {
+      setParsingLog(false);
     }
   };
 
@@ -276,6 +346,9 @@ export function CycleCarePage() {
       startDate: dayjs(record.startDate),
       endDate: record.endDate ? dayjs(record.endDate) : undefined,
       note: record.note,
+      flowSummary: record.flowSummary,
+      painSummary: record.painSummary,
+      colorSummary: record.colorSummary,
     });
     setRecordModalOpen(true);
   };
@@ -289,6 +362,9 @@ export function CycleCarePage() {
         loverSpaceId: selectedLoverSpaceId,
         startDate: values.startDate.format('YYYY-MM-DD'),
         endDate: values.endDate?.format('YYYY-MM-DD'),
+        flowSummary: values.flowSummary,
+        painSummary: values.painSummary,
+        colorSummary: values.colorSummary,
         note: values.note,
       };
       if (editingRecord) {
@@ -399,7 +475,7 @@ export function CycleCarePage() {
         <Card>
           <Empty
             image={Empty.PRESENTED_IMAGE_SIMPLE}
-            description={access.reason || t('cycle.accessDenied')}
+            description={access.reason === 'NO_LOVER_SPACE' ? t('cycle.accessDenied') : access.reason || t('cycle.accessDenied')}
           >
             <Button type="primary" onClick={() => navigate('/relationships/create')}>
               {t('cycle.createCoupleSpace')}
@@ -544,7 +620,20 @@ export function CycleCarePage() {
             label: t('cycle.dailyLogTab'),
             children: (
               <Card title={t('cycle.dailyLog')}>
-                <Form form={dailyForm} layout="vertical" initialValues={{ logDate: dailyDate, flowLevel: 'NONE', painLevel: 0, symptoms: [] }}>
+                <Space direction="vertical" size={12} className="form-full-width">
+                  <Input.TextArea
+                    rows={2}
+                    maxLength={1000}
+                    showCount
+                    value={naturalLogText}
+                    onChange={(event) => setNaturalLogText(event.target.value)}
+                    placeholder={t('cycle.naturalLogPlaceholder')}
+                  />
+                  <Button loading={parsingLog} onClick={handleParseNaturalLog}>
+                    {t('cycle.parseNaturalLog')}
+                  </Button>
+                </Space>
+                <Form form={dailyForm} layout="vertical" initialValues={{ logDate: dailyDate, flowLevel: 'NONE', painLevel: 0, symptoms: [], foodTags: [] }}>
                   <Row gutter={[16, 0]}>
                     <Col xs={24} md={8}>
                       <Form.Item name="logDate" label={t('cycle.logDate')} rules={[{ required: true, message: t('cycle.logDateRequired') }]}>
@@ -557,13 +646,18 @@ export function CycleCarePage() {
                       </Form.Item>
                     </Col>
                     <Col xs={24} md={8}>
+                      <Form.Item name="bloodColor" label={t('cycle.bloodColor')}>
+                        <Select allowClear options={bloodColors.map((value) => ({ value, label: t(`cycle.bloodColors.${value}`) }))} />
+                      </Form.Item>
+                    </Col>
+                    <Col xs={24} md={8}>
                       <Form.Item name="painLevel" label={t('cycle.painLevel')}>
                         <Slider min={0} max={10} marks={{ 0: '0', 5: '5', 10: '10' }} />
                       </Form.Item>
                     </Col>
                     <Col xs={24} md={8}>
                       <Form.Item name="mood" label={t('cycle.mood')}>
-                        <Select allowClear options={['calm', 'sensitive', 'tired', 'low', 'good'].map((value) => ({ value, label: t(`cycle.moods.${value}`) }))} />
+                        <Select allowClear options={moodOptions.map((value) => ({ value, label: t(`cycle.moods.${value}`) }))} />
                       </Form.Item>
                     </Col>
                     <Col xs={24} md={8}>
@@ -576,9 +670,49 @@ export function CycleCarePage() {
                         <Select allowClear options={['normal', 'low', 'high'].map((value) => ({ value, label: t(`cycle.appetiteOptions.${value}`) }))} />
                       </Form.Item>
                     </Col>
+                    <Col xs={24} md={8}>
+                      <Form.Item name="sleepHours" label={t('cycle.sleepHours')}>
+                        <InputNumber className="form-full-width" min={0} max={24} step={0.5} addonAfter={t('cycle.hourUnit')} />
+                      </Form.Item>
+                    </Col>
+                    <Col xs={24} md={8}>
+                      <Form.Item name="waterCups" label={t('cycle.waterCups')}>
+                        <InputNumber className="form-full-width" min={0} max={40} addonAfter={t('cycle.cupUnit')} />
+                      </Form.Item>
+                    </Col>
+                    <Col xs={24} md={8}>
+                      <Form.Item name="exerciseMinutes" label={t('cycle.exerciseMinutes')}>
+                        <InputNumber className="form-full-width" min={0} max={1440} addonAfter={t('cycle.minuteUnit')} />
+                      </Form.Item>
+                    </Col>
                     <Col xs={24}>
                       <Form.Item name="symptoms" label={t('cycle.symptoms')}>
                         <Select mode="multiple" allowClear options={symptomOptions.map((value) => ({ value, label: t(`cycle.symptomOptions.${value}`) }))} />
+                      </Form.Item>
+                    </Col>
+                    <Col xs={24}>
+                      <Form.Item name="foodTags" label={t('cycle.foodTags')}>
+                        <Select mode="multiple" allowClear options={foodOptions.map((value) => ({ value, label: t(`cycle.foodOptions.${value}`) }))} />
+                      </Form.Item>
+                    </Col>
+                    <Col xs={24} md={8}>
+                      <Form.Item name="temperature" label={t('cycle.temperatureValue')}>
+                        <InputNumber className="form-full-width" min={30} max={45} step={0.1} addonAfter="℃" />
+                      </Form.Item>
+                    </Col>
+                    <Col xs={24} md={8}>
+                      <Form.Item name="weight" label={t('cycle.weight')}>
+                        <InputNumber className="form-full-width" min={20} max={300} step={0.1} addonAfter="kg" />
+                      </Form.Item>
+                    </Col>
+                    <Col xs={24} md={8}>
+                      <Form.Item name="medicationNote" label={t('cycle.medicationNote')}>
+                        <Input maxLength={500} />
+                      </Form.Item>
+                    </Col>
+                    <Col xs={24}>
+                      <Form.Item name="dischargeNote" label={t('cycle.dischargeNote')}>
+                        <Input maxLength={500} />
                       </Form.Item>
                     </Col>
                     <Col xs={24}>
@@ -651,6 +785,16 @@ export function CycleCarePage() {
                         <Switch />
                       </Form.Item>
                     </Col>
+                    <Col xs={24} md={8}>
+                      <Form.Item name="dailyAdviceEnabled" label={t('cycle.dailyAdviceEnabled')} valuePropName="checked">
+                        <Switch />
+                      </Form.Item>
+                    </Col>
+                    <Col xs={24} md={8}>
+                      <Form.Item name="privacyNoteVisibleToPartner" label={t('cycle.privacyNoteVisibleToPartner')} valuePropName="checked">
+                        <Switch />
+                      </Form.Item>
+                    </Col>
                   </Row>
                   <Button type="primary" loading={savingProfile} onClick={handleSaveProfile}>
                     {t('common.save')}
@@ -683,6 +827,15 @@ export function CycleCarePage() {
           </Form.Item>
           <Form.Item name="endDate" label={t('cycle.endDate')}>
             <DatePicker className="form-full-width" />
+          </Form.Item>
+          <Form.Item name="flowSummary" label={t('cycle.flowSummary')}>
+            <Input maxLength={100} />
+          </Form.Item>
+          <Form.Item name="painSummary" label={t('cycle.painSummary')}>
+            <Input maxLength={100} />
+          </Form.Item>
+          <Form.Item name="colorSummary" label={t('cycle.colorSummary')}>
+            <Input maxLength={100} />
           </Form.Item>
           <Form.Item name="note" label={t('cycle.note')}>
             <Input.TextArea rows={3} maxLength={1000} showCount placeholder={t('cycle.notePlaceholder')} />

@@ -23,6 +23,12 @@ public class CyclePeriodRecord {
 
     private LocalDate endDate;
 
+    private String flowSummary;
+
+    private String painSummary;
+
+    private String colorSummary;
+
     private Integer cycleLengthSnapshot;
 
     private Integer periodLengthSnapshot;
@@ -30,6 +36,8 @@ public class CyclePeriodRecord {
     private String note;
 
     private String status;
+
+    private LocalDateTime deletedAt;
 
     private LocalDateTime createdAt;
 

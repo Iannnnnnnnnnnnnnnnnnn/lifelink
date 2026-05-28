@@ -19,6 +19,8 @@ import com.lifelink.calendar.mapper.CalendarEventMapper;
 import com.lifelink.calendar.mapper.HolidayCalendarMapper;
 import com.lifelink.calendar.service.CalendarService;
 import com.lifelink.common.BusinessException;
+import com.lifelink.cycle.dto.CycleCalendarEventResponse;
+import com.lifelink.cycle.service.CycleCareCalendarService;
 import com.lifelink.daily.entity.DailyPost;
 import com.lifelink.daily.mapper.DailyPostMapper;
 import com.lifelink.relationship.entity.RelationshipMember;
@@ -65,6 +67,7 @@ public class CalendarServiceImpl implements CalendarService {
     private final CalendarEventMapper calendarEventMapper;
     private final HolidayCalendarMapper holidayCalendarMapper;
     private final RelationshipPermissionService relationshipPermissionService;
+    private final CycleCareCalendarService cycleCareCalendarService;
 
     @Override
     public CalendarMonthResponse getMonthCalendar(CalendarMonthQueryRequest request, Long userId) {
@@ -106,6 +109,9 @@ public class CalendarServiceImpl implements CalendarService {
         }
         if (enabled(request.getIncludeCustomEvents())) {
             fillCustomEvents(dayMap, relationshipId, startTime, endTime);
+        }
+        if (enabled(request.getIncludeCycleCare())) {
+            fillCycleCareEvents(dayMap, relationshipId, yearMonth, userId);
         }
 
         List<CalendarDayResponse> days = new ArrayList<CalendarDayResponse>(dayMap.values());
@@ -372,6 +378,24 @@ public class CalendarServiceImpl implements CalendarService {
         }
     }
 
+    private void fillCycleCareEvents(Map<LocalDate, CalendarDayResponse> dayMap, Long relationshipId, YearMonth yearMonth, Long userId) {
+        List<CycleCalendarEventResponse> events;
+        try {
+            events = cycleCareCalendarService.getRelationshipCalendarEvents(relationshipId, yearMonth, userId);
+        } catch (BusinessException ex) {
+            if (ex.getCode() != null && ex.getCode() == 403) {
+                return;
+            }
+            throw ex;
+        }
+        for (CycleCalendarEventResponse event : events) {
+            CalendarDayResponse day = dayMap.get(event.getDate());
+            if (day != null) {
+                day.getItems().add(buildCycleCareItem(event, relationshipId));
+            }
+        }
+    }
+
     private CalendarDayItemResponse buildTodoItem(SpaceTodo todo, LocalDate date, String itemType, LocalDateTime itemTime) {
         Map<String, Object> metadata = new HashMap<String, Object>();
         metadata.put("completedAt", todo.getCompletedAt());
@@ -508,6 +532,51 @@ public class CalendarServiceImpl implements CalendarService {
                 "calendar",
                 metadata
         );
+    }
+
+    private CalendarDayItemResponse buildCycleCareItem(CycleCalendarEventResponse event, Long relationshipId) {
+        Map<String, Object> metadata = new HashMap<String, Object>();
+        if (event.getMetadata() != null) {
+            metadata.putAll(event.getMetadata());
+        }
+        metadata.put("predicted", event.getPredicted());
+        return new CalendarDayItemResponse(
+                event.getId(),
+                event.getType(),
+                event.getTitle(),
+                String.valueOf(metadata.getOrDefault("disclaimer", "周期关怀提醒")),
+                event.getDate(),
+                event.getDate().atStartOfDay(),
+                null,
+                true,
+                relationshipId,
+                "CYCLE_CARE",
+                event.getId(),
+                ACTIVE_STATUS,
+                null,
+                null,
+                null,
+                null,
+                cycleCareColor(event.getType()),
+                "heart",
+                metadata
+        );
+    }
+
+    private String cycleCareColor(String type) {
+        if ("CYCLE_WARNING".equals(type)) {
+            return "#df746c";
+        }
+        if ("CYCLE_PERIOD_PREDICTED".equals(type)) {
+            return "#e9a34f";
+        }
+        if ("CYCLE_OVULATION_ESTIMATED".equals(type) || "CYCLE_FERTILE_WINDOW_ESTIMATED".equals(type)) {
+            return "#56b39b";
+        }
+        if ("CYCLE_DAILY_REPORT".equals(type)) {
+            return "#7487a8";
+        }
+        return "#c678dd";
     }
 
     private CalendarDayItemResponse buildHolidayItem(HolidayCalendar holiday) {

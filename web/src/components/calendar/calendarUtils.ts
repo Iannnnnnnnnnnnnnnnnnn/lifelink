@@ -94,6 +94,7 @@ export function getHolidayVisualType(item: CalendarDayItem): CalendarItemType | 
 
 export function getCalendarItemLabel(t: TFunction, item: CalendarDayItem) {
   if (item.type === 'SOLAR_TERM') return t('calendar.solarTerm');
+  if (item.type.startsWith('CYCLE_')) return t(`calendar.itemTypes.${item.type}`);
   if (item.type === 'HOLIDAY') {
     const holidayType = item.metadata?.holidayType;
     if (holidayType === 'LEGAL_HOLIDAY') return t('calendar.legalHoliday');
@@ -141,6 +142,9 @@ export function buildDayPills(day: CalendarDay | undefined, t: TFunction, langua
   if (day.expenseAmount > 0) add('TRANSACTION', 'expense', `${t('calendar.expense')} ${formatMoney(day.expenseAmount, language)}`);
   if (day.incomeAmount > 0) add('TRANSACTION', 'income', `${t('calendar.income')} ${formatMoney(day.incomeAmount, language)}`);
 
+  const cycleItems = day.items.filter((item) => item.type.startsWith('CYCLE_'));
+  cycleItems.slice(0, 2).forEach((item, index) => add(item.type, `cycle-${item.type}-${item.id || index}`, getDisplayTitle(item, language)));
+
   const customEvents = day.items.filter((item) => item.type === 'CUSTOM_EVENT');
   customEvents.forEach((item) => add('CUSTOM_EVENT', `event-${item.id}`, getDisplayTitle(item, language)));
 
@@ -153,6 +157,19 @@ export function groupDayItems(items: CalendarDayItem[], t: TFunction): CalendarS
     { key: 'anniversaries', title: t('calendar.sectionAnniversaries'), types: ['ANNIVERSARY'] },
     { key: 'daily', title: t('calendar.sectionDailyPosts'), types: ['DAILY_POST'] },
     { key: 'transactions', title: t('calendar.sectionTransactions'), types: ['TRANSACTION'] },
+    {
+      key: 'cycleCare',
+      title: t('calendar.sectionCycleCare'),
+      types: [
+        'CYCLE_PERIOD_ACTUAL',
+        'CYCLE_PERIOD_PREDICTED',
+        'CYCLE_OVULATION_ESTIMATED',
+        'CYCLE_FERTILE_WINDOW_ESTIMATED',
+        'CYCLE_WARNING',
+        'CYCLE_CARE_DAY',
+        'CYCLE_DAILY_REPORT',
+      ],
+    },
     { key: 'events', title: t('calendar.sectionEvents'), types: ['CUSTOM_EVENT'] },
     { key: 'holidays', title: t('calendar.holidayAndSolarTerm'), types: ['HOLIDAY', 'SOLAR_TERM'] },
   ];

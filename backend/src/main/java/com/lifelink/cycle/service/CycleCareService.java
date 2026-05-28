@@ -10,6 +10,7 @@ import com.lifelink.cycle.dto.CycleCalendarEventResponse;
 import com.lifelink.cycle.dto.CycleCareAccessResponse;
 import com.lifelink.cycle.dto.CycleCareProfileResponse;
 import com.lifelink.cycle.dto.CycleDailyLogResponse;
+import com.lifelink.cycle.dto.CycleParseLogResponse;
 import com.lifelink.cycle.dto.CyclePartnerSummaryResponse;
 import com.lifelink.cycle.dto.CyclePeriodRecordResponse;
 import com.lifelink.cycle.dto.CycleTodayResponse;
@@ -38,6 +39,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 @Service
@@ -69,7 +71,7 @@ public class CycleCareService {
         boolean enabled = !loverSpaceIds.isEmpty();
         return new CycleCareAccessResponse(
                 enabled,
-                enabled ? null : CycleCareAccessService.ACCESS_DENIED_MESSAGE,
+                enabled ? null : "NO_LOVER_SPACE",
                 loverSpaceIds
         );
     }
@@ -90,8 +92,12 @@ public class CycleCareService {
         profile.setPeriodLength(request.getPeriodLength() == null ? profile.getPeriodLength() : request.getPeriodLength());
         profile.setLastPeriodStartDate(request.getLastPeriodStartDate());
         profile.setReminderEnabled(request.getReminderEnabled() == null ? profile.getReminderEnabled() : request.getReminderEnabled());
+        profile.setDailyAdviceEnabled(request.getDailyAdviceEnabled() == null ? profile.getDailyAdviceEnabled() : request.getDailyAdviceEnabled());
         profile.setShareLevel(normalizeShareLevel(request.getShareLevel(), profile.getShareLevel()));
         profile.setTimezone(StringUtils.hasText(request.getTimezone()) ? request.getTimezone().trim() : DEFAULT_TIMEZONE);
+        profile.setPrivacyNoteVisibleToPartner(request.getPrivacyNoteVisibleToPartner() == null
+                ? profile.getPrivacyNoteVisibleToPartner()
+                : request.getPrivacyNoteVisibleToPartner());
         profile.setUpdatedAt(LocalDateTime.now());
         profileMapper.updateById(profile);
         return toProfileResponse(profile);
@@ -154,6 +160,9 @@ public class CycleCareService {
         record.setLoverSpaceId(loverSpaceId);
         record.setStartDate(request.getStartDate());
         record.setEndDate(request.getEndDate());
+        record.setFlowSummary(trimToNull(request.getFlowSummary()));
+        record.setPainSummary(trimToNull(request.getPainSummary()));
+        record.setColorSummary(trimToNull(request.getColorSummary()));
         record.setCycleLengthSnapshot(profile.getCycleLength());
         record.setPeriodLengthSnapshot(profile.getPeriodLength());
         record.setNote(trimToNull(request.getNote()));
@@ -183,6 +192,9 @@ public class CycleCareService {
         record.setLoverSpaceId(loverSpaceId);
         record.setStartDate(request.getStartDate());
         record.setEndDate(request.getEndDate());
+        record.setFlowSummary(trimToNull(request.getFlowSummary()));
+        record.setPainSummary(trimToNull(request.getPainSummary()));
+        record.setColorSummary(trimToNull(request.getColorSummary()));
         record.setCycleLengthSnapshot(profile.getCycleLength());
         record.setPeriodLengthSnapshot(profile.getPeriodLength());
         record.setNote(trimToNull(request.getNote()));
@@ -198,6 +210,7 @@ public class CycleCareService {
         CyclePeriodRecord record = requireOwnActiveRecord(recordId, userId);
         CycleCareProfile profile = getOrCreateProfile(userId);
         record.setStatus(DELETED_STATUS);
+        record.setDeletedAt(LocalDateTime.now());
         record.setUpdatedAt(LocalDateTime.now());
         periodRecordMapper.updateById(record);
         updateLastPeriodStartDate(profile, userId);
@@ -220,6 +233,7 @@ public class CycleCareService {
     }
 
     public CycleDailyLogResponse getDailyLog(LocalDate date, Long userId) {
+        accessService.requireAccess(userId);
         if (date == null) {
             throw new BusinessException(400, "Date is required");
         }
@@ -244,11 +258,20 @@ public class CycleCareService {
         }
         log.setLoverSpaceId(loverSpaceId);
         log.setFlowLevel(StringUtils.hasText(request.getFlowLevel()) ? request.getFlowLevel().trim() : FLOW_NONE);
+        log.setBloodColor(trimToNull(request.getBloodColor()));
         log.setPainLevel(request.getPainLevel());
         log.setMood(trimToNull(request.getMood()));
         log.setSymptoms(writeSymptoms(request.getSymptoms()));
         log.setTemperatureFeeling(trimToNull(request.getTemperatureFeeling()));
         log.setAppetite(trimToNull(request.getAppetite()));
+        log.setSleepHours(request.getSleepHours());
+        log.setWaterCups(request.getWaterCups());
+        log.setExerciseMinutes(request.getExerciseMinutes());
+        log.setFoodTags(writeStringList(request.getFoodTags()));
+        log.setMedicationNote(trimToNull(request.getMedicationNote()));
+        log.setDischargeNote(trimToNull(request.getDischargeNote()));
+        log.setTemperature(request.getTemperature());
+        log.setWeight(request.getWeight());
         log.setNote(trimToNull(request.getNote()));
         log.setUpdatedAt(now);
         if (log.getId() == null) {
@@ -261,6 +284,7 @@ public class CycleCareService {
     }
 
     public List<CycleWarningResponse> listWarnings(Long userId) {
+        accessService.requireAccess(userId);
         List<CycleWarningResponse> responses = new ArrayList<CycleWarningResponse>();
         for (CycleWarning warning : warningService.listActiveWarnings(userId)) {
             responses.add(toWarningResponse(warning));
@@ -270,6 +294,7 @@ public class CycleCareService {
 
     @Transactional
     public void dismissWarning(Long warningId, Long userId) {
+        accessService.requireAccess(userId);
         CycleWarning warning = warningService.requireOwnActiveWarning(warningId, userId);
         if (warning == null) {
             throw new BusinessException(404, "Warning not found");
@@ -341,11 +366,113 @@ public class CycleCareService {
         return new CyclePartnerSummaryResponse(false, PRIVATE_SHARE, null, null, CycleCareAdviceService.DISCLAIMER);
     }
 
+    public CycleParseLogResponse parseLogText(String text, Long userId) {
+        accessService.requireAccess(userId);
+        String value = StringUtils.hasText(text) ? text.trim() : "";
+        String lower = value.toLowerCase(Locale.ROOT);
+        List<String> symptoms = new ArrayList<String>();
+        List<String> foodTags = new ArrayList<String>();
+
+        String flowLevel = null;
+        if (containsAny(value, "量中", "中等", "medium")) {
+            flowLevel = "MEDIUM";
+        } else if (containsAny(value, "量少", "少量", "light")) {
+            flowLevel = "LIGHT";
+        } else if (containsAny(value, "量很多", "很多", "非常多", "very heavy")) {
+            flowLevel = "VERY_HEAVY";
+        } else if (containsAny(value, "量多", "较多", "heavy")) {
+            flowLevel = "HEAVY";
+        }
+
+        String bloodColor = null;
+        if (containsAny(value, "鲜红", "亮红")) {
+            bloodColor = "BRIGHT_RED";
+        } else if (containsAny(value, "暗红", "深红")) {
+            bloodColor = "DARK_RED";
+        } else if (containsAny(value, "褐色", "棕色")) {
+            bloodColor = "BROWN";
+        } else if (containsAny(value, "粉色")) {
+            bloodColor = "PINK";
+        }
+
+        Integer painLevel = parsePainLevel(value);
+        if (painLevel == null && containsAny(value, "有点痛", "轻微痛", "微痛")) {
+            painLevel = 3;
+        } else if (painLevel == null && containsAny(value, "很痛", "疼得厉害", "剧痛")) {
+            painLevel = 8;
+        } else if (painLevel == null && containsAny(value, "痛", "疼", "肚子疼", "腹痛")) {
+            painLevel = 4;
+        }
+
+        String mood = null;
+        if (containsAny(value, "焦虑", "紧张")) {
+            mood = "ANXIOUS";
+        } else if (containsAny(value, "烦", "烦躁", "易怒")) {
+            mood = "IRRITABLE";
+        } else if (containsAny(value, "低落", "难过", "伤心")) {
+            mood = "SAD";
+        } else if (containsAny(value, "压力", "压抑")) {
+            mood = "STRESSED";
+        } else if (containsAny(value, "累", "疲惫", "困")) {
+            mood = "TIRED";
+        } else if (containsAny(value, "开心", "高兴")) {
+            mood = "HAPPY";
+        } else if (containsAny(value, "平静", "还好")) {
+            mood = "CALM";
+        }
+
+        if (containsAny(value, "肚子痛", "肚子疼", "腹痛", "痛经", "cramp")) {
+            symptoms.add("cramps");
+        }
+        if (containsAny(value, "头痛", "头疼")) {
+            symptoms.add("headache");
+        }
+        if (containsAny(value, "腰酸", "腰疼", "腰痛")) {
+            symptoms.add("backache");
+        }
+        if (containsAny(value, "腹胀", "胀气")) {
+            symptoms.add("bloating");
+        }
+        if (containsAny(value, "发热", "发烧")) {
+            symptoms.add("fever");
+        }
+
+        if (containsAny(value, "清淡")) {
+            foodTags.add("light");
+        }
+        if (containsAny(value, "辛辣", "辣")) {
+            foodTags.add("spicy");
+        }
+        if (containsAny(value, "冷饮", "冰")) {
+            foodTags.add("cold");
+        }
+
+        Double sleepHours = parseNumberBeforeUnit(lower, "小时", "h");
+        Integer waterCups = parseIntegerBeforeUnit(value, "杯");
+        Integer exerciseMinutes = parseIntegerBeforeUnit(value, "分钟");
+
+        return new CycleParseLogResponse(
+                flowLevel,
+                bloodColor,
+                painLevel,
+                mood,
+                sleepHours,
+                waterCups,
+                exerciseMinutes,
+                symptoms,
+                foodTags,
+                value,
+                true,
+                CycleCareAdviceService.DISCLAIMER
+        );
+    }
+
     private CycleCareProfile getOrCreateProfile(Long userId) {
         CycleCareProfile profile = profileMapper.selectOne(new LambdaQueryWrapper<CycleCareProfile>()
                 .eq(CycleCareProfile::getUserId, userId)
                 .last("LIMIT 1"));
         if (profile != null) {
+            fillProfileDefaults(profile);
             return profile;
         }
         Long loverSpaceId = accessService.resolveLoverSpaceId(userId, null);
@@ -356,12 +483,54 @@ public class CycleCareService {
         profile.setCycleLength(28);
         profile.setPeriodLength(5);
         profile.setReminderEnabled(true);
+        profile.setDailyAdviceEnabled(true);
         profile.setShareLevel(PRIVATE_SHARE);
         profile.setTimezone(DEFAULT_TIMEZONE);
+        profile.setPrivacyNoteVisibleToPartner(false);
         profile.setCreatedAt(now);
         profile.setUpdatedAt(now);
         profileMapper.insert(profile);
         return profile;
+    }
+
+    private void fillProfileDefaults(CycleCareProfile profile) {
+        boolean changed = false;
+        if (profile.getCycleLength() == null) {
+            profile.setCycleLength(28);
+            changed = true;
+        }
+        if (profile.getPeriodLength() == null) {
+            profile.setPeriodLength(5);
+            changed = true;
+        }
+        if (profile.getReminderEnabled() == null) {
+            profile.setReminderEnabled(true);
+            changed = true;
+        }
+        if (profile.getDailyAdviceEnabled() == null) {
+            profile.setDailyAdviceEnabled(true);
+            changed = true;
+        }
+        if (!StringUtils.hasText(profile.getShareLevel())) {
+            profile.setShareLevel(PRIVATE_SHARE);
+            changed = true;
+        }
+        if (!StringUtils.hasText(profile.getTimezone())) {
+            profile.setTimezone(DEFAULT_TIMEZONE);
+            changed = true;
+        }
+        if (profile.getPrivacyNoteVisibleToPartner() == null) {
+            profile.setPrivacyNoteVisibleToPartner(false);
+            changed = true;
+        }
+        if (profile.getDefaultLoverSpaceId() == null) {
+            profile.setDefaultLoverSpaceId(accessService.resolveLoverSpaceId(profile.getUserId(), null));
+            changed = true;
+        }
+        if (changed) {
+            profile.setUpdatedAt(LocalDateTime.now());
+            profileMapper.updateById(profile);
+        }
     }
 
     private void ensureProfileSpace(CycleCareProfile profile, Long loverSpaceId) {
@@ -512,13 +681,17 @@ public class CycleCareService {
     }
 
     private String writeSymptoms(List<String> symptoms) {
-        if (symptoms == null || symptoms.isEmpty()) {
+        return writeStringList(symptoms);
+    }
+
+    private String writeStringList(List<String> values) {
+        if (values == null || values.isEmpty()) {
             return null;
         }
         try {
-            return objectMapper.writeValueAsString(symptoms);
+            return objectMapper.writeValueAsString(values);
         } catch (Exception ex) {
-            throw new BusinessException(400, "Invalid symptoms");
+            throw new BusinessException(400, "Invalid list value");
         }
     }
 
@@ -532,6 +705,52 @@ public class CycleCareService {
         } catch (Exception ex) {
             return Collections.emptyList();
         }
+    }
+
+    private boolean containsAny(String value, String... keywords) {
+        if (!StringUtils.hasText(value)) {
+            return false;
+        }
+        String lower = value.toLowerCase(Locale.ROOT);
+        for (String keyword : keywords) {
+            if (StringUtils.hasText(keyword) && lower.contains(keyword.toLowerCase(Locale.ROOT))) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Integer parsePainLevel(String value) {
+        if (!StringUtils.hasText(value)) {
+            return null;
+        }
+        java.util.regex.Matcher matcher = java.util.regex.Pattern
+                .compile("(疼痛|痛|疼|pain)\\D{0,6}(10|[0-9])")
+                .matcher(value);
+        if (matcher.find()) {
+            return Math.min(10, Math.max(0, Integer.parseInt(matcher.group(2))));
+        }
+        return null;
+    }
+
+    private Double parseNumberBeforeUnit(String value, String... units) {
+        if (!StringUtils.hasText(value)) {
+            return null;
+        }
+        for (String unit : units) {
+            java.util.regex.Matcher matcher = java.util.regex.Pattern
+                    .compile("(\\d+(?:\\.\\d+)?)\\s*(?:个)?\\s*" + java.util.regex.Pattern.quote(unit))
+                    .matcher(value);
+            if (matcher.find()) {
+                return Double.parseDouble(matcher.group(1));
+            }
+        }
+        return null;
+    }
+
+    private Integer parseIntegerBeforeUnit(String value, String unit) {
+        Double number = parseNumberBeforeUnit(value, unit);
+        return number == null ? null : number.intValue();
     }
 
     private <T> Page<T> page(Integer page, Integer size) {
@@ -549,8 +768,10 @@ public class CycleCareService {
                 profile.getPeriodLength(),
                 profile.getLastPeriodStartDate(),
                 profile.getReminderEnabled(),
+                profile.getDailyAdviceEnabled(),
                 normalizeShareLevel(profile.getShareLevel(), PRIVATE_SHARE),
                 profile.getTimezone(),
+                profile.getPrivacyNoteVisibleToPartner(),
                 profile.getCreatedAt(),
                 profile.getUpdatedAt()
         );
@@ -562,6 +783,9 @@ public class CycleCareService {
                 record.getLoverSpaceId(),
                 record.getStartDate(),
                 record.getEndDate(),
+                record.getFlowSummary(),
+                record.getPainSummary(),
+                record.getColorSummary(),
                 record.getCycleLengthSnapshot(),
                 record.getPeriodLengthSnapshot(),
                 record.getNote(),
@@ -576,11 +800,20 @@ public class CycleCareService {
                 log.getLoverSpaceId(),
                 log.getLogDate(),
                 log.getFlowLevel(),
+                log.getBloodColor(),
                 log.getPainLevel(),
                 log.getMood(),
                 readSymptoms(log.getSymptoms()),
                 log.getTemperatureFeeling(),
                 log.getAppetite(),
+                log.getSleepHours(),
+                log.getWaterCups(),
+                log.getExerciseMinutes(),
+                readSymptoms(log.getFoodTags()),
+                log.getMedicationNote(),
+                log.getDischargeNote(),
+                log.getTemperature(),
+                log.getWeight(),
                 log.getNote(),
                 log.getCreatedAt(),
                 log.getUpdatedAt()

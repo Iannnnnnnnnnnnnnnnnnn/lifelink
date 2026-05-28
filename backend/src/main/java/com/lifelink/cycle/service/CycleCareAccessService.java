@@ -16,7 +16,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class CycleCareAccessService {
 
-    public static final String ACCESS_DENIED_MESSAGE = "生理期关怀功能仅对恋人关系空间开放";
+    public static final String ACCESS_DENIED_MESSAGE = "周期关怀功能仅对恋人关系空间开放，你可以先创建或加入一个恋人关系空间。";
 
     private static final String ACTIVE_STATUS = "ACTIVE";
     private static final String COUPLE_TYPE = "COUPLE";

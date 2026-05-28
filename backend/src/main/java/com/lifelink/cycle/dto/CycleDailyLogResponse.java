@@ -21,6 +21,8 @@ public class CycleDailyLogResponse {
 
     private String flowLevel;
 
+    private String bloodColor;
+
     private Integer painLevel;
 
     private String mood;
@@ -30,6 +32,22 @@ public class CycleDailyLogResponse {
     private String temperatureFeeling;
 
     private String appetite;
+
+    private Double sleepHours;
+
+    private Integer waterCups;
+
+    private Integer exerciseMinutes;
+
+    private List<String> foodTags;
+
+    private String medicationNote;
+
+    private String dischargeNote;
+
+    private Double temperature;
+
+    private Double weight;
 
     private String note;
 

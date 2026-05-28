@@ -124,6 +124,15 @@ public class CycleCareDailyAdviceRuleEngine {
         if (StringUtils.hasText(log.getAppetite())) {
             parts.add("胃口：" + log.getAppetite() + "。");
         }
+        if (log.getSleepHours() != null) {
+            parts.add("睡眠约 " + log.getSleepHours() + " 小时。");
+        }
+        if (log.getWaterCups() != null) {
+            parts.add("饮水约 " + log.getWaterCups() + " 杯。");
+        }
+        if (log.getExerciseMinutes() != null) {
+            parts.add("运动约 " + log.getExerciseMinutes() + " 分钟。");
+        }
         return String.join("", parts);
     }
 
@@ -181,6 +190,12 @@ public class CycleCareDailyAdviceRuleEngine {
         }
         if (warningTypes.contains("IRREGULAR_CYCLE")) {
             messages.add("本次周期与常见范围有差异，建议继续记录；如果多次出现明显不规律，建议咨询医生。");
+        }
+        if (warningTypes.contains("LOW_SLEEP_WITH_PAIN")) {
+            messages.add("睡眠偏少并伴随疼痛，今天建议减少消耗、优先休息。");
+        }
+        if (warningTypes.contains("MOOD_STRESS_CONTINUED")) {
+            messages.add("连续多天记录到压力或烦躁情绪，可以尝试放慢节奏，必要时和心理老师聊聊。");
         }
         if (messages.isEmpty()) {
             messages.add("昨天的记录显示有需要关注的地方，建议继续观察；如持续不适可咨询医生。");
