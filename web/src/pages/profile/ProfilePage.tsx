@@ -3,6 +3,7 @@ import {
   CheckCircleOutlined,
   EditOutlined,
   IdcardOutlined,
+  LockOutlined,
   MailOutlined,
   PhoneOutlined,
   UserOutlined,
@@ -11,7 +12,8 @@ import { Button, Card, Col, Form, Input, Modal, Row, Space, Tag, Typography, mes
 import { useEffect, useState } from 'react';
 import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
-import { updateCurrentUser } from '../../api/user';
+import { useNavigate } from 'react-router-dom';
+import { changePassword, updateCurrentUser } from '../../api/user';
 import { PageLoading } from '../../components/common/PageLoading';
 import { AvatarUploader } from '../../components/profile/AvatarUploader';
 import { useAuthStore } from '../../store/authStore';
@@ -23,6 +25,12 @@ interface ProfileFormValues {
   phone?: string;
 }
 
+interface ChangePasswordFormValues {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
 interface InfoItemProps {
   icon: ReactNode;
   label: string;
@@ -32,6 +40,44 @@ interface InfoItemProps {
 function normalizeOptionalValue(value?: string | null) {
   const trimmed = value?.trim();
   return trimmed || null;
+}
+
+function getPasswordCategoryCount(password: string) {
+  const hasLetter = /[A-Za-z]/.test(password);
+  const hasNumber = /\d/.test(password);
+  const hasSymbol = /[^A-Za-z0-9]/.test(password);
+  return [hasLetter, hasNumber, hasSymbol].filter(Boolean).length;
+}
+
+function isPasswordStrong(password?: string) {
+  if (!password) {
+    return false;
+  }
+  return password.length >= 8
+    && password.length <= 72
+    && password.trim() === password
+    && getPasswordCategoryCount(password) >= 2;
+}
+
+function getBackendMessage(error: unknown) {
+  const response = (error as { response?: { data?: { message?: string }; status?: number } }).response;
+  return {
+    message: response?.data?.message,
+    status: response?.status,
+  };
+}
+
+function getChangePasswordErrorMessage(backendMessage: string | undefined, t: (key: string) => string) {
+  const messageMap: Record<string, string> = {
+    '当前密码不能为空': 'profile.currentPasswordRequired',
+    '新密码不能为空': 'profile.newPasswordRequired',
+    '确认新密码不能为空': 'profile.confirmNewPasswordRequired',
+    '当前密码不正确': 'profile.currentPasswordIncorrect',
+    '两次输入的新密码不一致': 'profile.passwordMismatch',
+    '新密码至少 8 位，并包含字母、数字或符号中的至少两类': 'profile.passwordPolicy',
+    '新密码不能与当前密码相同': 'profile.passwordSameAsCurrent',
+  };
+  return backendMessage && messageMap[backendMessage] ? t(messageMap[backendMessage]) : backendMessage || t('profile.changePasswordFailed');
 }
 
 function InfoItem({ icon, label, value }: InfoItemProps) {
@@ -48,14 +94,18 @@ function InfoItem({ icon, label, value }: InfoItemProps) {
 
 export function ProfilePage() {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
   const user = useAuthStore((state) => state.user);
   const fetchCurrentUser = useAuthStore((state) => state.fetchCurrentUser);
   const setUser = useAuthStore((state) => state.setUser);
   const updateUser = useAuthStore((state) => state.updateUser);
+  const logout = useAuthStore((state) => state.logout);
   const [form] = Form.useForm<ProfileFormValues>();
+  const [passwordForm] = Form.useForm<ChangePasswordFormValues>();
   const [loading, setLoading] = useState(!user);
   const [editOpen, setEditOpen] = useState(false);
   const [saving, setSaving] = useState(false);
+  const [changingPassword, setChangingPassword] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
 
   useEffect(() => {
@@ -101,6 +151,31 @@ export function ProfilePage() {
   const handleAvatarUploaded = (avatarUrl: string) => {
     updateUser({ avatarUrl });
     fetchCurrentUser().catch(() => undefined);
+  };
+
+  const handleChangePassword = async () => {
+    let values: ChangePasswordFormValues;
+    try {
+      values = await passwordForm.validateFields();
+    } catch (error) {
+      return;
+    }
+    setChangingPassword(true);
+    try {
+      await changePassword(values);
+      passwordForm.resetFields();
+      logout();
+      message.success(t('profile.passwordChangeSuccess'));
+      navigate('/login', { replace: true });
+    } catch (error) {
+      const { message: backendMessage, status } = getBackendMessage(error);
+      if (status === 401) {
+        return;
+      }
+      messageApi.error(getChangePasswordErrorMessage(backendMessage, t));
+    } finally {
+      setChangingPassword(false);
+    }
   };
 
   if (loading && !user) {
@@ -169,6 +244,74 @@ export function ProfilePage() {
           </Card>
         </Col>
       </Row>
+
+      <Card title={t('profile.security')} className="profile-detail-card">
+        <Form form={passwordForm} layout="vertical" className="profile-password-form" onFinish={handleChangePassword}>
+          <Row gutter={[16, 0]}>
+            <Col xs={24} md={8}>
+              <Form.Item
+                name="currentPassword"
+                label={t('profile.currentPassword')}
+                rules={[{ required: true, message: t('profile.currentPasswordRequired') }]}
+              >
+                <Input.Password prefix={<LockOutlined />} placeholder={t('profile.currentPasswordPlaceholder')} autoComplete="current-password" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={8}>
+              <Form.Item
+                name="newPassword"
+                label={t('profile.newPassword')}
+                dependencies={['currentPassword']}
+                rules={[
+                  { required: true, message: t('profile.newPasswordRequired') },
+                  {
+                    validator: (_, value?: string) => {
+                      if (!value) {
+                        return Promise.resolve();
+                      }
+                      if (!isPasswordStrong(value)) {
+                        return Promise.reject(new Error(t('profile.passwordPolicy')));
+                      }
+                      if (value === passwordForm.getFieldValue('currentPassword')) {
+                        return Promise.reject(new Error(t('profile.passwordSameAsCurrent')));
+                      }
+                      return Promise.resolve();
+                    },
+                  },
+                ]}
+              >
+                <Input.Password prefix={<LockOutlined />} placeholder={t('profile.newPasswordPlaceholder')} autoComplete="new-password" />
+              </Form.Item>
+            </Col>
+            <Col xs={24} md={8}>
+              <Form.Item
+                name="confirmPassword"
+                label={t('profile.confirmNewPassword')}
+                dependencies={['newPassword']}
+                rules={[
+                  { required: true, message: t('profile.confirmNewPasswordRequired') },
+                  {
+                    validator: (_, value?: string) => {
+                      if (!value || value === passwordForm.getFieldValue('newPassword')) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(new Error(t('profile.passwordMismatch')));
+                    },
+                  },
+                ]}
+              >
+                <Input.Password prefix={<LockOutlined />} placeholder={t('profile.confirmNewPasswordPlaceholder')} autoComplete="new-password" />
+              </Form.Item>
+            </Col>
+          </Row>
+          <div className="profile-password-actions">
+            <Typography.Text type="secondary">{t('profile.passwordPolicy')}</Typography.Text>
+            <Button type="primary" htmlType="submit" icon={<LockOutlined />} loading={changingPassword}>
+              {t('profile.changePassword')}
+            </Button>
+          </div>
+        </Form>
+      </Card>
 
       <Modal
         title={t('profile.editProfile')}

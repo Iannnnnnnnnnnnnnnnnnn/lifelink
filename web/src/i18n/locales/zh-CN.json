@@ -261,7 +261,22 @@
     "imageTooLarge": "图片大小不能超过 {{size}}MB",
     "basicInfo": "基础信息",
     "security": "账号安全",
-    "changePassword": "修改密码"
+    "changePassword": "修改密码",
+    "currentPassword": "当前密码",
+    "newPassword": "新密码",
+    "confirmNewPassword": "确认新密码",
+    "currentPasswordRequired": "请输入当前密码",
+    "newPasswordRequired": "请输入新密码",
+    "confirmNewPasswordRequired": "请再次输入新密码",
+    "currentPasswordPlaceholder": "请输入当前密码",
+    "newPasswordPlaceholder": "请输入新密码",
+    "confirmNewPasswordPlaceholder": "请再次输入新密码",
+    "passwordMismatch": "两次输入的新密码不一致",
+    "passwordPolicy": "新密码至少 8 位，并包含字母、数字或符号中的至少两类",
+    "passwordSameAsCurrent": "新密码不能与当前密码相同",
+    "passwordChangeSuccess": "密码修改成功，请重新登录",
+    "currentPasswordIncorrect": "当前密码不正确",
+    "changePasswordFailed": "修改失败，请稍后重试"
   },
   "home": {
     "title": "首页",

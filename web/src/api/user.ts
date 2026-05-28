@@ -20,6 +20,16 @@ export interface UpdateCurrentUserRequest {
   phone?: string | null;
 }
 
+export interface ChangePasswordRequest {
+  currentPassword: string;
+  newPassword: string;
+  confirmPassword: string;
+}
+
+export interface ChangePasswordResponse {
+  message: string;
+}
+
 export interface AvatarUploadResponse {
   avatarUrl: string;
 }
@@ -30,6 +40,10 @@ export function getCurrentUser() {
 
 export function updateCurrentUser(data: UpdateCurrentUserRequest) {
   return request.put<ApiResult<UserProfile>>('/api/users/me', data);
+}
+
+export function changePassword(data: ChangePasswordRequest) {
+  return request.put<ApiResult<ChangePasswordResponse>>('/api/users/me/password', data);
 }
 
 export function uploadAvatar(file: File) {

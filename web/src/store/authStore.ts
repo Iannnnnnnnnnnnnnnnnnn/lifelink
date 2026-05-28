@@ -30,6 +30,7 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
   logout: () => {
     localStorage.removeItem(TOKEN_STORAGE_KEY);
+    sessionStorage.removeItem(TOKEN_STORAGE_KEY);
     useRelationshipThemeStore.getState().resetRelationshipThemeStatus();
     set({
       token: null,

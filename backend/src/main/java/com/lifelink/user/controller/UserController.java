@@ -3,6 +3,8 @@ package com.lifelink.user.controller;
 import com.lifelink.common.Result;
 import com.lifelink.security.LoginUser;
 import com.lifelink.user.dto.AvatarUploadResponse;
+import com.lifelink.user.dto.ChangePasswordRequest;
+import com.lifelink.user.dto.ChangePasswordResponse;
 import com.lifelink.user.dto.UpdateUserProfileRequest;
 import com.lifelink.user.dto.UserProfileResponse;
 import com.lifelink.user.service.UserService;
@@ -45,5 +47,13 @@ public class UserController {
             @AuthenticationPrincipal LoginUser loginUser
     ) {
         return Result.success(userService.uploadAvatar(loginUser.getId(), file));
+    }
+
+    @PutMapping("/me/password")
+    public Result<ChangePasswordResponse> changePassword(
+            @RequestBody ChangePasswordRequest request,
+            @AuthenticationPrincipal LoginUser loginUser
+    ) {
+        return Result.success(userService.changePassword(loginUser.getId(), request));
     }
 }

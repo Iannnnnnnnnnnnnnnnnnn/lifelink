@@ -185,6 +185,25 @@
   margin-top: 12px;
 }
 
+.profile-password-form {
+  margin-top: 4px;
+}
+
+.profile-password-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.profile-password-actions .ant-typography {
+  max-width: 620px;
+}
+
+.profile-password-actions .ant-btn {
+  flex-shrink: 0;
+}
+
 .theme-grayscale .user-avatar-fallback,
 .theme-grayscale .profile-avatar-fallback {
   background: linear-gradient(135deg, #9aa3af, #d0d5dd);
@@ -217,6 +236,11 @@
 
   .profile-meta {
     justify-content: center;
+  }
+
+  .profile-password-actions {
+    align-items: stretch;
+    flex-direction: column;
   }
 }
 

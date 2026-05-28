@@ -261,7 +261,22 @@
     "imageTooLarge": "Image size must be less than {{size}}MB",
     "basicInfo": "Basic Info",
     "security": "Account Security",
-    "changePassword": "Change Password"
+    "changePassword": "Change Password",
+    "currentPassword": "Current Password",
+    "newPassword": "New Password",
+    "confirmNewPassword": "Confirm New Password",
+    "currentPasswordRequired": "Please enter your current password",
+    "newPasswordRequired": "Please enter a new password",
+    "confirmNewPasswordRequired": "Please confirm your new password",
+    "currentPasswordPlaceholder": "Please enter your current password",
+    "newPasswordPlaceholder": "Please enter a new password",
+    "confirmNewPasswordPlaceholder": "Please confirm your new password",
+    "passwordMismatch": "The two new passwords do not match",
+    "passwordPolicy": "The new password must be at least 8 characters and include at least two of letters, numbers, or symbols",
+    "passwordSameAsCurrent": "The new password cannot be the same as the current password",
+    "passwordChangeSuccess": "Password changed successfully. Please sign in again",
+    "currentPasswordIncorrect": "Current password is incorrect",
+    "changePasswordFailed": "Failed to change password. Please try again later"
   },
   "home": {
     "title": "Home",
