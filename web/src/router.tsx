@@ -10,6 +10,7 @@ import { CreateAnniversary } from './pages/CreateAnniversary';
 import { CreateRelationship } from './pages/CreateRelationship';
 import { CreateDailyPost } from './pages/CreateDailyPost';
 import { CycleCarePage } from './pages/CycleCarePage';
+import { CycleDailyReportPage } from './pages/CycleDailyReportPage';
 import { DailyPostDetail } from './pages/DailyPostDetail';
 import { DailyTimeline } from './pages/DailyTimeline';
 import { FinanceCreateTransaction } from './pages/FinanceCreateTransaction';
@@ -129,6 +130,10 @@ export const router = createBrowserRouter([
           {
             path: 'cycle-care',
             element: <CycleCarePage />,
+          },
+          {
+            path: 'cycle-care/daily',
+            element: <CycleDailyReportPage />,
           },
           {
             path: 'finance',

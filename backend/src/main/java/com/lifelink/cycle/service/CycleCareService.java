@@ -49,6 +49,9 @@ public class CycleCareService {
     private static final String PRIVATE_SHARE = "PRIVATE";
     private static final String BASIC_SHARE = "BASIC";
     private static final String DETAILED_SHARE = "DETAILED";
+    private static final String SUMMARY_SHARE = "SUMMARY";
+    private static final String CALENDAR_ONLY_SHARE = "CALENDAR_ONLY";
+    private static final String FULL_SHARE = "FULL";
     private static final String DEFAULT_TIMEZONE = "Asia/Shanghai";
     private static final String FLOW_NONE = "NONE";
 
@@ -324,13 +327,15 @@ public class CycleCareService {
                 .eq(CycleCareProfile::getDefaultLoverSpaceId, resolvedSpaceId)
                 .ne(CycleCareProfile::getUserId, userId));
         for (CycleCareProfile profile : profiles) {
-            if (!PRIVATE_SHARE.equals(profile.getShareLevel())) {
+            String shareLevel = normalizeShareLevel(profile.getShareLevel(), PRIVATE_SHARE);
+            if (!PRIVATE_SHARE.equals(shareLevel) && !CALENDAR_ONLY_SHARE.equals(shareLevel)) {
                 List<CyclePeriodRecord> records = listActiveRecords(profile.getUserId(), resolvedSpaceId);
                 CyclePredictionResult prediction = predictionService.predict(profile, records, LocalDate.now());
                 CycleCareAdvice advice = adviceService.buildAdvice(prediction.getPhase(), null);
-                String title = BASIC_SHARE.equals(profile.getShareLevel()) ? phaseLabel(prediction.getPhase()) : advice.getTitle();
-                String careAdvice = BASIC_SHARE.equals(profile.getShareLevel()) ? advice.getPartnerAdvice() : advice.getReminder();
-                return new CyclePartnerSummaryResponse(true, profile.getShareLevel(), title, careAdvice, CycleCareAdviceService.DISCLAIMER);
+                boolean summaryOnly = BASIC_SHARE.equals(shareLevel) || SUMMARY_SHARE.equals(shareLevel);
+                String title = summaryOnly ? phaseLabel(prediction.getPhase()) : advice.getTitle();
+                String careAdvice = summaryOnly ? advice.getPartnerAdvice() : advice.getReminder();
+                return new CyclePartnerSummaryResponse(true, shareLevel, title, careAdvice, CycleCareAdviceService.DISCLAIMER);
             }
         }
         return new CyclePartnerSummaryResponse(false, PRIVATE_SHARE, null, null, CycleCareAdviceService.DISCLAIMER);
@@ -490,7 +495,13 @@ public class CycleCareService {
             return StringUtils.hasText(fallback) ? fallback : PRIVATE_SHARE;
         }
         String value = shareLevel.trim().toUpperCase();
-        if (!PRIVATE_SHARE.equals(value) && !BASIC_SHARE.equals(value) && !DETAILED_SHARE.equals(value)) {
+        if (BASIC_SHARE.equals(value)) {
+            return SUMMARY_SHARE;
+        }
+        if (DETAILED_SHARE.equals(value)) {
+            return FULL_SHARE;
+        }
+        if (!PRIVATE_SHARE.equals(value) && !SUMMARY_SHARE.equals(value) && !CALENDAR_ONLY_SHARE.equals(value) && !FULL_SHARE.equals(value)) {
             throw new BusinessException(400, "Invalid share level");
         }
         return value;
@@ -538,7 +549,7 @@ public class CycleCareService {
                 profile.getPeriodLength(),
                 profile.getLastPeriodStartDate(),
                 profile.getReminderEnabled(),
-                profile.getShareLevel(),
+                normalizeShareLevel(profile.getShareLevel(), PRIVATE_SHARE),
                 profile.getTimezone(),
                 profile.getCreatedAt(),
                 profile.getUpdatedAt()

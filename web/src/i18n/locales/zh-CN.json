@@ -717,7 +717,10 @@
     "shareLevels": {
       "PRIVATE": "仅自己可见",
       "BASIC": "给伴侣基础关怀提醒",
-      "DETAILED": "给伴侣更完整关怀提醒"
+      "DETAILED": "给伴侣更完整关怀提醒",
+      "SUMMARY": "给伴侣摘要关怀提醒",
+      "CALENDAR_ONLY": "仅日历模糊可见",
+      "FULL": "给伴侣更完整关怀提醒"
     },
     "moods": {
       "calm": "平静",
@@ -749,6 +752,39 @@
       "LOW": "低",
       "MEDIUM": "中",
       "HIGH": "高"
+    },
+    "riskLevels": {
+      "NONE": "无风险",
+      "LOW": "低",
+      "MEDIUM": "中",
+      "HIGH": "高"
+    },
+    "dailyReport": {
+      "title": "周期关怀日报",
+      "subtitle": "查看昨日状态总结、今日建议和伴侣关怀摘要",
+      "loadFailed": "加载周期关怀日报失败",
+      "regenerated": "昨日关怀建议已重新生成",
+      "regenerateFailed": "重新生成失败，请稍后重试",
+      "regenerateYesterday": "重新生成昨日建议",
+      "disclaimer": "本功能仅用于生活记录与关怀提醒，不构成医学诊断、治疗建议或避孕/备孕依据。如出现持续异常、剧烈疼痛、大量出血或其他明显不适，请及时咨询医生。",
+      "reportDate": "日报日期",
+      "predictedPhase": "预测阶段",
+      "recordedPhase": "记录阶段",
+      "riskLevel": "风险等级",
+      "aiEnhanced": "AI 增强建议",
+      "ruleBased": "规则建议",
+      "yesterdaySummary": "昨日总结",
+      "todayAdvice": "今日建议",
+      "warningSummary": "预警提醒",
+      "partnerView": "伴侣可见摘要",
+      "history": "历史日报",
+      "noReport": "暂未找到这一天的周期关怀日报。你可以重新生成昨日建议。",
+      "noHistory": "暂无历史日报",
+      "bodyStatusSummary": "身体状态",
+      "flowSummary": "经量",
+      "painSummary": "疼痛",
+      "moodSummary": "情绪",
+      "symptomSummary": "症状"
     }
   },
   "philosophy": {

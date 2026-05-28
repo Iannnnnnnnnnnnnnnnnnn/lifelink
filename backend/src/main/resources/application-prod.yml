@@ -57,3 +57,10 @@ lifelink:
     mock: ${AI_MOCK:true}
     chat-context-messages: ${AI_CHAT_CONTEXT_MESSAGES:16}
     chat-max-user-message-length: ${AI_CHAT_MAX_USER_MESSAGE_LENGTH:2000}
+  cycle-care:
+    daily-advice:
+      enabled: ${LIFELINK_CYCLE_CARE_DAILY_ADVICE_ENABLED:true}
+      cron: "${LIFELINK_CYCLE_CARE_DAILY_ADVICE_CRON:0 5 0 * * ?}"
+      zone: ${LIFELINK_CYCLE_CARE_DAILY_ADVICE_ZONE:Asia/Shanghai}
+      use-ai: ${LIFELINK_CYCLE_CARE_DAILY_ADVICE_USE_AI:true}
+      max-regenerate-days: ${LIFELINK_CYCLE_CARE_DAILY_ADVICE_MAX_REGENERATE_DAYS:30}

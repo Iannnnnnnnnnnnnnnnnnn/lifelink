@@ -717,7 +717,10 @@
     "shareLevels": {
       "PRIVATE": "Only me",
       "BASIC": "Basic partner care reminders",
-      "DETAILED": "Detailed partner care reminders"
+      "DETAILED": "Detailed partner care reminders",
+      "SUMMARY": "Summary partner care reminders",
+      "CALENDAR_ONLY": "Calendar only",
+      "FULL": "Full partner care reminders"
     },
     "moods": {
       "calm": "Calm",
@@ -749,6 +752,39 @@
       "LOW": "Low",
       "MEDIUM": "Medium",
       "HIGH": "High"
+    },
+    "riskLevels": {
+      "NONE": "None",
+      "LOW": "Low",
+      "MEDIUM": "Medium",
+      "HIGH": "High"
+    },
+    "dailyReport": {
+      "title": "Daily Cycle Care Report",
+      "subtitle": "Review yesterday's summary, today's advice, and partner care notes",
+      "loadFailed": "Failed to load daily cycle care report",
+      "regenerated": "Yesterday's care advice has been regenerated",
+      "regenerateFailed": "Failed to regenerate. Please try again later.",
+      "regenerateYesterday": "Regenerate Yesterday",
+      "disclaimer": "This feature is for life logging and care reminders only. It is not a medical diagnosis, treatment advice, or contraception/fertility guidance. If severe pain, heavy bleeding, ongoing abnormal symptoms, or other obvious discomfort occurs, please consult a doctor.",
+      "reportDate": "Report Date",
+      "predictedPhase": "Predicted phase",
+      "recordedPhase": "Recorded phase",
+      "riskLevel": "Risk Level",
+      "aiEnhanced": "AI enhanced",
+      "ruleBased": "Rule-based",
+      "yesterdaySummary": "Yesterday Summary",
+      "todayAdvice": "Today's Advice",
+      "warningSummary": "Warnings",
+      "partnerView": "Partner-visible summary",
+      "history": "Report History",
+      "noReport": "No daily cycle care report was found for this date. You can regenerate yesterday's advice.",
+      "noHistory": "No report history",
+      "bodyStatusSummary": "Body Status",
+      "flowSummary": "Flow",
+      "painSummary": "Pain",
+      "moodSummary": "Mood",
+      "symptomSummary": "Symptoms"
     }
   },
   "philosophy": {

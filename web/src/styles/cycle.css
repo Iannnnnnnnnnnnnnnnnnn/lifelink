@@ -57,6 +57,27 @@
   margin-top: 16px;
 }
 
+.cycle-daily-date-picker {
+  min-width: 150px;
+}
+
+.cycle-daily-summary {
+  font-size: 16px;
+}
+
+.cycle-daily-info-item {
+  min-height: 118px;
+}
+
+.cycle-daily-actions-mobile {
+  width: 100%;
+}
+
+.cycle-daily-actions-mobile .ant-picker,
+.cycle-daily-actions-mobile .ant-btn {
+  width: 100%;
+}
+
 .form-full-width {
   width: 100%;
 }

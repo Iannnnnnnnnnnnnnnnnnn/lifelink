@@ -1,6 +1,6 @@
 import { ApiResult, request } from './request';
 
-export type CycleShareLevel = 'PRIVATE' | 'BASIC' | 'DETAILED';
+export type CycleShareLevel = 'PRIVATE' | 'SUMMARY' | 'CALENDAR_ONLY' | 'FULL' | 'BASIC' | 'DETAILED';
 export type CycleFlowLevel = 'NONE' | 'LIGHT' | 'MEDIUM' | 'HEAVY' | 'VERY_HEAVY';
 
 export interface CycleCareAccess {
@@ -81,6 +81,38 @@ export interface CycleDailyLog {
   updatedAt: string;
 }
 
+export interface CycleDailyAdviceReport {
+  id: number;
+  loverSpaceId?: number;
+  reportDate: string;
+  phase?: string;
+  phaseLabel?: string;
+  predictedPhase: boolean;
+  summary?: string;
+  bodyStatusSummary?: string;
+  flowSummary?: string;
+  painSummary?: string;
+  moodSummary?: string;
+  symptomSummary?: string;
+  clothingAdvice?: string;
+  foodAdvice?: string;
+  restAdvice?: string;
+  moodAdvice?: string;
+  partnerAdvice?: string;
+  warningSummary?: string;
+  riskLevel: 'NONE' | 'LOW' | 'MEDIUM' | 'HIGH';
+  warningTypes: string[];
+  shareLevel?: string;
+  partnerVisibleSummary?: string;
+  sourceType?: string;
+  aiGenerated: boolean;
+  status: string;
+  disclaimer?: string;
+  partnerView: boolean;
+  createdAt: string;
+  updatedAt: string;
+}
+
 export interface UpsertCycleCareProfileRequest {
   defaultLoverSpaceId?: number;
   cycleLength?: number;
@@ -157,4 +189,26 @@ export function getCycleWarnings() {
 
 export function dismissCycleWarning(warningId: number) {
   return request.patch<ApiResult<void>>(`/api/cycle-care/warnings/${warningId}/dismiss`);
+}
+
+export function getLatestCycleDailyReport() {
+  return request.get<ApiResult<CycleDailyAdviceReport | null>>('/api/cycle-care/daily-reports/latest');
+}
+
+export function getCycleDailyReports(params?: { startDate?: string; endDate?: string }) {
+  return request.get<ApiResult<CycleDailyAdviceReport[]>>('/api/cycle-care/daily-reports', { params });
+}
+
+export function getCycleDailyReport(date: string) {
+  return request.get<ApiResult<CycleDailyAdviceReport | null>>(`/api/cycle-care/daily-reports/${date}`);
+}
+
+export function regenerateCycleDailyReport(date: string) {
+  return request.post<ApiResult<CycleDailyAdviceReport>>(`/api/cycle-care/daily-reports/${date}/regenerate`);
+}
+
+export function getLatestPartnerCycleDailyReport(spaceId: number) {
+  return request.get<ApiResult<CycleDailyAdviceReport | null>>('/api/cycle-care/partner/daily-reports/latest', {
+    params: { spaceId },
+  });
 }

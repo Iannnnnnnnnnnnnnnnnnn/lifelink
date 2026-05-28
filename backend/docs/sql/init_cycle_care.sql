@@ -68,6 +68,42 @@ CREATE TABLE IF NOT EXISTS cycle_warnings (
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
 
+CREATE TABLE IF NOT EXISTS cycle_daily_advice_reports (
+    id BIGSERIAL PRIMARY KEY,
+    user_id BIGINT NOT NULL,
+    lover_space_id BIGINT,
+    report_date DATE NOT NULL,
+    phase VARCHAR(50),
+    phase_label VARCHAR(100),
+    is_predicted_phase BOOLEAN NOT NULL DEFAULT FALSE,
+    summary TEXT,
+    body_status_summary TEXT,
+    flow_summary TEXT,
+    pain_summary TEXT,
+    mood_summary TEXT,
+    symptom_summary TEXT,
+    clothing_advice TEXT,
+    food_advice TEXT,
+    rest_advice TEXT,
+    mood_advice TEXT,
+    partner_advice TEXT,
+    warning_summary TEXT,
+    risk_level VARCHAR(20) NOT NULL DEFAULT 'NONE',
+    warning_types JSONB,
+    share_level_snapshot VARCHAR(30) NOT NULL DEFAULT 'PRIVATE',
+    partner_visible_summary TEXT,
+    source_type VARCHAR(20) NOT NULL DEFAULT 'RULE_BASED',
+    ai_generated BOOLEAN NOT NULL DEFAULT FALSE,
+    ai_model VARCHAR(100),
+    prompt_version VARCHAR(50),
+    raw_ai_response JSONB,
+    status VARCHAR(20) NOT NULL DEFAULT 'GENERATED',
+    error_message VARCHAR(500),
+    created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
+    UNIQUE (user_id, report_date)
+);
+
 CREATE INDEX IF NOT EXISTS idx_cycle_care_profiles_lover_space_id
 ON cycle_care_profiles(default_lover_space_id);
 
@@ -107,3 +143,15 @@ ON cycle_warnings(status);
 CREATE UNIQUE INDEX IF NOT EXISTS ux_cycle_warnings_active_once
 ON cycle_warnings(user_id, warning_type, warning_date)
 WHERE status = 'ACTIVE';
+
+CREATE INDEX IF NOT EXISTS idx_cycle_daily_advice_reports_user_date
+ON cycle_daily_advice_reports(user_id, report_date);
+
+CREATE INDEX IF NOT EXISTS idx_cycle_daily_advice_reports_space_date
+ON cycle_daily_advice_reports(lover_space_id, report_date);
+
+CREATE INDEX IF NOT EXISTS idx_cycle_daily_advice_reports_status
+ON cycle_daily_advice_reports(status);
+
+CREATE INDEX IF NOT EXISTS idx_cycle_daily_advice_reports_created_at
+ON cycle_daily_advice_reports(created_at);

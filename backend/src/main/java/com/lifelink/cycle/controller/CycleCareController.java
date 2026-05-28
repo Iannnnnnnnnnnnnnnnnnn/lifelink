@@ -5,6 +5,7 @@ import com.lifelink.cycle.dto.CreateCyclePeriodRecordRequest;
 import com.lifelink.cycle.dto.CycleCalendarEventResponse;
 import com.lifelink.cycle.dto.CycleCareAccessResponse;
 import com.lifelink.cycle.dto.CycleCareProfileResponse;
+import com.lifelink.cycle.dto.CycleDailyAdviceReportResponse;
 import com.lifelink.cycle.dto.CycleDailyLogResponse;
 import com.lifelink.cycle.dto.CyclePartnerSummaryResponse;
 import com.lifelink.cycle.dto.CyclePeriodRecordResponse;
@@ -14,6 +15,7 @@ import com.lifelink.cycle.dto.UpdateCyclePeriodRecordRequest;
 import com.lifelink.cycle.dto.UpdateCycleShareSettingsRequest;
 import com.lifelink.cycle.dto.UpsertCycleCareProfileRequest;
 import com.lifelink.cycle.dto.UpsertCycleDailyLogRequest;
+import com.lifelink.cycle.service.CycleCareDailyAdviceService;
 import com.lifelink.cycle.service.CycleCareService;
 import com.lifelink.security.LoginUser;
 import jakarta.validation.Valid;
@@ -40,6 +42,7 @@ import java.util.List;
 public class CycleCareController {
 
     private final CycleCareService cycleCareService;
+    private final CycleCareDailyAdviceService dailyAdviceService;
 
     @GetMapping("/access")
     public Result<CycleCareAccessResponse> getAccess(@AuthenticationPrincipal LoginUser loginUser) {
@@ -121,6 +124,36 @@ public class CycleCareController {
     @GetMapping("/warnings")
     public Result<List<CycleWarningResponse>> listWarnings(@AuthenticationPrincipal LoginUser loginUser) {
         return Result.success(cycleCareService.listWarnings(loginUser.getId()));
+    }
+
+    @GetMapping("/daily-reports/latest")
+    public Result<CycleDailyAdviceReportResponse> getLatestDailyReport(@AuthenticationPrincipal LoginUser loginUser) {
+        return Result.success(dailyAdviceService.getLatestReport(loginUser.getId()));
+    }
+
+    @GetMapping("/daily-reports")
+    public Result<List<CycleDailyAdviceReportResponse>> listDailyReports(@RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate startDate,
+                                                                         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate endDate,
+                                                                         @AuthenticationPrincipal LoginUser loginUser) {
+        return Result.success(dailyAdviceService.listReports(startDate, endDate, loginUser.getId()));
+    }
+
+    @GetMapping("/daily-reports/{date}")
+    public Result<CycleDailyAdviceReportResponse> getDailyReport(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+                                                                 @AuthenticationPrincipal LoginUser loginUser) {
+        return Result.success(dailyAdviceService.getReport(date, loginUser.getId()));
+    }
+
+    @PostMapping("/daily-reports/{date}/regenerate")
+    public Result<CycleDailyAdviceReportResponse> regenerateDailyReport(@PathVariable @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate date,
+                                                                        @AuthenticationPrincipal LoginUser loginUser) {
+        return Result.success(dailyAdviceService.regenerate(date, loginUser.getId()));
+    }
+
+    @GetMapping("/partner/daily-reports/latest")
+    public Result<CycleDailyAdviceReportResponse> getLatestPartnerDailyReport(@RequestParam Long spaceId,
+                                                                              @AuthenticationPrincipal LoginUser loginUser) {
+        return Result.success(dailyAdviceService.getLatestPartnerReport(spaceId, loginUser.getId()));
     }
 
     @PatchMapping("/warnings/{warningId}/dismiss")

@@ -4,6 +4,7 @@ import {
   CheckCircleOutlined,
   DeleteOutlined,
   EditOutlined,
+  FileTextOutlined,
   HeartOutlined,
   ReloadOutlined,
 } from '@ant-design/icons';
@@ -88,7 +89,7 @@ type PeriodRecordFormValues = {
 };
 
 const flowLevels: CycleFlowLevel[] = ['NONE', 'LIGHT', 'MEDIUM', 'HEAVY', 'VERY_HEAVY'];
-const shareLevels: CycleShareLevel[] = ['PRIVATE', 'BASIC', 'DETAILED'];
+const shareLevels: CycleShareLevel[] = ['PRIVATE', 'SUMMARY', 'CALENDAR_ONLY', 'FULL'];
 const symptomOptions = ['cramps', 'headache', 'backache', 'tired', 'bloating', 'fever', 'sick'];
 
 export function CycleCarePage() {
@@ -427,6 +428,9 @@ export function CycleCarePage() {
           />
           <Button icon={<ReloadOutlined />} onClick={loadPage} loading={loading}>
             {t('common.refresh')}
+          </Button>
+          <Button icon={<FileTextOutlined />} onClick={() => navigate('/cycle-care/daily')}>
+            {t('cycle.dailyReport.title')}
           </Button>
         </Space>
       </div>
