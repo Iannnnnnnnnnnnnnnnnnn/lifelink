@@ -65,6 +65,12 @@ public class FileServiceImpl implements FileService {
         return uploadImage(file, userId, "backgrounds", MAX_BACKGROUND_FILE_SIZE);
     }
 
+    @Override
+    @Transactional
+    public FileUploadResponse uploadRewardCoverImage(MultipartFile file, Long userId) {
+        return uploadImage(file, userId, "rewards");
+    }
+
     private FileUploadResponse uploadImage(MultipartFile file, Long userId, String category) {
         return uploadImage(file, userId, category, MAX_FILE_SIZE);
     }
@@ -184,6 +190,12 @@ public class FileServiceImpl implements FileService {
             return "backgrounds/"
                     + userId
                     + "/"
+                    + UUID.randomUUID()
+                    + "."
+                    + extension;
+        }
+        if ("rewards".equals(category)) {
+            return "rewards/covers/"
                     + UUID.randomUUID()
                     + "."
                     + extension;

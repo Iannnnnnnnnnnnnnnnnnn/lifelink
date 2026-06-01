@@ -61,7 +61,7 @@ class SecurityConfigTest {
                 "13800000000",
                 null,
                 "ACTIVE",
-                new UserFeaturesResponse(false),
+                new UserFeaturesResponse(false, false),
                 LocalDateTime.now(),
                 LocalDateTime.now()
         );

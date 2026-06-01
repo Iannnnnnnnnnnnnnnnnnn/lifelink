@@ -47,6 +47,8 @@ export interface FocusSession {
   status: FocusSessionStatus;
   source: string;
   note?: string;
+  coinsAwarded?: number;
+  coinsAwardedAt?: string;
   startedAt: string;
   endedAt?: string;
   expectedEndAt: string;

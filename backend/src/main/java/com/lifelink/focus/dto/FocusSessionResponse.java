@@ -41,6 +41,10 @@ public class FocusSessionResponse {
 
     private String note;
 
+    private Integer coinsAwarded;
+
+    private LocalDateTime coinsAwardedAt;
+
     private LocalDateTime startedAt;
 
     private LocalDateTime endedAt;

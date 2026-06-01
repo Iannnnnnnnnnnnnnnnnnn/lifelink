@@ -17,6 +17,7 @@ import { FinanceCreateTransaction } from './pages/FinanceCreateTransaction';
 import { FinanceDashboard } from './pages/FinanceDashboard';
 import { FinanceTransactionList } from './pages/FinanceTransactionList';
 import { FocusHome } from './pages/Focus/FocusHome';
+import { RewardAdminPage, RewardCenterPage } from './pages/Rewards/RewardCenterPage';
 import { Home } from './pages/Home';
 import { JoinRelationship } from './pages/JoinRelationship';
 import { RelationshipFinance } from './pages/RelationshipFinance';
@@ -147,6 +148,14 @@ export const router = createBrowserRouter([
           {
             path: 'focus-timer',
             element: <FocusHome />,
+          },
+          {
+            path: 'rewards',
+            element: <RewardCenterPage />,
+          },
+          {
+            path: 'rewards/admin',
+            element: <RewardAdminPage />,
           },
           {
             path: 'finance/transactions',

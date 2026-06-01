@@ -45,6 +45,14 @@ lifelink:
   feature:
     philosophy:
       allowed-phones: ${LIFELINK_PHILOSOPHY_ALLOWED_PHONES:${LIFELINK_PSYCHOLOGY_TEACHER_ALLOWED_PHONES:}}
+  reward:
+    admin-phones: ${LIFELINK_REWARD_ADMIN_PHONES:}
+  focus-coin:
+    enabled: ${LIFELINK_FOCUS_COIN_ENABLED:true}
+    unit-minutes: ${LIFELINK_FOCUS_COIN_UNIT_MINUTES:5}
+    per-unit: ${LIFELINK_FOCUS_COIN_PER_UNIT:2}
+    max-minutes-per-session: ${LIFELINK_FOCUS_COIN_MAX_MINUTES_PER_SESSION:120}
+    daily-cap: ${LIFELINK_FOCUS_COIN_DAILY_CAP:}
   ai:
     enabled: ${AI_ENABLED:false}
     provider: ${AI_PROVIDER:mock}

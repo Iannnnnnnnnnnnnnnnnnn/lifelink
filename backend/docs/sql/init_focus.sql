@@ -43,9 +43,14 @@ CREATE TABLE IF NOT EXISTS focus_sessions (
     status VARCHAR(20) NOT NULL DEFAULT 'RUNNING',
     source VARCHAR(20) NOT NULL DEFAULT 'MANUAL',
     note TEXT,
+    coins_awarded INT NOT NULL DEFAULT 0,
+    coins_awarded_at TIMESTAMP,
     created_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP,
     updated_at TIMESTAMP NOT NULL DEFAULT CURRENT_TIMESTAMP
 );
+
+ALTER TABLE focus_sessions ADD COLUMN IF NOT EXISTS coins_awarded INT NOT NULL DEFAULT 0;
+ALTER TABLE focus_sessions ADD COLUMN IF NOT EXISTS coins_awarded_at TIMESTAMP;
 
 CREATE TABLE IF NOT EXISTS focus_session_events (
     id BIGSERIAL PRIMARY KEY,
@@ -74,6 +79,7 @@ CREATE INDEX IF NOT EXISTS idx_focus_sessions_space_started ON focus_sessions (s
 CREATE INDEX IF NOT EXISTS idx_focus_sessions_todo_id ON focus_sessions (todo_id);
 CREATE INDEX IF NOT EXISTS idx_focus_sessions_status ON focus_sessions (status);
 CREATE INDEX IF NOT EXISTS idx_focus_sessions_room_id ON focus_sessions (room_id);
+CREATE INDEX IF NOT EXISTS idx_focus_sessions_coins_awarded_at ON focus_sessions (coins_awarded_at);
 CREATE INDEX IF NOT EXISTS idx_focus_session_events_session_id ON focus_session_events (session_id);
 CREATE INDEX IF NOT EXISTS idx_focus_session_events_user_id ON focus_session_events (user_id);
 CREATE INDEX IF NOT EXISTS idx_focus_rooms_space_id ON focus_rooms (space_id);

@@ -5,6 +5,7 @@ import com.lifelink.common.BusinessException;
 import com.lifelink.file.dto.FileUploadResponse;
 import com.lifelink.file.service.FileService;
 import com.lifelink.philosophy.service.PhilosophyAccessService;
+import com.lifelink.reward.service.RewardAdminAccessService;
 import com.lifelink.security.JwtUtil;
 import com.lifelink.user.dto.AvatarUploadResponse;
 import com.lifelink.user.dto.ChangePasswordRequest;
@@ -47,6 +48,8 @@ public class UserServiceImpl implements UserService {
     private final JwtUtil jwtUtil;
 
     private final PhilosophyAccessService philosophyAccessService;
+
+    private final RewardAdminAccessService rewardAdminAccessService;
 
     @Override
     @Transactional
@@ -277,7 +280,10 @@ public class UserServiceImpl implements UserService {
                 user.getPhone(),
                 user.getAvatarUrl(),
                 user.getStatus(),
-                new UserFeaturesResponse(philosophyAccessService.canAccess(user.getId())),
+                new UserFeaturesResponse(
+                        philosophyAccessService.canAccess(user.getId()),
+                        rewardAdminAccessService.isRewardAdmin(user.getId())
+                ),
                 user.getCreatedAt(),
                 user.getUpdatedAt()
         );

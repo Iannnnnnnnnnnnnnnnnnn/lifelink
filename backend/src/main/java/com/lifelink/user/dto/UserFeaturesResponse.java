@@ -10,4 +10,6 @@ import lombok.NoArgsConstructor;
 public class UserFeaturesResponse {
 
     private Boolean philosophyEnabled;
+
+    private Boolean rewardAdmin;
 }

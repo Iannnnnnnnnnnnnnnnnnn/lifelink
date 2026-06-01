@@ -9,6 +9,7 @@ export interface UserProfile {
   status: string;
   features?: {
     philosophyEnabled?: boolean;
+    rewardAdmin?: boolean;
   };
   createdAt?: string;
   updatedAt?: string;

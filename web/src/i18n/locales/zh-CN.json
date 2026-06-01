@@ -23,7 +23,8 @@
     "all": "全部",
     "notAvailable": "-",
     "enabled": "开启",
-    "disabled": "关闭"
+    "disabled": "关闭",
+    "actions": "操作"
   },
   "language": {
     "zhCN": "中文",
@@ -137,6 +138,7 @@
     "anniversaries": "纪念日",
     "cycleCare": "周期关怀",
     "focus": "专注",
+    "rewards": "兑换中心",
     "finance": "记账",
     "philosophy": "思想对话"
   },
@@ -1007,6 +1009,8 @@
     "soundEnabled": "声音提醒",
     "notificationEnabled": "通知提醒",
     "strictModeEnabled": "严格模式",
+    "coinsEarned": "本次专注获得 {{coins}} 专注币",
+    "noCoinsEarned": "本次专注时间较短，未获得专注币",
     "phase": {
       "FOCUS": "专注中",
       "SHORT_BREAK": "短休息",
@@ -1034,6 +1038,52 @@
       "PAUSED": "暂停中",
       "COMPLETED": "已完成",
       "ABANDONED": "已放弃"
+    }
+  },
+  "rewards": {
+    "focusCoins": "专注币",
+    "center": "兑换中心",
+    "subtitle": "用完成专注积累的专注币，兑换自己设定的奖励。",
+    "myCoins": "我的专注币",
+    "rewards": "奖励",
+    "management": "奖励管理",
+    "createReward": "创建奖励",
+    "editReward": "编辑奖励",
+    "uploadCover": "上传奖励封面",
+    "rewardTitle": "奖励标题",
+    "rewardDescription": "奖励描述",
+    "requiredCoins": "所需专注币",
+    "stock": "库存",
+    "unlimitedStock": "不限库存",
+    "publish": "上架",
+    "unpublish": "下架",
+    "draft": "草稿",
+    "soldOut": "已售罄",
+    "available": "可兑换",
+    "notEnoughCoins": "专注币不足",
+    "redeem": "立即兑换",
+    "confirmRedeem": "确认兑换",
+    "confirmRedeemText": "确认消耗 {{coinCost}} 专注币兑换「{{title}}」吗？",
+    "confirmRedemption": "确认兑换",
+    "redeemedSuccessfully": "兑换成功",
+    "coinsEarned": "获得专注币",
+    "permissionDenied": "你没有奖励管理权限",
+    "coinLedger": "货币流水",
+    "myRedemptions": "我的兑换",
+    "time": "时间",
+    "source": "来源",
+    "changeAmount": "数量变化",
+    "balance": "余额",
+    "currentBalance": "当前余额",
+    "statusLabel": "状态",
+    "sortOrder": "排序",
+    "emptyRewards": "暂无可兑换奖励",
+    "noDescription": "暂无描述",
+    "status": {
+      "DRAFT": "草稿",
+      "ACTIVE": "上架",
+      "INACTIVE": "下架",
+      "SOLD_OUT": "已售罄"
     }
   },
   "finance": {

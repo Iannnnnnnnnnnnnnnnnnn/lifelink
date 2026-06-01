@@ -2,6 +2,7 @@ package com.lifelink.focus.service.impl;
 
 import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.lifelink.coin.service.FocusCoinService;
 import com.lifelink.common.BusinessException;
 import com.lifelink.focus.dto.CreateFocusRoomRequest;
 import com.lifelink.focus.dto.FocusCalendarEventResponse;
@@ -89,6 +90,7 @@ public class FocusServiceImpl implements FocusService {
     private final UserMapper userMapper;
     private final RelationshipPermissionService relationshipPermissionService;
     private final NotificationService notificationService;
+    private final FocusCoinService focusCoinService;
     private final ObjectMapper objectMapper;
 
     @Override
@@ -205,6 +207,7 @@ public class FocusServiceImpl implements FocusService {
         session.setUpdatedAt(now);
         focusSessionMapper.updateById(session);
         recordEvent(session, "COMPLETE", Map.of("actualMinutes", session.getActualMinutes()));
+        focusCoinService.awardForFocusSession(session);
         notifySessionCompleted(session);
         syncRoomMemberStatus(session.getRoomId(), userId, MEMBER_COMPLETED);
         completeRoomIfDone(session.getRoomId());
@@ -544,6 +547,8 @@ public class FocusServiceImpl implements FocusService {
                 session.getStatus(),
                 session.getSource(),
                 session.getNote(),
+                session.getCoinsAwarded(),
+                session.getCoinsAwardedAt(),
                 session.getStartedAt(),
                 session.getEndedAt(),
                 expectedEndAt,

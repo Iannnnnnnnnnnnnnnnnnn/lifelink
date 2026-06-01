@@ -23,7 +23,8 @@
     "all": "All",
     "notAvailable": "-",
     "enabled": "On",
-    "disabled": "Off"
+    "disabled": "Off",
+    "actions": "Actions"
   },
   "language": {
     "zhCN": "中文",
@@ -137,6 +138,7 @@
     "anniversaries": "Anniversaries",
     "cycleCare": "Cycle Care",
     "focus": "Focus",
+    "rewards": "Reward Center",
     "finance": "Finance",
     "philosophy": "Philosophy"
   },
@@ -1007,6 +1009,8 @@
     "soundEnabled": "Sound",
     "notificationEnabled": "Notifications",
     "strictModeEnabled": "Strict Mode",
+    "coinsEarned": "You earned {{coins}} Focus Coins from this session",
+    "noCoinsEarned": "This focus session was too short to earn Focus Coins",
     "phase": {
       "FOCUS": "Focus",
       "SHORT_BREAK": "Short Break",
@@ -1034,6 +1038,52 @@
       "PAUSED": "Paused",
       "COMPLETED": "Completed",
       "ABANDONED": "Abandoned"
+    }
+  },
+  "rewards": {
+    "focusCoins": "Focus Coins",
+    "center": "Reward Center",
+    "subtitle": "Use Focus Coins earned from completed focus sessions to redeem configured rewards.",
+    "myCoins": "My Focus Coins",
+    "rewards": "Rewards",
+    "management": "Reward Management",
+    "createReward": "Create Reward",
+    "editReward": "Edit Reward",
+    "uploadCover": "Upload Reward Cover",
+    "rewardTitle": "Reward Title",
+    "rewardDescription": "Reward Description",
+    "requiredCoins": "Required Coins",
+    "stock": "Stock",
+    "unlimitedStock": "Unlimited Stock",
+    "publish": "Publish",
+    "unpublish": "Unpublish",
+    "draft": "Draft",
+    "soldOut": "Sold Out",
+    "available": "Available",
+    "notEnoughCoins": "Not enough coins",
+    "redeem": "Redeem",
+    "confirmRedeem": "Confirm Redemption",
+    "confirmRedeemText": "Redeem “{{title}}” for {{coinCost}} Focus Coins?",
+    "confirmRedemption": "Confirm Redemption",
+    "redeemedSuccessfully": "Redeemed successfully",
+    "coinsEarned": "Focus Coins earned",
+    "permissionDenied": "You do not have permission to manage rewards",
+    "coinLedger": "Coin Ledger",
+    "myRedemptions": "My Redemptions",
+    "time": "Time",
+    "source": "Source",
+    "changeAmount": "Change",
+    "balance": "Balance",
+    "currentBalance": "Current Balance",
+    "statusLabel": "Status",
+    "sortOrder": "Sort",
+    "emptyRewards": "No rewards available",
+    "noDescription": "No description",
+    "status": {
+      "DRAFT": "Draft",
+      "ACTIVE": "Published",
+      "INACTIVE": "Unpublished",
+      "SOLD_OUT": "Sold Out"
     }
   },
   "finance": {

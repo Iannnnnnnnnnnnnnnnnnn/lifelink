@@ -6,6 +6,7 @@ import {
   PlayCircleOutlined,
   ReloadOutlined,
   SettingOutlined,
+  StarOutlined,
   StopOutlined,
   TeamOutlined,
 } from '@ant-design/icons';
@@ -36,6 +37,7 @@ import {
   startFocusSession,
   updateFocusSettings,
 } from '../../api/focus';
+import { CoinAccount, getCoinAccount } from '../../api/rewards';
 import { getRelationshipMembers, getRelationships, RelationshipMember, RelationshipSummary } from '../../api/relationship';
 import { getSpaceTodos, SpaceTodo } from '../../api/spaceTodo';
 import { useAuthStore } from '../../store/authStore';
@@ -75,6 +77,7 @@ export function FocusHome() {
   const [settings, setSettings] = useState<FocusSettings | null>(null);
   const [session, setSession] = useState<FocusSession | null>(null);
   const [stats, setStats] = useState<FocusStats | null>(null);
+  const [coinAccount, setCoinAccount] = useState<CoinAccount | null>(null);
   const [recentSessions, setRecentSessions] = useState<FocusSession[]>([]);
   const [relationships, setRelationships] = useState<RelationshipSummary[]>([]);
   const [selectedRelationshipId, setSelectedRelationshipId] = useState<number | undefined>();
@@ -102,13 +105,14 @@ export function FocusHome() {
   const loadFocusData = async () => {
     setLoading(true);
     try {
-      const [settingsResult, currentResult, statsResult, sessionsResult, relationshipsResult, roomResult] = await Promise.allSettled([
+      const [settingsResult, currentResult, statsResult, sessionsResult, relationshipsResult, roomResult, coinResult] = await Promise.allSettled([
         getFocusSettings(),
         getCurrentFocusSession(),
         getTodayFocusStats(),
         getFocusSessions(),
         getRelationships(),
         getCurrentFocusRoom(),
+        getCoinAccount(),
       ]);
       if (settingsResult.status === 'fulfilled') {
         const nextSettings = settingsResult.value.data.data;
@@ -134,6 +138,9 @@ export function FocusHome() {
       }
       if (roomResult.status === 'fulfilled') {
         setRoom(roomResult.value.data.data);
+      }
+      if (coinResult.status === 'fulfilled') {
+        setCoinAccount(coinResult.value.data.data);
       }
     } finally {
       setLoading(false);
@@ -209,9 +216,10 @@ export function FocusHome() {
       const current = await getCurrentFocusSession();
       setSession(current.data.data);
     }
-    const [statsResponse, sessionsResponse] = await Promise.all([getTodayFocusStats(), getFocusSessions()]);
+    const [statsResponse, sessionsResponse, coinResponse] = await Promise.all([getTodayFocusStats(), getFocusSessions(), getCoinAccount()]);
     setStats(statsResponse.data.data);
     setRecentSessions(sessionsResponse.data.data.slice(0, 8));
+    setCoinAccount(coinResponse.data.data);
   };
 
   const handleStart = async () => {
@@ -245,7 +253,12 @@ export function FocusHome() {
         abandon: abandonFocusSession,
       }[action](session.sessionId));
       await refreshAfterAction(['complete', 'abandon'].includes(action) ? null : response.data.data);
-      messageApi.success(t('common.success'));
+      if (action === 'complete') {
+        const coins = response.data.data.coinsAwarded || 0;
+        messageApi.success(coins > 0 ? t('focus.coinsEarned', { coins }) : t('focus.noCoinsEarned'));
+      } else {
+        messageApi.success(t('common.success'));
+      }
     } catch (error) {
       messageApi.error(t('message.operationFailed'));
     } finally {
@@ -450,7 +463,7 @@ export function FocusHome() {
               <div><strong>{stats?.totalFocusMinutes || 0}</strong><span>{t('focus.totalMinutes')}</span></div>
               <div><strong>{stats?.completedPomodoros || 0}</strong><span>{t('focus.completedPomodoros')}</span></div>
               <div><strong>{stats?.currentStreak || 0}</strong><span>{t('focus.currentStreak')}</span></div>
-              <div><strong>{stats?.weekFocusMinutes || 0}</strong><span>{t('focus.weekMinutes')}</span></div>
+              <div><strong>{coinAccount?.balance || 0}</strong><span>{t('rewards.myCoins')}</span></div>
             </div>
             <List
               size="small"
@@ -479,7 +492,10 @@ export function FocusHome() {
                       {dayjs(item.startedAt).format(i18n.resolvedLanguage === 'en-US' ? 'MMM D HH:mm' : 'M月D日 HH:mm')} · {item.actualMinutes || item.plannedMinutes} {t('focus.minutes')}
                     </Typography.Text>
                   </Space>
-                  <Tag>{t(`focus.status.${item.status}`)}</Tag>
+                  <Space>
+                    {Boolean(item.coinsAwarded) && <Tag icon={<StarOutlined />} color="gold">+{item.coinsAwarded}</Tag>}
+                    <Tag>{t(`focus.status.${item.status}`)}</Tag>
+                  </Space>
                 </List.Item>
               )}
             />

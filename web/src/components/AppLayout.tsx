@@ -1,4 +1,4 @@
-import { BulbOutlined, CalendarOutlined, ClockCircleOutlined, DollarOutlined, HeartOutlined, HomeOutlined, LogoutOutlined, MenuOutlined, ReadOutlined, TeamOutlined, ThunderboltOutlined, UserOutlined } from '@ant-design/icons';
+import { BulbOutlined, CalendarOutlined, ClockCircleOutlined, DollarOutlined, GiftOutlined, HeartOutlined, HomeOutlined, LogoutOutlined, MenuOutlined, ReadOutlined, TeamOutlined, ThunderboltOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Button, Drawer, Dropdown, Grid, Input, Layout, Menu, Space, Typography } from 'antd';
 import type { MenuProps } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -51,6 +51,8 @@ export function AppLayout() {
         ? '/finance'
       : location.pathname.startsWith('/focus')
         ? '/focus'
+      : location.pathname.startsWith('/rewards')
+        ? '/rewards'
       : location.pathname.startsWith('/philosophy')
         ? '/philosophy'
         : '/';
@@ -162,6 +164,15 @@ export function AppLayout() {
       label: t('menu.focus'),
       onClick: () => {
         navigate('/focus');
+        setMobileMenuOpen(false);
+      },
+    },
+    {
+      key: '/rewards',
+      icon: <GiftOutlined />,
+      label: t('menu.rewards'),
+      onClick: () => {
+        navigate('/rewards');
         setMobileMenuOpen(false);
       },
     },
