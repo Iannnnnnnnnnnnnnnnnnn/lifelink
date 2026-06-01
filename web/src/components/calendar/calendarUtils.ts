@@ -145,6 +145,9 @@ export function buildDayPills(day: CalendarDay | undefined, t: TFunction, langua
   const cycleItems = day.items.filter((item) => item.type.startsWith('CYCLE_'));
   cycleItems.slice(0, 2).forEach((item, index) => add(item.type, `cycle-${item.type}-${item.id || index}`, getDisplayTitle(item, language)));
 
+  const focusItems = day.items.filter((item) => item.type.startsWith('FOCUS_'));
+  focusItems.slice(0, 2).forEach((item, index) => add(item.type, `focus-${item.type}-${item.id || index}`, getDisplayTitle(item, language)));
+
   const customEvents = day.items.filter((item) => item.type === 'CUSTOM_EVENT');
   customEvents.forEach((item) => add('CUSTOM_EVENT', `event-${item.id}`, getDisplayTitle(item, language)));
 
@@ -157,6 +160,11 @@ export function groupDayItems(items: CalendarDayItem[], t: TFunction): CalendarS
     { key: 'anniversaries', title: t('calendar.sectionAnniversaries'), types: ['ANNIVERSARY'] },
     { key: 'daily', title: t('calendar.sectionDailyPosts'), types: ['DAILY_POST'] },
     { key: 'transactions', title: t('calendar.sectionTransactions'), types: ['TRANSACTION'] },
+    {
+      key: 'focus',
+      title: t('calendar.sectionFocus'),
+      types: ['FOCUS_SESSION', 'FOCUS_ROOM_SESSION', 'FOCUS_DAILY_SUMMARY'],
+    },
     {
       key: 'cycleCare',
       title: t('calendar.sectionCycleCare'),

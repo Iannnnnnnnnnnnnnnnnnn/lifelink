@@ -20,6 +20,7 @@ import './styles/search.css';
 import './styles/timeline.css';
 import './styles/calendar.css';
 import './styles/cycle.css';
+import './styles/focus.css';
 import './styles/philosophy.css';
 import './styles/animations.css';
 import './styles/stickers.css';

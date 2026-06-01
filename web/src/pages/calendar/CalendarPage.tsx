@@ -242,6 +242,8 @@ export function CalendarPage() {
       navigate('/cycle-care/daily');
     } else if (item.type.startsWith('CYCLE_')) {
       navigate('/cycle-care');
+    } else if (item.type.startsWith('FOCUS_')) {
+      navigate('/focus');
     } else if (item.type === 'CUSTOM_EVENT') {
       openEditEvent(item);
     }

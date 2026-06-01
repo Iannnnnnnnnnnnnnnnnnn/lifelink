@@ -9,6 +9,9 @@ export type CalendarItemType =
   | 'HOLIDAY'
   | 'SOLAR_TERM'
   | 'CUSTOM_EVENT'
+  | 'FOCUS_SESSION'
+  | 'FOCUS_ROOM_SESSION'
+  | 'FOCUS_DAILY_SUMMARY'
   | 'CYCLE_PERIOD_ACTUAL'
   | 'CYCLE_PERIOD_PREDICTED'
   | 'CYCLE_OVULATION_ESTIMATED'
@@ -79,6 +82,7 @@ export interface CalendarMonthQuery {
   includeHolidays?: boolean;
   includeCustomEvents?: boolean;
   includeCycleCare?: boolean;
+  includeFocus?: boolean;
 }
 
 export interface CalendarDayQuery {

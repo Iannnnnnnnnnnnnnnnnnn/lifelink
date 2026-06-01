@@ -16,6 +16,7 @@ import { DailyTimeline } from './pages/DailyTimeline';
 import { FinanceCreateTransaction } from './pages/FinanceCreateTransaction';
 import { FinanceDashboard } from './pages/FinanceDashboard';
 import { FinanceTransactionList } from './pages/FinanceTransactionList';
+import { FocusHome } from './pages/Focus/FocusHome';
 import { Home } from './pages/Home';
 import { JoinRelationship } from './pages/JoinRelationship';
 import { RelationshipFinance } from './pages/RelationshipFinance';
@@ -138,6 +139,14 @@ export const router = createBrowserRouter([
           {
             path: 'finance',
             element: <FinanceDashboard />,
+          },
+          {
+            path: 'focus',
+            element: <FocusHome />,
+          },
+          {
+            path: 'focus-timer',
+            element: <FocusHome />,
           },
           {
             path: 'finance/transactions',
