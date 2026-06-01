@@ -21,7 +21,9 @@
     "failed": "Failed",
     "due": "Due",
     "all": "All",
-    "notAvailable": "-"
+    "notAvailable": "-",
+    "enabled": "On",
+    "disabled": "Off"
   },
   "language": {
     "zhCN": "中文",
@@ -137,6 +139,46 @@
     "focus": "Focus",
     "finance": "Finance",
     "philosophy": "Philosophy"
+  },
+  "background": {
+    "personalBackground": "Personal Background",
+    "customBackground": "Custom Background",
+    "uploadBackground": "Upload Background",
+    "changeBackground": "Change Background",
+    "enableBackground": "Enable Background",
+    "disableBackground": "Disable Background",
+    "resetDefault": "Reset to Default",
+    "saveSettings": "Save Background Settings",
+    "scale": "Scale",
+    "position": "Position",
+    "positionX": "Horizontal Position",
+    "positionY": "Vertical Position",
+    "opacity": "Opacity",
+    "blur": "Blur",
+    "overlay": "Overlay",
+    "preview": "Preview",
+    "previewTitle": "Content stays clear",
+    "previewText": "The background stays subtle and keeps text and actions readable.",
+    "fileTip": "Only JPG, PNG, and WebP are supported. Image size must not exceed 10MB.",
+    "invalidImageType": "Only JPG, PNG, and WebP are supported",
+    "imageTooLarge": "Image size must not exceed {{size}}MB",
+    "saveSuccess": "Background settings saved",
+    "uploadSuccess": "Background uploaded",
+    "uploadFailed": "Failed to upload background",
+    "resetSuccess": "Default background restored",
+    "uploadFirst": "Upload a background image first",
+    "scopeGlobal": "Scope: global background",
+    "positions": {
+      "CENTER": "Center",
+      "TOP": "Top",
+      "BOTTOM": "Bottom",
+      "LEFT": "Left",
+      "RIGHT": "Right",
+      "TOP_LEFT": "Top Left",
+      "TOP_RIGHT": "Top Right",
+      "BOTTOM_LEFT": "Bottom Left",
+      "BOTTOM_RIGHT": "Bottom Right"
+    }
   },
   "ui": {
     "welcomeBack": "Welcome back",

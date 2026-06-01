@@ -1,0 +1,281 @@
+.app-background-layer {
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  pointer-events: none;
+  overflow: hidden;
+  background:
+    radial-gradient(circle at 18% 12%, rgba(47, 111, 237, 0.07), transparent 30%),
+    linear-gradient(180deg, #ffffff 0%, var(--ll-bg) 100%);
+}
+
+.theme-grayscale .app-background-layer {
+  background:
+    radial-gradient(circle at 20% 14%, rgba(98, 106, 115, 0.08), transparent 30%),
+    linear-gradient(180deg, #ffffff 0%, #f0f1f3 100%);
+}
+
+.app-background-image,
+.app-background-overlay {
+  position: absolute;
+  inset: 0;
+}
+
+.app-background-image {
+  background-image: var(--user-background-image);
+  background-repeat: no-repeat;
+  background-position: var(--user-background-position-x, 50%) var(--user-background-position-y, 50%);
+  background-size: var(--user-background-size, 100% auto);
+  opacity: var(--user-background-opacity, 0);
+  filter: blur(var(--user-background-blur, 0));
+  transition:
+    opacity 240ms ease-out,
+    filter 240ms ease-out,
+    background-size 240ms ease-out,
+    background-position 240ms ease-out;
+  will-change: opacity, filter, background-position;
+}
+
+.app-background-layer.has-user-background .app-background-overlay {
+  background: rgba(255, 255, 255, var(--user-background-overlay-opacity, 0.35));
+}
+
+.theme-grayscale .app-background-layer.has-user-background .app-background-overlay {
+  background: rgba(246, 246, 247, var(--user-background-overlay-opacity, 0.35));
+}
+
+.app-shell,
+.app-main-layout,
+.app-sider,
+.app-header,
+.app-content {
+  position: relative;
+}
+
+.app-shell {
+  z-index: 0;
+  background: transparent;
+}
+
+.app-main-layout,
+.app-content {
+  background: transparent !important;
+}
+
+.app-sider,
+.app-header {
+  z-index: 1;
+}
+
+.app-content {
+  z-index: 1;
+}
+
+.background-settings-card .ant-card-body {
+  padding: 22px;
+}
+
+.dashboard-hero-card,
+.dashboard-section-card,
+.dashboard-action-card,
+.dashboard-stat-card,
+.calendar-shell,
+.focus-timer-card,
+.focus-panel,
+.cycle-summary-card,
+.cycle-locked-card,
+.profile-hero-card,
+.profile-detail-card,
+.relationship-card,
+.daily-card,
+.todo-list-card {
+  background: rgba(255, 255, 255, 0.86);
+  backdrop-filter: blur(16px);
+}
+
+.dashboard-hero-card {
+  background:
+    radial-gradient(circle at 86% 18%, rgba(47, 111, 237, 0.08), transparent 32%),
+    rgba(255, 255, 255, 0.88);
+}
+
+.theme-grayscale .dashboard-hero-card,
+.theme-grayscale .cycle-summary-card-live,
+.theme-grayscale .cycle-advice-item-partner {
+  background: rgba(255, 255, 255, 0.88);
+}
+
+.calendar-week-row,
+.calendar-month-nav,
+.focus-stat-grid div,
+.focus-room-mini,
+.cycle-advice-item {
+  background: rgba(255, 255, 255, 0.72);
+  backdrop-filter: blur(12px);
+}
+
+.focus-countdown span,
+.calendar-title-block h1,
+.dashboard-hero-copy h1 {
+  text-shadow: 0 1px 0 rgba(255, 255, 255, 0.55);
+}
+
+.background-preview {
+  position: relative;
+  aspect-ratio: 16 / 9;
+  min-height: 190px;
+  overflow: hidden;
+  border: 1px solid var(--ll-border-soft);
+  border-radius: var(--ll-radius-lg);
+  background:
+    radial-gradient(circle at 24% 18%, rgba(47, 111, 237, 0.1), transparent 32%),
+    linear-gradient(135deg, #ffffff 0%, #f3f5f8 100%);
+}
+
+.theme-grayscale .background-preview {
+  background:
+    radial-gradient(circle at 24% 18%, rgba(98, 106, 115, 0.1), transparent 32%),
+    linear-gradient(135deg, #ffffff 0%, #f0f1f3 100%);
+}
+
+.background-preview-image,
+.background-preview-overlay {
+  position: absolute;
+  inset: 0;
+}
+
+.background-preview-image {
+  background-repeat: no-repeat;
+}
+
+.background-preview-overlay {
+  background: #ffffff;
+}
+
+.theme-grayscale .background-preview-overlay {
+  background: #f6f6f7;
+}
+
+.background-preview-card {
+  position: absolute;
+  right: 18px;
+  bottom: 18px;
+  width: min(280px, calc(100% - 36px));
+  padding: 16px;
+  border: 1px solid var(--ll-border-soft);
+  border-radius: var(--ll-radius-md);
+  background: rgba(255, 255, 255, 0.84);
+  box-shadow: var(--ll-shadow-sm);
+  backdrop-filter: blur(14px);
+}
+
+.background-preview-card h4 {
+  margin: 4px 0 6px;
+}
+
+.background-preview-card .ant-typography {
+  margin-bottom: 0;
+}
+
+.background-preview-eyebrow {
+  color: var(--ll-primary);
+  font-size: 12px;
+  font-weight: 700;
+}
+
+.background-actions {
+  margin-top: 14px;
+}
+
+.background-file-tip {
+  margin: 10px 0 0 !important;
+  font-size: 13px;
+}
+
+.background-control-grid {
+  display: flex;
+  flex-direction: column;
+  gap: 14px;
+}
+
+.background-control-row {
+  padding: 14px;
+  border: 1px solid var(--ll-border-soft);
+  border-radius: var(--ll-radius-md);
+  background: rgba(255, 255, 255, 0.66);
+}
+
+.background-switch-row,
+.background-save-row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+}
+
+.background-control-row > .ant-typography {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 650;
+}
+
+.background-control-row .ant-slider {
+  margin-inline: 4px;
+}
+
+.background-position-segmented {
+  width: 100%;
+}
+
+.background-position-segmented .ant-segmented-group {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 4px;
+}
+
+.background-position-segmented .ant-segmented-item-label {
+  min-height: 34px;
+  padding-inline: 8px;
+  line-height: 34px;
+}
+
+.background-save-row {
+  padding-top: 4px;
+}
+
+@media (max-width: 768px) {
+  .app-background-image {
+    background-size: cover;
+  }
+
+  .background-settings-card .ant-card-body {
+    padding: 18px;
+  }
+
+  .background-preview {
+    min-height: 160px;
+  }
+
+  .background-preview-card {
+    right: 12px;
+    bottom: 12px;
+    width: calc(100% - 24px);
+    padding: 14px;
+  }
+
+  .background-actions,
+  .background-actions .ant-upload,
+  .background-actions .ant-btn {
+    width: 100%;
+  }
+
+  .background-position-segmented .ant-segmented-group {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+
+  .background-switch-row,
+  .background-save-row {
+    align-items: stretch;
+    flex-direction: column;
+  }
+}

@@ -14,6 +14,7 @@ import type { ReactNode } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
 import { changePassword, updateCurrentUser } from '../../api/user';
+import { BackgroundSettingsPanel } from '../../components/background/BackgroundSettingsPanel';
 import { PageLoading } from '../../components/common/PageLoading';
 import { AvatarUploader } from '../../components/profile/AvatarUploader';
 import { useAuthStore } from '../../store/authStore';
@@ -244,6 +245,8 @@ export function ProfilePage() {
           </Card>
         </Col>
       </Row>
+
+      <BackgroundSettingsPanel />
 
       <Card title={t('profile.security')} className="profile-detail-card">
         <Form form={passwordForm} layout="vertical" className="profile-password-form" onFinish={handleChangePassword}>

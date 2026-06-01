@@ -21,7 +21,9 @@
     "failed": "操作失败",
     "due": "截止时间",
     "all": "全部",
-    "notAvailable": "-"
+    "notAvailable": "-",
+    "enabled": "开启",
+    "disabled": "关闭"
   },
   "language": {
     "zhCN": "中文",
@@ -137,6 +139,46 @@
     "focus": "专注",
     "finance": "记账",
     "philosophy": "思想对话"
+  },
+  "background": {
+    "personalBackground": "个性化背景",
+    "customBackground": "自定义背景",
+    "uploadBackground": "上传背景",
+    "changeBackground": "更换背景",
+    "enableBackground": "启用背景",
+    "disableBackground": "关闭背景",
+    "resetDefault": "恢复默认",
+    "saveSettings": "保存背景设置",
+    "scale": "缩放比例",
+    "position": "图片位置",
+    "positionX": "水平位置",
+    "positionY": "垂直位置",
+    "opacity": "透明度",
+    "blur": "模糊程度",
+    "overlay": "遮罩强度",
+    "preview": "预览",
+    "previewTitle": "内容保持清晰",
+    "previewText": "背景作为柔和氛围层，不影响文字和按钮阅读。",
+    "fileTip": "仅支持 JPG、PNG、WebP 格式，图片大小不能超过 10MB。",
+    "invalidImageType": "仅支持 JPG、PNG、WebP 格式",
+    "imageTooLarge": "图片大小不能超过 {{size}}MB",
+    "saveSuccess": "背景设置已保存",
+    "uploadSuccess": "背景上传成功",
+    "uploadFailed": "背景上传失败",
+    "resetSuccess": "恢复默认背景成功",
+    "uploadFirst": "请先上传背景图片",
+    "scopeGlobal": "应用范围：全站背景",
+    "positions": {
+      "CENTER": "居中",
+      "TOP": "顶部",
+      "BOTTOM": "底部",
+      "LEFT": "左侧",
+      "RIGHT": "右侧",
+      "TOP_LEFT": "左上",
+      "TOP_RIGHT": "右上",
+      "BOTTOM_LEFT": "左下",
+      "BOTTOM_RIGHT": "右下"
+    }
   },
   "ui": {
     "welcomeBack": "欢迎回来",

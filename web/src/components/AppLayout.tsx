@@ -6,8 +6,10 @@ import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useState } from 'react';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { SiteFooter } from './SiteFooter';
+import { BackgroundLayer } from './background/BackgroundLayer';
 import { useAppStore } from '../store/appStore';
 import { useAuthStore } from '../store/authStore';
+import { useBackgroundStore } from '../store/backgroundStore';
 import { useRelationshipThemeStore } from '../store/relationshipThemeStore';
 import { getAvatarInitial } from '../utils/avatar';
 
@@ -24,6 +26,7 @@ export function AppLayout() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
   const logout = useAuthStore((state) => state.logout);
   const fetchCurrentUser = useAuthStore((state) => state.fetchCurrentUser);
+  const fetchBackgroundSetting = useBackgroundStore((state) => state.fetchSetting);
   const hasCoupleRelationship = useRelationshipThemeStore((state) => state.hasCoupleRelationship);
   const fetchRelationshipThemeStatus = useRelationshipThemeStore((state) => state.fetchRelationshipThemeStatus);
   const [searchKeyword, setSearchKeyword] = useState('');
@@ -81,6 +84,12 @@ export function AppLayout() {
       fetchCurrentUser().catch(() => undefined);
     }
   }, [fetchCurrentUser, isAuthenticated, user]);
+
+  useEffect(() => {
+    if (isAuthenticated) {
+      fetchBackgroundSetting().catch(() => undefined);
+    }
+  }, [fetchBackgroundSetting, isAuthenticated]);
 
   const themeClassName = hasCoupleRelationship ? 'theme-colorful' : 'theme-grayscale';
   const menuItems: MenuItem[] = [
@@ -222,6 +231,7 @@ export function AppLayout() {
 
   return (
     <Layout className={`app-shell ${themeClassName}`}>
+      <BackgroundLayer />
       {!isMobile && (
         <Sider width={220} className="app-sider desktop-sider">
           {brand}

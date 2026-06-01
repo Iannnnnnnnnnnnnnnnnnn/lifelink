@@ -17,7 +17,7 @@ spring:
       password: ${SPRING_REDIS_PASSWORD:}
   servlet:
     multipart:
-      max-file-size: ${LIFELINK_MAX_FILE_SIZE:5MB}
+      max-file-size: ${LIFELINK_MAX_FILE_SIZE:10MB}
       max-request-size: ${LIFELINK_MAX_REQUEST_SIZE:50MB}
 
 mybatis-plus:

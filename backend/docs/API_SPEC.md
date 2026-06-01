@@ -522,6 +522,74 @@ Response:
 }
 ```
 
+## User Background Settings
+
+### Get Current User Background
+
+- Method: `GET`
+- Path: `/api/user-background/me`
+- Auth: Required
+- Description: Returns current user's global background setting. Missing settings return defaults.
+
+### Upload User Background
+
+- Method: `POST`
+- Path: `/api/user-background/upload`
+- Auth: Required
+- Content-Type: `multipart/form-data`
+- Form field: `file`
+
+Rules:
+
+- Only `jpg`, `jpeg`, `png`, `webp` are allowed.
+- Max size is 10MB.
+- Uploaded to MinIO as `backgrounds/{userId}/{uuid}.{ext}`.
+- SVG and GIF are not allowed.
+
+Response:
+
+```json
+{
+  "code": 200,
+  "message": "success",
+  "data": {
+    "imageUrl": "http://localhost:9000/lifelink/backgrounds/1/uuid.jpg",
+    "objectKey": "backgrounds/1/uuid.jpg"
+  }
+}
+```
+
+### Save Current User Background
+
+- Method: `PUT`
+- Path: `/api/user-background/me`
+- Auth: Required
+- Description: Saves only the authenticated user's `GLOBAL` background setting.
+
+Request:
+
+```json
+{
+  "enabled": true,
+  "objectKey": "backgrounds/1/uuid.jpg",
+  "scale": 1.2,
+  "positionX": 50,
+  "positionY": 50,
+  "presetPosition": "CENTER",
+  "opacity": 0.22,
+  "blur": 8,
+  "overlayOpacity": 0.35,
+  "scope": "GLOBAL"
+}
+```
+
+### Reset Current User Background
+
+- Method: `DELETE`
+- Path: `/api/user-background/me`
+- Auth: Required
+- Description: Disables current user's background setting without deleting MinIO objects.
+
 ## Create Space Todo
 
 - Method: `POST`

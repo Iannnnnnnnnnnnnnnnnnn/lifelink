@@ -32,6 +32,7 @@ import java.util.UUID;
 public class FileServiceImpl implements FileService {
 
     private static final long MAX_FILE_SIZE = 5L * 1024L * 1024L;
+    private static final long MAX_BACKGROUND_FILE_SIZE = 10L * 1024L * 1024L;
     private static final Set<String> ALLOWED_EXTENSIONS = new HashSet<String>(Arrays.asList("jpg", "jpeg", "png", "webp"));
     private static final Set<String> ALLOWED_CONTENT_TYPES = new HashSet<String>(Arrays.asList("image/jpeg", "image/png", "image/webp"));
     private static final Map<String, String> EXTENSIONS_BY_CONTENT_TYPE = new HashMap<String, String>();
@@ -58,12 +59,22 @@ public class FileServiceImpl implements FileService {
         return uploadImage(file, userId, "avatars");
     }
 
+    @Override
+    @Transactional
+    public FileUploadResponse uploadBackgroundImage(MultipartFile file, Long userId) {
+        return uploadImage(file, userId, "backgrounds", MAX_BACKGROUND_FILE_SIZE);
+    }
+
     private FileUploadResponse uploadImage(MultipartFile file, Long userId, String category) {
+        return uploadImage(file, userId, category, MAX_FILE_SIZE);
+    }
+
+    private FileUploadResponse uploadImage(MultipartFile file, Long userId, String category, long maxFileSize) {
         if (file == null || file.isEmpty()) {
             throw new BusinessException(400, "File is required");
         }
-        if (file.getSize() > MAX_FILE_SIZE) {
-            throw new BusinessException(400, "File size cannot exceed 5MB");
+        if (file.getSize() > maxFileSize) {
+            throw new BusinessException(400, "File size cannot exceed " + maxFileSize / 1024L / 1024L + "MB");
         }
 
         String originalName = file.getOriginalFilename();
@@ -163,6 +174,14 @@ public class FileServiceImpl implements FileService {
     private String buildObjectKey(String category, Long userId, String extension) {
         if ("avatars".equals(category)) {
             return "avatars/"
+                    + userId
+                    + "/"
+                    + UUID.randomUUID()
+                    + "."
+                    + extension;
+        }
+        if ("backgrounds".equals(category)) {
+            return "backgrounds/"
                     + userId
                     + "/"
                     + UUID.randomUUID()
