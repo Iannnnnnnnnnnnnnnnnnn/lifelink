@@ -8,7 +8,7 @@ spring:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/lifelink
     username: lifelink
-    password: lifelink123456
+    password: ${SPRING_DATASOURCE_PASSWORD:}
   data:
     redis:
       host: localhost
@@ -31,13 +31,13 @@ springdoc:
 
 lifelink:
   jwt:
-    secret: lifelink-jwt-secret-change-me-lifelink-jwt-secret-change-me
+    secret: ${LIFELINK_JWT_SECRET:}
     expiration: 604800000
   minio:
     endpoint: http://localhost:9000
     public-endpoint: http://localhost:9000
-    access-key: admin
-    secret-key: admin123456
+    access-key: ${MINIO_ROOT_USER:}
+    secret-key: ${MINIO_ROOT_PASSWORD:}
     bucket: lifelink
   cors:
     allowed-origins: http://localhost:5173,http://127.0.0.1:5173
@@ -45,7 +45,7 @@ lifelink:
     philosophy:
       allowed-phones: ${LIFELINK_PHILOSOPHY_ALLOWED_PHONES:${LIFELINK_PSYCHOLOGY_TEACHER_ALLOWED_PHONES:}}
   reward:
-    admin-phones: ${LIFELINK_REWARD_ADMIN_PHONES:15948981889}
+    admin-phones: ${LIFELINK_REWARD_ADMIN_PHONES:}
   focus-coin:
     enabled: ${LIFELINK_FOCUS_COIN_ENABLED:true}
     unit-minutes: ${LIFELINK_FOCUS_COIN_UNIT_MINUTES:5}
