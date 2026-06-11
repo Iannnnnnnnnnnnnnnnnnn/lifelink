@@ -38,7 +38,7 @@ import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams } from 'react-router-dom';
 import {
   createCyclePeriodRecord,
   CycleCareAccess,
@@ -62,6 +62,7 @@ import {
   parseCycleLog,
 } from '../api/cycleCare';
 import { getRelationships, type RelationshipSummary } from '../api/relationship';
+import { RelationshipSubNav } from '../components/navigation/RelationshipSubNav';
 import { formatDate } from '../utils/date';
 
 type ProfileFormValues = {
@@ -114,6 +115,8 @@ const foodOptions = ['light', 'spicy', 'cold', 'sweet', 'protein', 'warm'];
 export function CycleCarePage() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const params = useParams();
+  const routeRelationshipId = params.relationshipId ? Number(params.relationshipId) : undefined;
   const screens = Grid.useBreakpoint();
   const isMobile = !screens.md;
   const [messageApi, contextHolder] = message.useMessage();
@@ -136,6 +139,7 @@ export function CycleCarePage() {
   const [savingRecord, setSavingRecord] = useState(false);
   const [recordModalOpen, setRecordModalOpen] = useState(false);
   const [editingRecord, setEditingRecord] = useState<CyclePeriodRecord | null>(null);
+  const [routeAccessDenied, setRouteAccessDenied] = useState(false);
 
   const loverRelationships = useMemo(() => {
     const allowedIds = access?.loverSpaceIds || [];
@@ -196,9 +200,14 @@ export function CycleCarePage() {
       if (!accessData.enabled) {
         return;
       }
+      if (routeRelationshipId && !accessData.loverSpaceIds.includes(routeRelationshipId)) {
+        setRouteAccessDenied(true);
+        return;
+      }
       const profileResponse = await getCycleCareProfile();
       const profileData = profileResponse.data.data;
-      const loverSpaceId = profileData.defaultLoverSpaceId || accessData.loverSpaceIds[0];
+      const loverSpaceId = routeRelationshipId || profileData.defaultLoverSpaceId || accessData.loverSpaceIds[0];
+      setRouteAccessDenied(false);
       setProfile(profileData);
       setSelectedLoverSpaceId(loverSpaceId);
       profileForm.setFieldsValue({
@@ -407,7 +416,7 @@ export function CycleCarePage() {
 
   useEffect(() => {
     loadPage();
-  }, []);
+  }, [routeRelationshipId]);
 
   const recordColumns: ColumnsType<CyclePeriodRecord> = [
     {
@@ -468,14 +477,15 @@ export function CycleCarePage() {
     );
   }
 
-  if (access && !access.enabled) {
+  if ((access && !access.enabled) || routeAccessDenied) {
     return (
       <div className="page-wide cycle-page">
         {contextHolder}
+        {routeRelationshipId && <RelationshipSubNav relationshipId={routeRelationshipId} />}
         <Card className="cycle-locked-card">
           <Empty
             image={Empty.PRESENTED_IMAGE_SIMPLE}
-            description={access.reason === 'NO_LOVER_SPACE' ? t('cycle.accessDenied') : access.reason || t('cycle.accessDenied')}
+            description={routeAccessDenied ? t('relationship.cycleCareUnavailable') : access?.reason === 'NO_LOVER_SPACE' ? t('cycle.accessDenied') : access?.reason || t('cycle.accessDenied')}
           >
             <Button type="primary" onClick={() => navigate('/relationships/create')}>
               {t('cycle.createCoupleSpace')}
@@ -489,10 +499,11 @@ export function CycleCarePage() {
   return (
     <Space direction="vertical" size={16} className="page-wide cycle-page">
       {contextHolder}
+      {routeRelationshipId && <RelationshipSubNav relationshipId={routeRelationshipId} />}
       <div className="page-heading">
         <div>
           <Typography.Title level={2}>{t('cycle.title')}</Typography.Title>
-          <Typography.Text type="secondary">{t('cycle.subtitle')}</Typography.Text>
+          {t('cycle.subtitle') && <Typography.Text type="secondary">{t('cycle.subtitle')}</Typography.Text>}
           <Tag className="cycle-live-tag">{t('cycle.enabledForCouple')}</Tag>
         </div>
         <Space wrap>

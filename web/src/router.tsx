@@ -98,6 +98,10 @@ export const router = createBrowserRouter([
             element: <AnniversaryList />,
           },
           {
+            path: 'relationships/:relationshipId/cycle-care',
+            element: <CycleCarePage />,
+          },
+          {
             path: 'activities',
             element: <ActivityTimeline />,
           },
@@ -143,6 +147,10 @@ export const router = createBrowserRouter([
           },
           {
             path: 'focus',
+            element: <FocusHome />,
+          },
+          {
+            path: 'focus/timer',
             element: <FocusHome />,
           },
           {

@@ -14,6 +14,8 @@
 
 .rewards-hero h1 {
   margin-bottom: 8px !important;
+  font-size: 34px !important;
+  line-height: 1.12 !important;
 }
 
 .coin-balance-pill {

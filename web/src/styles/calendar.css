@@ -12,6 +12,9 @@
 }
 
 .calendar-page {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
   animation: calendar-page-in 240ms cubic-bezier(0.2, 0, 0, 1);
 }
 
@@ -20,7 +23,7 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 24px;
-  margin-bottom: 22px;
+  margin-bottom: 0;
 }
 
 .calendar-title-block h1 {

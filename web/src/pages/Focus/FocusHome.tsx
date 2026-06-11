@@ -40,6 +40,7 @@ import {
 import { CoinAccount, getCoinAccount } from '../../api/rewards';
 import { getRelationshipMembers, getRelationships, RelationshipMember, RelationshipSummary } from '../../api/relationship';
 import { getSpaceTodos, SpaceTodo } from '../../api/spaceTodo';
+import { FocusRewardsNav } from '../../components/navigation/FocusRewardsNav';
 import { useAuthStore } from '../../store/authStore';
 
 const phaseOptions = ['FOCUS', 'SHORT_BREAK', 'LONG_BREAK'] as const;
@@ -336,14 +337,16 @@ export function FocusHome() {
       {contextHolder}
       <section className="focus-hero">
         <div className="focus-hero-copy">
-          <Typography.Title level={1}>{t('focus.title')}</Typography.Title>
-          <Typography.Text>{t('focus.subtitle')}</Typography.Text>
+          <Typography.Title level={1}>{t('focusRewards.title')}</Typography.Title>
+          <Typography.Text>{t('focusRewards.subtitle')}</Typography.Text>
         </div>
         <Space wrap>
           <Button icon={<ReloadOutlined />} onClick={loadFocusData}>{t('common.refresh')}</Button>
           <Button icon={<SettingOutlined />} onClick={() => setSettingsOpen(true)}>{t('focus.settings')}</Button>
         </Space>
       </section>
+
+      <FocusRewardsNav />
 
       <Row gutter={[18, 18]} align="stretch">
         <Col xs={24} xl={14}>

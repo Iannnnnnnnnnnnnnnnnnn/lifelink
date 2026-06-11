@@ -1,6 +1,8 @@
 import {
   CalendarOutlined,
   CheckSquareOutlined,
+  ClockCircleOutlined,
+  DollarOutlined,
   HeartOutlined,
   PlusOutlined,
   ReadOutlined,
@@ -213,6 +215,19 @@ export function Home() {
         </Row>
       </section>
 
+      <Row gutter={[16, 16]}>
+        <Col xs={24} xl={14}>
+          <DashboardSection title={t('dashboard.recentDaily')} onViewAll={() => navigate('/daily')}>
+            <RecentDailyList items={dailyPosts} loading={loading.daily} onOpen={(id) => navigate(`/daily/${id}`)} onCreate={() => navigate('/daily/create')} />
+          </DashboardSection>
+        </Col>
+        <Col xs={24} xl={10}>
+          <DashboardSection title={t('dashboard.unfinishedTodos')}>
+            <TodoPreviewList items={unfinishedTodos} loading={loading.todos} togglingIds={togglingIds} onToggle={handleToggleTodo} />
+          </DashboardSection>
+        </Col>
+      </Row>
+
       <section>
         <div className="dashboard-section-heading">
           <span>{t('dashboard.quickActions')}</span>
@@ -221,6 +236,8 @@ export function Home() {
           <QuickActionCard icon={<ReadOutlined />} title={t('dashboard.createDaily')} description={t('dashboard.createDailyDesc')} onClick={() => navigate('/daily/create')} />
           <QuickActionCard icon={<CheckSquareOutlined />} title={t('dashboard.createTodo')} description={t('dashboard.createTodoDesc')} onClick={() => navigate(relationships[0] ? `/relationships/${relationships[0].id}/todos` : '/relationships')} />
           <QuickActionCard icon={<CalendarOutlined />} title={t('dashboard.createAnniversary')} description={t('dashboard.createAnniversaryDesc')} onClick={() => navigate('/anniversaries/create')} />
+          <QuickActionCard icon={<ClockCircleOutlined />} title={t('dashboard.startFocus')} description={t('dashboard.startFocusDesc')} onClick={() => navigate('/focus/timer')} />
+          <QuickActionCard icon={<DollarOutlined />} title={t('dashboard.createFinance')} description={t('dashboard.createFinanceDesc')} onClick={() => navigate('/finance/create')} />
           <QuickActionCard
             icon={<HeartOutlined />}
             title={t('dashboard.cycleCare')}
@@ -234,19 +251,6 @@ export function Home() {
           <QuickActionCard icon={<ThunderboltOutlined />} title={t('dashboard.viewActivities')} description={t('dashboard.viewActivitiesDesc')} onClick={() => navigate('/activities')} />
         </div>
       </section>
-
-      <Row gutter={[16, 16]}>
-        <Col xs={24} xl={14}>
-          <DashboardSection title={t('dashboard.recentDaily')} onViewAll={() => navigate('/daily')}>
-            <RecentDailyList items={dailyPosts} loading={loading.daily} onOpen={(id) => navigate(`/daily/${id}`)} onCreate={() => navigate('/daily/create')} />
-          </DashboardSection>
-        </Col>
-        <Col xs={24} xl={10}>
-          <DashboardSection title={t('dashboard.unfinishedTodos')}>
-            <TodoPreviewList items={unfinishedTodos} loading={loading.todos} togglingIds={togglingIds} onToggle={handleToggleTodo} />
-          </DashboardSection>
-        </Col>
-      </Row>
 
       <Row gutter={[16, 16]}>
         <Col xs={24} xl={12}>

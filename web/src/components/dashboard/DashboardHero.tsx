@@ -1,6 +1,7 @@
 import { CalendarOutlined } from '@ant-design/icons';
 import { Button, Space, Tag, Typography } from 'antd';
 import { useTranslation } from 'react-i18next';
+import { useAuthStore } from '../../store/authStore';
 import { formatDashboardDate } from '../../utils/date';
 
 interface DashboardHeroProps {
@@ -10,6 +11,7 @@ interface DashboardHeroProps {
 
 export function DashboardHero({ onCreateDaily, onOpenSpaces }: DashboardHeroProps) {
   const { t, i18n } = useTranslation();
+  const user = useAuthStore((state) => state.user);
   const currentDate = formatDashboardDate(new Date(), i18n.resolvedLanguage);
 
   return (
@@ -18,8 +20,7 @@ export function DashboardHero({ onCreateDaily, onOpenSpaces }: DashboardHeroProp
         <Space wrap className="dashboard-hero-tags">
           <Tag icon={<CalendarOutlined />}>{currentDate}</Tag>
         </Space>
-        <Typography.Title level={1}>{t('dashboard.heroTitle')}</Typography.Title>
-        <Typography.Text>{t('dashboard.slogan')}</Typography.Text>
+        <Typography.Title level={2}>{t('home.welcome', { name: user?.username || t('home.defaultUser') })}</Typography.Title>
       </div>
       <Space wrap className="dashboard-hero-actions">
         <Button type="primary" size="large" onClick={onOpenSpaces}>

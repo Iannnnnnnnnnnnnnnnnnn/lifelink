@@ -246,7 +246,9 @@ export function ProfilePage() {
         </Col>
       </Row>
 
-      <BackgroundSettingsPanel />
+      <div id="settings">
+        <BackgroundSettingsPanel />
+      </div>
 
       <Card title={t('profile.security')} className="profile-detail-card">
         <Form form={passwordForm} layout="vertical" className="profile-password-form" onFinish={handleChangePassword}>

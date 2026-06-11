@@ -14,12 +14,12 @@
 
 .focus-hero-copy h1 {
   margin-bottom: 6px !important;
-  font-size: clamp(36px, 7vw, 72px) !important;
-  line-height: 1;
+  font-size: 34px !important;
+  line-height: 1.12;
 }
 
 .focus-hero-copy .ant-typography {
-  font-size: 18px;
+  font-size: 15px;
   color: #6e6e73;
 }
 

@@ -4,7 +4,7 @@ import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   deleteTransaction,
   getTransactionCategories,
@@ -29,6 +29,10 @@ interface EditValues {
 export function FinanceTransactionList() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const scope = searchParams.get('scope') === 'space' || searchParams.get('spaceId') || searchParams.get('relationshipId') ? 'space' : 'personal';
+  const relationshipId = searchParams.get('spaceId') || searchParams.get('relationshipId');
+  const accountBookId = searchParams.get('accountBookId');
   const [items, setItems] = useState<Transaction[]>([]);
   const [type, setType] = useState<TransactionType | undefined>();
   const [month, setMonth] = useState<Dayjs>(dayjs());
@@ -43,7 +47,15 @@ export function FinanceTransactionList() {
     try {
       const startDate = month.startOf('month').format('YYYY-MM-DD');
       const endDate = month.endOf('month').format('YYYY-MM-DD');
-      const response = await getTransactions({ type, startDate, endDate, page: 1, size: 50 });
+      const response = await getTransactions({
+        accountBookId: accountBookId ? Number(accountBookId) : undefined,
+        relationshipId: relationshipId ? Number(relationshipId) : undefined,
+        type,
+        startDate,
+        endDate,
+        page: 1,
+        size: 50,
+      });
       setItems(response.data.data);
     } finally {
       setLoading(false);
@@ -96,7 +108,22 @@ export function FinanceTransactionList() {
 
   useEffect(() => {
     loadData();
-  }, [type, month]);
+  }, [type, month, accountBookId, relationshipId]);
+
+  const buildCreatePath = () => {
+    const params = new URLSearchParams();
+    if (scope === 'space') {
+      params.set('scope', 'space');
+      if (relationshipId) {
+        params.set('spaceId', relationshipId);
+      }
+    }
+    if (accountBookId) {
+      params.set('accountBookId', accountBookId);
+    }
+    const query = params.toString();
+    return query ? `/finance/create?${query}` : '/finance/create';
+  };
 
   return (
     <Space direction="vertical" size={16} className="page-wide">
@@ -104,7 +131,9 @@ export function FinanceTransactionList() {
       <div className="page-heading">
         <div>
           <Typography.Title level={2}>{t('finance.transactions')}</Typography.Title>
-          <Typography.Text type="secondary">{t('finance.transactionsSubtitle')}</Typography.Text>
+          <Typography.Text type="secondary">
+            {scope === 'space' ? t('finance.spaceLedger') : t('finance.personalLedger')} · {t('finance.transactionsSubtitle')}
+          </Typography.Text>
         </div>
         <Space wrap>
           <DatePicker picker="month" value={month} onChange={(value) => value && setMonth(value)} />
@@ -120,13 +149,16 @@ export function FinanceTransactionList() {
             ]}
           />
           <Button icon={<ReloadOutlined />} loading={loading} onClick={loadData}>{t('common.refresh')}</Button>
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/finance/create')}>{t('finance.addTransaction')}</Button>
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate(buildCreatePath())}>
+            {scope === 'space' ? t('finance.addSpaceTransaction') : t('finance.addPersonalTransaction')}
+          </Button>
         </Space>
       </div>
       <Table
         rowKey="id"
         loading={loading}
         dataSource={items}
+        scroll={{ x: 920 }}
         columns={[
           { title: t('finance.titleField'), dataIndex: 'title' },
           { title: t('finance.accountBook'), dataIndex: 'accountBookName' },

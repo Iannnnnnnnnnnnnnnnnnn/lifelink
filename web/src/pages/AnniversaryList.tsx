@@ -8,6 +8,7 @@ import { getRelationships, RelationshipSummary } from '../api/relationship';
 import { getAnniversaryDisplayText, getRepeatTypeLabel } from '../utils/anniversary';
 import { EmptyState } from '../components/decorations/EmptyState';
 import { ErrorState } from '../components/common/ErrorState';
+import { RelationshipSubNav } from '../components/navigation/RelationshipSubNav';
 import { formatDate } from '../utils/date';
 import { getPageErrorType, PageErrorType } from '../utils/error';
 
@@ -58,6 +59,7 @@ export function AnniversaryList() {
   return (
     <Space direction="vertical" size={16} className="page-wide">
       {contextHolder}
+      {routeRelationshipId && <RelationshipSubNav relationshipId={routeRelationshipId} />}
       <div className="page-heading">
         <div>
           <Typography.Title level={2}>{t('anniversary.title')}</Typography.Title>

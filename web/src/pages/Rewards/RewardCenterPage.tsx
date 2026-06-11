@@ -10,6 +10,7 @@ import type { ColumnsType } from 'antd/es/table';
 import dayjs from 'dayjs';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   CoinAccount,
   CoinLedger,
@@ -28,6 +29,7 @@ import {
   updateReward,
   uploadRewardCover,
 } from '../../api/rewards';
+import { FocusRewardsNav } from '../../components/navigation/FocusRewardsNav';
 import { ForbiddenPage } from '../error/ForbiddenPage';
 
 const statusOptions: RewardStatus[] = ['DRAFT', 'ACTIVE', 'INACTIVE', 'SOLD_OUT'];
@@ -60,6 +62,8 @@ function RewardCover({ reward }: { reward: Reward }) {
 
 export function RewardCenterPage() {
   const { t, i18n } = useTranslation();
+  const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const screens = Grid.useBreakpoint();
   const isMobile = !screens.md;
   const [messageApi, contextHolder] = message.useMessage();
@@ -71,6 +75,11 @@ export function RewardCenterPage() {
   const [selectedReward, setSelectedReward] = useState<Reward | null>(null);
   const [redeeming, setRedeeming] = useState(false);
   const [loading, setLoading] = useState(true);
+  const activeRewardTab = searchParams.get('tab') === 'ledger'
+    ? 'ledger'
+    : searchParams.get('tab') === 'redemptions'
+      ? 'redemptions'
+      : 'rewards';
 
   const loadData = async () => {
     setLoading(true);
@@ -167,7 +176,7 @@ export function RewardCenterPage() {
       {contextHolder}
       <section className="rewards-hero">
         <div>
-          <Typography.Title level={1}>{t('rewards.center')}</Typography.Title>
+          <Typography.Title level={1}>{t('focusRewards.title')}</Typography.Title>
           <Typography.Text>{t('rewards.subtitle')}</Typography.Text>
         </div>
         <Space wrap>
@@ -180,7 +189,17 @@ export function RewardCenterPage() {
         </Space>
       </section>
 
+      <FocusRewardsNav />
+
       <Tabs
+        activeKey={activeRewardTab}
+        onChange={(key) => {
+          if (key === 'admin') {
+            navigate('/rewards/admin');
+            return;
+          }
+          setSearchParams(key === 'rewards' ? {} : { tab: key });
+        }}
         items={[
           {
             key: 'rewards',
@@ -313,13 +332,20 @@ export function RewardAdminPage() {
     return <Skeleton active paragraph={{ rows: 8 }} />;
   }
   if (!allowed) {
-    return <ForbiddenPage />;
+    return (
+      <div className="page-wide rewards-page">
+        <FocusRewardsNav />
+        <ForbiddenPage />
+      </div>
+    );
   }
   return (
     <div className="page-wide rewards-page">
+      <FocusRewardsNav />
       <section className="rewards-hero">
         <div>
-          <Typography.Title level={1}>{t('rewards.management')}</Typography.Title>
+          <Typography.Title level={1}>{t('focusRewards.title')}</Typography.Title>
+          <Typography.Text>{t('rewards.management')}</Typography.Text>
         </div>
       </section>
       <RewardAdminPanel />

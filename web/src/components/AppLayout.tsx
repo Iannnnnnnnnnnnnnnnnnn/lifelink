@@ -1,9 +1,9 @@
-import { BulbOutlined, CalendarOutlined, ClockCircleOutlined, DollarOutlined, GiftOutlined, HeartOutlined, HomeOutlined, LogoutOutlined, MenuOutlined, ReadOutlined, TeamOutlined, ThunderboltOutlined, UserOutlined } from '@ant-design/icons';
-import { Avatar, Button, Drawer, Dropdown, Grid, Input, Layout, Menu, Space, Typography } from 'antd';
+import { DownOutlined, HeartOutlined, LogoutOutlined, MenuOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
+import { Avatar, Button, Drawer, Dropdown, Grid, Input, Layout, Select, Space, Tooltip, Typography } from 'antd';
 import type { MenuProps } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
-import { useEffect, useState } from 'react';
+import { useEffect, useMemo, useState } from 'react';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { SiteFooter } from './SiteFooter';
 import { BackgroundLayer } from './background/BackgroundLayer';
@@ -12,10 +12,11 @@ import { useAuthStore } from '../store/authStore';
 import { useBackgroundStore } from '../store/backgroundStore';
 import { useRelationshipThemeStore } from '../store/relationshipThemeStore';
 import { getAvatarInitial } from '../utils/avatar';
+import { getRelationships, type RelationshipSummary } from '../api/relationship';
+import { buildPrimaryNavSections, getPageContext, getRouteRelationshipId, headerActionIcons } from './navigation/navConfig';
 
 const { Header, Content, Footer, Sider } = Layout;
 const { useBreakpoint } = Grid;
-type MenuItem = Required<MenuProps>['items'][number];
 
 export function AppLayout() {
   const navigate = useNavigate();
@@ -31,31 +32,24 @@ export function AppLayout() {
   const fetchRelationshipThemeStatus = useRelationshipThemeStore((state) => state.fetchRelationshipThemeStatus);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [relationships, setRelationships] = useState<RelationshipSummary[]>([]);
   const screens = useBreakpoint();
   const isMobile = !screens.md;
   const philosophyEnabled = Boolean(user?.features?.philosophyEnabled);
-
-  const selectedKey = location.pathname.startsWith('/profile')
-    ? '/profile'
-    : location.pathname.startsWith('/relationships')
-    ? '/relationships'
-    : location.pathname.startsWith('/daily')
-      ? '/daily'
-      : location.pathname.startsWith('/activities')
-        ? '/activities'
-      : location.pathname.startsWith('/anniversaries')
-        ? '/anniversaries'
-      : location.pathname.startsWith('/cycle-care')
-        ? '/cycle-care'
-      : location.pathname.startsWith('/finance')
-        ? '/finance'
-      : location.pathname.startsWith('/focus')
-        ? '/focus'
-      : location.pathname.startsWith('/rewards')
-        ? '/rewards'
-      : location.pathname.startsWith('/philosophy')
-        ? '/philosophy'
-        : '/';
+  const currentRelationshipId = getRouteRelationshipId(location.pathname, location.search);
+  const currentRelationship = relationships.find((item) => item.id === currentRelationshipId);
+  const pageContext = useMemo(() => getPageContext(t, location), [t, location]);
+  const navSections = useMemo(
+    () => buildPrimaryNavSections({
+      t,
+      location,
+      currentRelationship,
+      currentRelationshipId,
+      hasCoupleRelationship,
+      philosophyEnabled,
+    }),
+    [currentRelationship, currentRelationshipId, hasCoupleRelationship, location, philosophyEnabled, t],
+  );
 
   const handleLogout = () => {
     logout();
@@ -64,6 +58,10 @@ export function AppLayout() {
 
   const handleOpenProfile = () => {
     navigate('/profile');
+  };
+
+  const handleOpenSettings = () => {
+    navigate('/profile#settings');
   };
 
   const handleGlobalSearch = (value: string) => {
@@ -93,114 +91,26 @@ export function AppLayout() {
     }
   }, [fetchBackgroundSetting, isAuthenticated]);
 
+  useEffect(() => {
+    if (isAuthenticated) {
+      getRelationships()
+        .then((response) => setRelationships(response.data.data))
+        .catch(() => setRelationships([]));
+    }
+  }, [isAuthenticated]);
+
   const themeClassName = hasCoupleRelationship ? 'theme-colorful' : 'theme-grayscale';
-  const menuItems: MenuItem[] = [
-    {
-      key: '/',
-      icon: <HomeOutlined />,
-      label: t('menu.home'),
-      onClick: () => {
-        navigate('/');
-        setMobileMenuOpen(false);
-      },
-    },
-    {
-      key: '/profile',
-      icon: <UserOutlined />,
-      label: t('profile.title'),
-      onClick: () => {
-        navigate('/profile');
-        setMobileMenuOpen(false);
-      },
-    },
-    {
-      key: '/relationships',
-      icon: <TeamOutlined />,
-      label: t('menu.relationships'),
-      onClick: () => {
-        navigate('/relationships');
-        setMobileMenuOpen(false);
-      },
-    },
-    {
-      key: '/daily',
-      icon: <ReadOutlined />,
-      label: t('menu.daily'),
-      onClick: () => {
-        navigate('/daily');
-        setMobileMenuOpen(false);
-      },
-    },
-    {
-      key: '/activities',
-      icon: <ThunderboltOutlined />,
-      label: t('menu.activities'),
-      onClick: () => {
-        navigate('/activities');
-        setMobileMenuOpen(false);
-      },
-    },
-    {
-      key: '/anniversaries',
-      icon: <CalendarOutlined />,
-      label: t('menu.anniversaries'),
-      onClick: () => {
-        navigate('/anniversaries');
-        setMobileMenuOpen(false);
-      },
-    },
-    ...(hasCoupleRelationship ? [{
-      key: '/cycle-care',
-      icon: <HeartOutlined />,
-      label: t('menu.cycleCare'),
-      onClick: () => {
-        navigate('/cycle-care');
-        setMobileMenuOpen(false);
-      },
-    }] : []),
-    {
-      key: '/focus',
-      icon: <ClockCircleOutlined />,
-      label: t('menu.focus'),
-      onClick: () => {
-        navigate('/focus');
-        setMobileMenuOpen(false);
-      },
-    },
-    {
-      key: '/rewards',
-      icon: <GiftOutlined />,
-      label: t('menu.rewards'),
-      onClick: () => {
-        navigate('/rewards');
-        setMobileMenuOpen(false);
-      },
-    },
-    {
-      key: '/finance',
-      icon: <DollarOutlined />,
-      label: t('menu.finance'),
-      onClick: () => {
-        navigate('/finance');
-        setMobileMenuOpen(false);
-      },
-    },
-    ...(philosophyEnabled ? [{
-      key: '/philosophy',
-      icon: <BulbOutlined />,
-      label: t('menu.philosophy'),
-      onClick: () => {
-        navigate('/philosophy');
-        setMobileMenuOpen(false);
-      },
-    }] : []),
-  ];
 
   const userMenuItems: MenuProps['items'] = [
     {
       key: 'profile',
       icon: <UserOutlined />,
       label: t('profile.title'),
+    },
+    {
+      key: 'settings',
+      icon: <SettingOutlined />,
+      label: t('menu.settings'),
     },
     {
       key: 'logout',
@@ -212,6 +122,10 @@ export function AppLayout() {
   const handleUserMenuClick: MenuProps['onClick'] = ({ key }) => {
     if (key === 'profile') {
       handleOpenProfile();
+      return;
+    }
+    if (key === 'settings') {
+      handleOpenSettings();
       return;
     }
     if (key === 'logout') {
@@ -226,18 +140,44 @@ export function AppLayout() {
       </span>
       <div>
         <Typography.Text strong className="brand-name">{appName}</Typography.Text>
-        <Typography.Text type="secondary" className="brand-subtitle">{t('app.subtitle')}</Typography.Text>
+        {t('app.subtitle') && <Typography.Text type="secondary" className="brand-subtitle">{t('app.subtitle')}</Typography.Text>}
       </div>
     </div>
   );
 
   const menu = (
-    <Menu
-      mode="inline"
-      selectedKeys={[selectedKey]}
-      className="app-menu"
-      items={menuItems}
-    />
+    <nav className="app-menu grouped-nav" aria-label={t('menu.navigation')}>
+      {navSections.map((section) => (
+        <div key={section.key} className={`nav-section ${section.active ? 'is-active' : ''}`}>
+          <div className="nav-section-title">{section.label}</div>
+          <div className="nav-section-items">
+            {section.items.map((item) => {
+              const navButton = (
+                <button
+                  key={item.key}
+                  type="button"
+                  className={`nav-item ${item.active ? 'is-active' : ''}`}
+                  disabled={item.disabled}
+                  onClick={() => {
+                    if (item.disabled) return;
+                    navigate(item.to);
+                    setMobileMenuOpen(false);
+                  }}
+                >
+                  <span className="nav-item-icon">{item.icon}</span>
+                  <span className="nav-item-label">{item.label}</span>
+                </button>
+              );
+              return item.disabled ? (
+                <Tooltip key={item.key} title={t('menu.selectSpaceFirst')} placement="right">
+                  <span>{navButton}</span>
+                </Tooltip>
+              ) : navButton;
+            })}
+          </div>
+        </div>
+      ))}
+    </nav>
   );
 
   return (
@@ -270,8 +210,10 @@ export function AppLayout() {
             />
           )}
           <div className="app-header-title">
-            <Typography.Title level={4}>{t('app.title')}</Typography.Title>
-            <Typography.Text type="secondary" className="header-subtitle">{t('app.headerSubtitle')}</Typography.Text>
+            <Typography.Text type="secondary" className="header-breadcrumb">
+              {pageContext.crumbs.join(' / ')}
+            </Typography.Text>
+            <Typography.Title level={4}>{pageContext.title}</Typography.Title>
           </div>
           <Input.Search
             allowClear
@@ -282,9 +224,29 @@ export function AppLayout() {
             onSearch={handleGlobalSearch}
           />
           <Space className="header-actions">
+            {relationships.length > 0 && (
+              <Select
+                className="header-space-switcher"
+                placeholder={t('menu.currentSpace')}
+                value={currentRelationshipId}
+                allowClear
+                onChange={(value) => {
+                  if (value) {
+                    navigate(`/relationships/${value}`);
+                  }
+                }}
+                options={relationships.map((item) => ({ value: item.id, label: item.name }))}
+              />
+            )}
+            <Tooltip title={t('empty.noNotifications')}>
+              <Button className="header-icon-button" icon={headerActionIcons.notification} />
+            </Tooltip>
+            <Tooltip title={t('menu.settings')}>
+              <Button className="header-icon-button" icon={<SettingOutlined />} onClick={handleOpenSettings} />
+            </Tooltip>
             <LanguageSwitcher />
-            <Dropdown menu={{ items: userMenuItems, onClick: handleUserMenuClick }} trigger={['hover']}>
-              <button type="button" className="user-chip user-chip-button" onClick={handleOpenProfile}>
+            <Dropdown menu={{ items: userMenuItems, onClick: handleUserMenuClick }} trigger={['click']}>
+              <button type="button" className="user-chip user-chip-button">
                 <Avatar
                   size="small"
                   src={user?.avatarUrl || undefined}
@@ -293,11 +255,9 @@ export function AppLayout() {
                   {getAvatarInitial(user?.username)}
                 </Avatar>
                 <Typography.Text>{user?.username}</Typography.Text>
+                <DownOutlined className="user-chip-arrow" />
               </button>
             </Dropdown>
-            <Button icon={<LogoutOutlined />} onClick={handleLogout} className="logout-button">
-              {t('auth.logout')}
-            </Button>
           </Space>
         </Header>
         <Content className="app-content">

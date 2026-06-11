@@ -41,7 +41,7 @@ export function RelationshipList() {
       <div className="page-heading">
         <div>
           <Typography.Title level={2}>{t('relationship.title')}</Typography.Title>
-          <Typography.Text type="secondary">{t('relationship.spacesJoined')}</Typography.Text>
+          {t('relationship.spacesJoined') && <Typography.Text type="secondary">{t('relationship.spacesJoined')}</Typography.Text>}
         </div>
         <Space>
           <Button icon={<UsergroupAddOutlined />} onClick={() => navigate('/relationships/join')}>

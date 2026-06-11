@@ -99,15 +99,85 @@ body {
 }
 
 .app-menu {
-  padding: 12px;
+  padding: 10px 12px 18px;
   border-inline-end: 0 !important;
 }
 
-.app-menu .ant-menu-item {
-  height: 42px;
-  margin: 4px 0;
+.grouped-nav {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  overflow-y: auto;
+}
+
+.nav-section {
+  position: relative;
+}
+
+.nav-section-title {
+  margin: 0 8px 6px;
+  color: var(--ll-text-subtle);
+  font-size: 11px;
+  font-weight: 700;
+  letter-spacing: 0;
+}
+
+.nav-section.is-active .nav-section-title {
+  color: var(--ll-text-muted);
+}
+
+.nav-section-items {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.nav-item {
+  display: flex;
+  width: 100%;
+  min-width: 0;
+  height: 38px;
+  align-items: center;
+  gap: 10px;
+  padding: 0 10px;
+  border: 0;
   border-radius: var(--ll-radius-sm);
+  background: transparent;
+  color: var(--ll-text-muted);
+  cursor: pointer;
+  font: inherit;
+  text-align: left;
   transition: background var(--ll-transition-fast), color var(--ll-transition-fast), transform var(--ll-transition-fast);
+}
+
+.nav-item:hover {
+  background: rgba(47, 111, 237, 0.055);
+  color: var(--ll-text);
+}
+
+.nav-item.is-active {
+  background: var(--ll-primary-soft);
+  color: var(--ll-primary);
+  font-weight: 650;
+}
+
+.nav-item:disabled {
+  cursor: not-allowed;
+  opacity: 0.48;
+}
+
+.nav-item-icon {
+  display: inline-flex;
+  flex: 0 0 18px;
+  justify-content: center;
+  font-size: 16px;
+}
+
+.nav-item-label {
+  min-width: 0;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .app-header {
@@ -123,6 +193,18 @@ body {
 
 .app-header h4 {
   margin: 0;
+}
+
+.app-header-title {
+  min-width: 160px;
+}
+
+.header-breadcrumb {
+  display: block;
+  margin-bottom: 2px;
+  color: var(--ll-text-subtle);
+  font-size: 12px;
+  line-height: 1.2;
 }
 
 .header-subtitle {
@@ -213,7 +295,7 @@ body {
 .page-heading h2 {
   margin: 0 0 6px;
   color: var(--ll-text);
-  font-size: 34px;
+  font-size: 30px;
   font-weight: 760;
   letter-spacing: 0;
   line-height: 1.14;
@@ -266,13 +348,79 @@ body {
   margin-left: auto;
 }
 
+.header-space-switcher {
+  width: 180px;
+}
+
+.header-icon-button {
+  width: 38px;
+  padding-inline: 0;
+}
+
 .user-chip {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
   height: 32px;
   padding: 4px 12px;
   border: 1px solid var(--ll-border-soft);
   border-radius: var(--ll-radius-pill);
   background: rgba(255, 255, 255, 0.72);
   transition: background var(--ll-transition-fast), transform var(--ll-transition-fast), border-color var(--ll-transition-fast);
+}
+
+.user-chip-button {
+  cursor: pointer;
+  font: inherit;
+}
+
+.user-chip-arrow {
+  color: var(--ll-text-subtle);
+  font-size: 10px;
+}
+
+.relationship-subnav {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  padding: 10px 12px;
+  border: 1px solid var(--ll-border-soft);
+  border-radius: var(--ll-radius-lg);
+  background: rgba(255, 255, 255, 0.76);
+  box-shadow: var(--ll-shadow-sm);
+  backdrop-filter: blur(14px);
+}
+
+.relationship-subnav-crumbs {
+  display: flex;
+  min-width: 0;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 6px;
+  padding: 0 4px;
+  font-size: 13px;
+}
+
+.relationship-subnav-scroll {
+  overflow-x: auto;
+  padding-bottom: 2px;
+}
+
+.relationship-subnav-scroll .ant-space {
+  min-width: max-content;
+}
+
+.relationship-subnav-item {
+  border-color: transparent;
+  background: rgba(247, 248, 250, 0.82);
+}
+
+.module-tabs .ant-tabs-nav {
+  margin-bottom: 12px;
+}
+
+.module-tabs .ant-tabs-nav::before {
+  border-bottom-color: var(--ll-border-soft);
 }
 
 .welcome-card {
@@ -320,6 +468,15 @@ body {
 
 .action-card {
   height: 100%;
+}
+
+.action-card-disabled {
+  cursor: not-allowed;
+  opacity: 0.66;
+}
+
+.action-card-disabled:hover {
+  box-shadow: var(--ll-shadow-sm);
 }
 
 .action-card h4 {

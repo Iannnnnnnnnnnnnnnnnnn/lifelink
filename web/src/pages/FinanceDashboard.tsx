@@ -1,8 +1,8 @@
 import { DollarOutlined, PlusOutlined, ReloadOutlined, UnorderedListOutlined } from '@ant-design/icons';
-import { Button, Card, Col, Form, Input, message, Modal, Row, Select, Space, Statistic, Table, Tag, Typography } from 'antd';
-import { useEffect, useState } from 'react';
+import { Button, Card, Col, Form, Input, message, Modal, Row, Segmented, Select, Space, Statistic, Table, Tag, Typography } from 'antd';
+import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import {
   AccountBook,
   createAccountBook,
@@ -12,12 +12,28 @@ import {
   MonthlyFinanceSummary,
   Transaction,
 } from '../api/accounting';
+import { getRelationships, type RelationshipSummary } from '../api/relationship';
 import { formatDateTime } from '../utils/date';
 import { getTransactionCategoryLabel, getTransactionTypeLabel } from '../utils/display';
+
+type FinanceScope = 'personal' | 'space';
+
+function getScopeFromParams(searchParams: URLSearchParams): FinanceScope {
+  return searchParams.get('scope') === 'space' || searchParams.has('spaceId') || searchParams.has('relationshipId') ? 'space' : 'personal';
+}
+
+function getSpaceIdFromParams(searchParams: URLSearchParams) {
+  const value = searchParams.get('spaceId') || searchParams.get('relationshipId');
+  return value ? Number(value) : undefined;
+}
 
 export function FinanceDashboard() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const [scope, setScope] = useState<FinanceScope>(() => getScopeFromParams(searchParams));
+  const [relationships, setRelationships] = useState<RelationshipSummary[]>([]);
+  const [selectedSpaceId, setSelectedSpaceId] = useState<number | undefined>(() => getSpaceIdFromParams(searchParams));
   const [books, setBooks] = useState<AccountBook[]>([]);
   const [bookId, setBookId] = useState<number | undefined>();
   const [summary, setSummary] = useState<MonthlyFinanceSummary>({ totalIncome: 0, totalExpense: 0, balance: 0 });
@@ -27,15 +43,67 @@ export function FinanceDashboard() {
   const [form] = Form.useForm<{ name: string }>();
   const [messageApi, contextHolder] = message.useMessage();
 
-  const loadData = async (nextBookId = bookId) => {
+  const personalBooks = useMemo(() => books.filter((book) => book.type === 'PERSONAL'), [books]);
+  const spaceBooks = useMemo(
+    () => books.filter((book) => book.type === 'RELATIONSHIP' && (!selectedSpaceId || book.relationshipId === selectedSpaceId)),
+    [books, selectedSpaceId],
+  );
+  const currentBooks = scope === 'space' ? spaceBooks : personalBooks;
+  const selectedSpaceName = relationships.find((item) => item.id === selectedSpaceId)?.name;
+  const addTransactionText = scope === 'space' ? t('finance.addSpaceTransaction') : t('finance.addPersonalTransaction');
+  const pageTitle = scope === 'space' ? t('finance.spaceLedger') : t('finance.personalLedger');
+  const pageSubtitle = scope === 'space' ? t('finance.spaceFinanceUnifiedSubtitle') : t('finance.personalFinanceSubtitle');
+
+  const updateScopeQuery = (nextScope: FinanceScope, nextSpaceId?: number) => {
+    const nextParams = new URLSearchParams();
+    if (nextScope === 'space') {
+      nextParams.set('scope', 'space');
+      if (nextSpaceId) {
+        nextParams.set('spaceId', String(nextSpaceId));
+      }
+    }
+    setSearchParams(nextParams, { replace: true });
+  };
+
+  const buildScopedPath = (path: string) => {
+    const params = new URLSearchParams();
+    if (scope === 'space') {
+      params.set('scope', 'space');
+      if (selectedSpaceId) {
+        params.set('spaceId', String(selectedSpaceId));
+      }
+    }
+    if (bookId) {
+      params.set('accountBookId', String(bookId));
+    }
+    const query = params.toString();
+    return query ? `${path}?${query}` : path;
+  };
+
+  const loadReferenceData = async () => {
+    const [bookRes, relationshipRes] = await Promise.all([getAccountBooks(), getRelationships()]);
+    setBooks(bookRes.data.data);
+    setRelationships(relationshipRes.data.data);
+  };
+
+  const loadData = async () => {
+    const query: { accountBookId?: number; relationshipId?: number; page?: number; size?: number } = { page: 1, size: 8 };
+    if (bookId) {
+      query.accountBookId = bookId;
+    } else if (scope === 'space' && selectedSpaceId) {
+      query.relationshipId = selectedSpaceId;
+    } else if (scope === 'personal') {
+      setSummary({ totalIncome: 0, totalExpense: 0, balance: 0 });
+      setTransactions([]);
+      return;
+    }
+
     setLoading(true);
     try {
-      const [bookRes, summaryRes, transactionRes] = await Promise.all([
-        getAccountBooks(),
-        getMonthlyFinanceSummary({ accountBookId: nextBookId }),
-        getTransactions({ accountBookId: nextBookId, page: 1, size: 8 }),
+      const [summaryRes, transactionRes] = await Promise.all([
+        getMonthlyFinanceSummary({ accountBookId: query.accountBookId, relationshipId: query.relationshipId }),
+        getTransactions(query),
       ]);
-      setBooks(bookRes.data.data);
       setSummary(summaryRes.data.data);
       setTransactions(transactionRes.data.data);
     } finally {
@@ -43,45 +111,121 @@ export function FinanceDashboard() {
     }
   };
 
+  const handleRefresh = async () => {
+    setLoading(true);
+    try {
+      await loadReferenceData();
+      await loadData();
+    } finally {
+      setLoading(false);
+    }
+  };
+
   const handleCreateBook = async () => {
     const values = await form.validateFields();
-    await createAccountBook({ name: values.name, type: 'PERSONAL' });
+    const response = await createAccountBook({
+      name: values.name,
+      type: scope === 'space' ? 'RELATIONSHIP' : 'PERSONAL',
+      relationshipId: scope === 'space' ? selectedSpaceId : undefined,
+    });
     messageApi.success(t('finance.bookCreated'));
     setOpen(false);
     form.resetFields();
-    loadData();
+    setBookId(response.data.data.id);
+    await loadReferenceData();
   };
 
   useEffect(() => {
-    loadData();
+    setScope(getScopeFromParams(searchParams));
+    setSelectedSpaceId(getSpaceIdFromParams(searchParams));
+    setBookId(searchParams.get('accountBookId') ? Number(searchParams.get('accountBookId')) : undefined);
+  }, [searchParams]);
+
+  useEffect(() => {
+    loadReferenceData().catch(() => undefined);
   }, []);
+
+  useEffect(() => {
+    if (scope === 'personal') {
+      if (!personalBooks.some((book) => book.id === bookId)) {
+        setBookId(personalBooks[0]?.id);
+      }
+      return;
+    }
+    const fallbackSpaceId = selectedSpaceId
+      || relationships[0]?.id
+      || books.find((book) => book.type === 'RELATIONSHIP' && book.relationshipId)?.relationshipId;
+    if (fallbackSpaceId && !selectedSpaceId) {
+      setSelectedSpaceId(fallbackSpaceId);
+    }
+    if (bookId && !spaceBooks.some((book) => book.id === bookId)) {
+      setBookId(undefined);
+    }
+  }, [bookId, books, personalBooks, relationships, scope, selectedSpaceId, spaceBooks]);
+
+  useEffect(() => {
+    loadData().catch(() => undefined);
+  }, [scope, selectedSpaceId, bookId]);
 
   return (
     <Space direction="vertical" size={16} className="page-wide">
       {contextHolder}
       <div className="page-heading">
         <div>
-          <Typography.Title level={2}>{t('finance.title')}</Typography.Title>
-          <Typography.Text type="secondary">{t('finance.subtitle')}</Typography.Text>
+          <Typography.Title level={2}>{pageTitle}</Typography.Title>
+          <Typography.Text type="secondary">{pageSubtitle}</Typography.Text>
         </div>
         <Space wrap>
-          <Select
-            allowClear
-            className="relationship-filter"
-            placeholder={t('finance.accountBook')}
-            value={bookId}
-            options={books.map((book) => ({ value: book.id, label: book.name }))}
+          <Segmented
+            value={scope}
+            options={[
+              { value: 'personal', label: t('finance.personalLedger') },
+              { value: 'space', label: t('finance.spaceLedger') },
+            ]}
             onChange={(value) => {
-              setBookId(value);
-              loadData(value);
+              const nextScope = value as FinanceScope;
+              setScope(nextScope);
+              setBookId(undefined);
+              updateScopeQuery(nextScope, selectedSpaceId);
             }}
           />
-          <Button icon={<ReloadOutlined />} loading={loading} onClick={() => loadData()}>{t('common.refresh')}</Button>
-          <Button icon={<UnorderedListOutlined />} onClick={() => navigate('/finance/transactions')}>{t('finance.transactions')}</Button>
-          <Button onClick={() => setOpen(true)}>{t('finance.createBook')}</Button>
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/finance/create')}>{t('finance.addTransaction')}</Button>
+          {scope === 'space' && (
+            <Select
+              className="relationship-filter"
+              placeholder={t('finance.selectSpace')}
+              value={selectedSpaceId}
+              options={relationships.map((item) => ({ value: item.id, label: item.name }))}
+              onChange={(value) => {
+                setSelectedSpaceId(value);
+                setBookId(undefined);
+                updateScopeQuery('space', value);
+              }}
+            />
+          )}
+          <Select
+            allowClear={scope === 'space'}
+            className="relationship-filter"
+            placeholder={t('finance.selectBook')}
+            value={bookId}
+            options={currentBooks.map((book) => ({ value: book.id, label: book.name }))}
+            onChange={setBookId}
+          />
+          <Button icon={<ReloadOutlined />} loading={loading} onClick={handleRefresh}>{t('common.refresh')}</Button>
+          <Button icon={<UnorderedListOutlined />} onClick={() => navigate(buildScopedPath('/finance/transactions'))}>{t('finance.transactions')}</Button>
+          <Button disabled={scope === 'space' && !selectedSpaceId} onClick={() => setOpen(true)}>{t('finance.createBook')}</Button>
+          <Button type="primary" icon={<PlusOutlined />} disabled={currentBooks.length === 0} onClick={() => navigate(buildScopedPath('/finance/create'))}>
+            {addTransactionText}
+          </Button>
         </Space>
       </div>
+
+      <Card className="finance-scope-card">
+        <Space wrap>
+          <Tag color={scope === 'space' ? 'blue' : 'default'}>{t('finance.currentScope')}: {pageTitle}</Tag>
+          {scope === 'space' && <Tag>{selectedSpaceName || t('finance.selectSpace')}</Tag>}
+          {currentBooks.length === 0 && <Typography.Text type="secondary">{scope === 'space' ? t('finance.noSpaceBook') : t('finance.noPersonalBook')}</Typography.Text>}
+        </Space>
+      </Card>
 
       <Row gutter={[16, 16]} className="finance-summary-grid">
         <Col xs={24} md={8}>
@@ -101,6 +245,7 @@ export function FinanceDashboard() {
           loading={loading}
           dataSource={transactions}
           pagination={false}
+          scroll={{ x: 760 }}
           columns={[
             { title: t('finance.titleField'), dataIndex: 'title' },
             { title: t('finance.accountBook'), dataIndex: 'accountBookName' },
@@ -114,6 +259,9 @@ export function FinanceDashboard() {
 
       <Modal title={t('finance.createBook')} open={open} onOk={handleCreateBook} onCancel={() => setOpen(false)} okText={t('common.create')} cancelText={t('common.cancel')}>
         <Form form={form} layout="vertical">
+          <Form.Item label={t('finance.currentScope')}>
+            <Tag>{scope === 'space' ? `${t('finance.spaceLedger')}${selectedSpaceName ? ` · ${selectedSpaceName}` : ''}` : t('finance.personalLedger')}</Tag>
+          </Form.Item>
           <Form.Item name="name" label={t('finance.bookName')} rules={[{ required: true, message: t('finance.bookNameRequired') }]}>
             <Input placeholder={t('finance.bookName')} />
           </Form.Item>

@@ -1,4 +1,4 @@
-import { Button, Card, DatePicker, Form, Input, InputNumber, message, Select, Typography } from 'antd';
+import { Button, Card, DatePicker, Form, Input, InputNumber, message, Select, Space, Tag, Typography } from 'antd';
 import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
@@ -21,7 +21,9 @@ export function FinanceCreateTransaction() {
   const { t } = useTranslation();
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
-  const relationshipId = searchParams.get('relationshipId');
+  const scope = searchParams.get('scope') === 'space' || searchParams.get('spaceId') || searchParams.get('relationshipId') ? 'space' : 'personal';
+  const relationshipId = searchParams.get('spaceId') || searchParams.get('relationshipId');
+  const accountBookId = searchParams.get('accountBookId');
   const [books, setBooks] = useState<AccountBook[]>([]);
   const [categories, setCategories] = useState<TransactionCategory[]>([]);
   const [type, setType] = useState<TransactionType>('EXPENSE');
@@ -32,13 +34,14 @@ export function FinanceCreateTransaction() {
     getAccountBooks().then((response) => {
       const items = relationshipId
         ? response.data.data.filter((book) => String(book.relationshipId) === relationshipId)
-        : response.data.data;
+        : response.data.data.filter((book) => book.type === 'PERSONAL');
       setBooks(items);
-      if (items.length > 0) {
-        form.setFieldsValue({ accountBookId: items[0].id });
+      const preferredBook = accountBookId ? items.find((item) => String(item.id) === accountBookId) : undefined;
+      if (preferredBook || items.length > 0) {
+        form.setFieldsValue({ accountBookId: preferredBook?.id || items[0].id });
       }
     });
-  }, [relationshipId]);
+  }, [accountBookId, relationshipId]);
 
   useEffect(() => {
     getTransactionCategories(type).then((response) => setCategories(response.data.data));
@@ -55,14 +58,17 @@ export function FinanceCreateTransaction() {
       transactionTime: values.transactionTime.format('YYYY-MM-DDTHH:mm:ss'),
     });
     messageApi.success(t('finance.createSuccess'));
-    navigate(relationshipId ? `/relationships/${relationshipId}/finance` : '/finance');
+    navigate(relationshipId ? `/finance?scope=space&spaceId=${relationshipId}` : '/finance');
   };
 
   return (
     <div className="page-narrow">
       {contextHolder}
-      <Typography.Title level={2}>{t('finance.addTransaction')}</Typography.Title>
+      <Typography.Title level={2}>{scope === 'space' ? t('finance.addSpaceTransaction') : t('finance.addPersonalTransaction')}</Typography.Title>
       <Card>
+        <Space wrap className="finance-create-scope">
+          <Tag>{t('finance.currentScope')}: {scope === 'space' ? t('finance.spaceLedger') : t('finance.personalLedger')}</Tag>
+        </Space>
         <Form form={form} layout="vertical" onFinish={handleSubmit} initialValues={{ type: 'EXPENSE', transactionTime: dayjs() }}>
           <Form.Item name="accountBookId" label={t('finance.accountBook')} rules={[{ required: true, message: t('finance.accountBookRequired') }]}>
             <Select options={books.map((book) => ({ value: book.id, label: book.name }))} />

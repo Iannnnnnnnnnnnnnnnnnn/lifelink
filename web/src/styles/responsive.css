@@ -66,6 +66,10 @@
     justify-content: flex-end;
   }
 
+  .header-space-switcher {
+    width: 150px;
+  }
+
   .user-chip {
     max-width: 140px;
   }
@@ -119,6 +123,18 @@
   }
 
   .header-subtitle {
+    display: none;
+  }
+
+  .header-breadcrumb {
+    max-width: 210px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  .header-space-switcher,
+  .header-icon-button {
     display: none;
   }
 
