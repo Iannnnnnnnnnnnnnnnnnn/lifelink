@@ -166,6 +166,23 @@ export function AppLayout() {
     </div>
   );
 
+  const renderCollapseButton = () => (
+    <div className="sidebar-collapse-row">
+      <Button
+        type="text"
+        className="sidebar-collapse-trigger"
+        icon={sidebarCollapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+        onClick={handleToggleSidebar}
+        aria-label={sidebarCollapsed ? t('menu.expandSidebar') : t('menu.collapseSidebar')}
+        aria-expanded={!sidebarCollapsed}
+      >
+        <span className="sidebar-collapse-label">
+          {sidebarCollapsed ? t('menu.expandSidebar') : t('menu.collapseSidebar')}
+        </span>
+      </Button>
+    </div>
+  );
+
   const menu = (
     <nav className="app-menu grouped-nav" aria-label={t('menu.navigation')}>
       {navSections.map((section) => (
@@ -202,7 +219,7 @@ export function AppLayout() {
   );
 
   return (
-    <Layout className={`app-shell ${themeClassName} ${sidebarStateClassName}`}>
+    <div className={`app-shell ${themeClassName} ${sidebarStateClassName}`}>
       {!isMobile && (
         <Sider
           width={240}
@@ -216,15 +233,8 @@ export function AppLayout() {
           </div>
           <div className="sidebar-nav">
             {menu}
+            {renderCollapseButton()}
           </div>
-          <Button
-            type="text"
-            className="sidebar-collapse-trigger"
-            icon={sidebarCollapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-            onClick={handleToggleSidebar}
-            aria-label={sidebarCollapsed ? t('menu.expandSidebar') : t('menu.collapseSidebar')}
-            aria-expanded={!sidebarCollapsed}
-          />
         </Sider>
       )}
       <Drawer
@@ -307,6 +317,6 @@ export function AppLayout() {
           <SiteFooter />
         </Footer>
       </Layout>
-    </Layout>
+    </div>
   );
 }
