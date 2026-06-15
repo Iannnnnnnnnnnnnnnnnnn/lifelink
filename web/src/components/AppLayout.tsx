@@ -1,4 +1,4 @@
-import { DownOutlined, HeartOutlined, LogoutOutlined, MenuOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
+import { DownOutlined, HeartOutlined, LogoutOutlined, MenuFoldOutlined, MenuOutlined, MenuUnfoldOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Button, Drawer, Dropdown, Grid, Input, Layout, Select, Space, Tooltip, Typography } from 'antd';
 import type { MenuProps } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -32,6 +32,7 @@ export function AppLayout() {
   const fetchRelationshipThemeStatus = useRelationshipThemeStore((state) => state.fetchRelationshipThemeStatus);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [relationships, setRelationships] = useState<RelationshipSummary[]>([]);
   const screens = useBreakpoint();
   const isMobile = !screens.md;
@@ -133,15 +134,24 @@ export function AppLayout() {
     }
   };
 
-  const brand = (
-    <div className="brand">
+  const renderBrand = (showCollapse = false) => (
+    <div className={`brand ${sidebarCollapsed && showCollapse ? 'brand-collapsed' : ''}`}>
       <span className="brand-mark">
         <HeartOutlined className="brand-icon" />
       </span>
-      <div>
+      <div className="brand-copy">
         <Typography.Text strong className="brand-name">{appName}</Typography.Text>
         {t('app.subtitle') && <Typography.Text type="secondary" className="brand-subtitle">{t('app.subtitle')}</Typography.Text>}
       </div>
+      {showCollapse && (
+        <Button
+          type="text"
+          className="sidebar-collapse-button"
+          icon={sidebarCollapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+          onClick={() => setSidebarCollapsed((value) => !value)}
+          aria-label={sidebarCollapsed ? t('menu.expandSidebar') : t('menu.collapseSidebar')}
+        />
+      )}
     </div>
   );
 
@@ -184,8 +194,8 @@ export function AppLayout() {
     <Layout className={`app-shell ${themeClassName}`}>
       <BackgroundLayer />
       {!isMobile && (
-        <Sider width={220} className="app-sider desktop-sider">
-          {brand}
+        <Sider width={220} collapsedWidth={72} collapsed={sidebarCollapsed} trigger={null} className="app-sider desktop-sider">
+          {renderBrand(true)}
           {menu}
         </Sider>
       )}
@@ -197,7 +207,7 @@ export function AppLayout() {
         onClose={() => setMobileMenuOpen(false)}
         closable={false}
       >
-        {brand}
+        {renderBrand(false)}
         {menu}
       </Drawer>
       <Layout className="app-main-layout">
@@ -210,9 +220,6 @@ export function AppLayout() {
             />
           )}
           <div className="app-header-title">
-            <Typography.Text type="secondary" className="header-breadcrumb">
-              {pageContext.crumbs.join(' / ')}
-            </Typography.Text>
             <Typography.Title level={4}>{pageContext.title}</Typography.Title>
           </div>
           <Input.Search

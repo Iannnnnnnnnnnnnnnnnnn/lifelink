@@ -157,7 +157,9 @@
     "finance": "Finance",
     "philosophy": "Philosophy",
     "settings": "Settings",
-    "selectSpaceFirst": "Open a relationship space first"
+    "selectSpaceFirst": "Open a relationship space first",
+    "collapseSidebar": "Collapse sidebar",
+    "expandSidebar": "Expand sidebar"
   },
   "background": {
     "personalBackground": "Personal Background",
