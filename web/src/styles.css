@@ -29,6 +29,9 @@
   --ll-shadow-hover: 0 22px 60px rgba(29, 29, 31, 0.1);
   --ll-transition-fast: 160ms cubic-bezier(0.2, 0, 0, 1);
   --ll-transition: 220ms cubic-bezier(0.2, 0, 0, 1);
+  --sidebar-expanded-width: 240px;
+  --sidebar-collapsed-width: 72px;
+  --sidebar-header-height: 64px;
 }
 
 html,
@@ -49,11 +52,30 @@ body {
 }
 
 .app-shell {
+  --sidebar-width: var(--sidebar-expanded-width);
+  display: grid;
+  grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
   min-height: 100vh;
+  overflow-x: hidden;
+  transition: grid-template-columns var(--ll-transition);
+}
+
+.app-shell.is-collapsed {
+  --sidebar-width: var(--sidebar-collapsed-width);
+}
+
+.app-shell.is-expanded {
+  --sidebar-width: var(--sidebar-expanded-width);
 }
 
 .app-main-layout {
+  position: relative;
+  display: flex;
+  min-height: 100vh;
   min-width: 0;
+  flex-direction: column;
+  grid-column: 2;
+  overflow-x: hidden;
 }
 
 .app-sider {
@@ -61,17 +83,57 @@ body {
   border-right: 1px solid var(--ll-border-soft);
   box-shadow: 10px 0 32px rgba(29, 29, 31, 0.035);
   backdrop-filter: blur(18px);
+  overflow: visible !important;
   transition: width var(--ll-transition), min-width var(--ll-transition), max-width var(--ll-transition);
 }
 
-.brand {
+.sidebar {
   position: relative;
+  width: var(--sidebar-width) !important;
+  min-width: var(--sidebar-width) !important;
+  max-width: var(--sidebar-width) !important;
+  grid-column: 1;
+}
+
+.sidebar .ant-layout-sider-children {
   display: flex;
+  min-height: 100vh;
+  flex-direction: column;
+  overflow: visible;
+}
+
+.sidebar-header {
+  display: flex;
+  flex: 0 0 var(--sidebar-header-height);
+  height: var(--sidebar-header-height);
+  align-items: center;
+  justify-content: center;
+  border-bottom: 1px solid var(--ll-border-soft);
+}
+
+.sidebar.is-expanded .sidebar-header {
+  justify-content: stretch;
+}
+
+.sidebar-nav {
+  flex: 1;
+  min-height: 0;
+  padding-top: 8px;
+  overflow-x: visible;
+  overflow-y: auto;
+}
+
+.sidebar.is-collapsed .sidebar-nav {
+  padding-top: 16px;
+}
+
+.brand {
+  display: flex;
+  width: 100%;
   align-items: center;
   gap: 10px;
-  height: 72px;
-  padding: 0 20px;
-  border-bottom: 1px solid var(--ll-border-soft);
+  height: var(--sidebar-header-height);
+  padding: 0 18px;
 }
 
 .brand-copy {
@@ -79,32 +141,44 @@ body {
   flex: 1;
 }
 
-.brand-collapsed {
+.sidebar.is-collapsed .sidebar-brand {
   justify-content: center;
   gap: 0;
   padding: 0;
 }
 
-.brand-collapsed .brand-copy {
+.sidebar.is-collapsed .brand-copy {
   display: none;
 }
 
-.sidebar-collapse-button {
-  flex: 0 0 auto;
-  width: 30px;
-  height: 30px;
+.sidebar-collapse-trigger {
+  position: absolute;
+  top: calc(var(--sidebar-header-height) + 12px);
+  right: -14px;
+  z-index: 20;
+  width: 28px;
+  min-width: 28px;
+  height: 28px;
   padding: 0;
+  border: 1px solid var(--ll-border-soft);
   border-radius: var(--ll-radius-pill);
+  background: rgba(255, 255, 255, 0.94);
+  box-shadow: 0 8px 22px rgba(29, 29, 31, 0.08);
   color: var(--ll-text-muted);
+  transition: background var(--ll-transition-fast), border-color var(--ll-transition-fast), color var(--ll-transition-fast), box-shadow var(--ll-transition-fast);
 }
 
-.brand-collapsed .sidebar-collapse-button {
-  position: absolute;
-  right: 6px;
-  bottom: 6px;
-  width: 24px;
-  height: 24px;
-  font-size: 12px;
+.sidebar.is-collapsed .sidebar-collapse-trigger {
+  top: calc(var(--sidebar-header-height) + 12px);
+  right: -14px;
+}
+
+.sidebar-collapse-trigger:hover,
+.sidebar-collapse-trigger:focus-visible {
+  border-color: rgba(47, 111, 237, 0.18);
+  background: rgba(255, 255, 255, 0.98);
+  box-shadow: 0 10px 26px rgba(47, 111, 237, 0.13);
+  color: var(--ll-primary);
 }
 
 .brand-mark {
@@ -216,10 +290,14 @@ body {
 }
 
 .ant-layout-sider-collapsed .app-menu {
-  padding: 12px 8px 18px;
+  padding: 0 8px 18px;
 }
 
 .ant-layout-sider-collapsed .grouped-nav {
+  gap: 8px;
+}
+
+.ant-layout-sider-collapsed .nav-section-items {
   gap: 8px;
 }
 
@@ -228,9 +306,13 @@ body {
 }
 
 .ant-layout-sider-collapsed .nav-item {
+  width: 40px;
+  height: 40px;
   justify-content: center;
   gap: 0;
+  margin: 0 auto;
   padding: 0;
+  border-radius: 14px;
 }
 
 .ant-layout-sider-collapsed .nav-item-label {

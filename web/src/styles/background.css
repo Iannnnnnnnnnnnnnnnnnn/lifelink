@@ -1,5 +1,5 @@
 .app-background-layer {
-  position: fixed;
+  position: absolute;
   inset: 0;
   z-index: 0;
   pointer-events: none;
@@ -44,11 +44,11 @@
   background: rgba(246, 246, 247, var(--user-background-overlay-opacity, 0.35));
 }
 
-.app-shell,
 .app-main-layout,
 .app-sider,
 .app-header,
-.app-content {
+.app-content,
+.app-footer {
   position: relative;
 }
 
@@ -57,17 +57,19 @@
   background: transparent;
 }
 
+.app-main-layout {
+  isolation: isolate;
+}
+
 .app-main-layout,
 .app-content {
   background: transparent !important;
 }
 
 .app-sider,
-.app-header {
-  z-index: 1;
-}
-
-.app-content {
+.app-header,
+.app-content,
+.app-footer {
   z-index: 1;
 }
 

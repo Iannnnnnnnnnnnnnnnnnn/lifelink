@@ -27,7 +27,7 @@ export function BackgroundLayer() {
     : {};
 
   return (
-    <div className={`app-background-layer ${showImage ? 'has-user-background' : ''}`} style={style} aria-hidden="true">
+    <div className={`app-background-layer page-background ${showImage ? 'has-user-background' : ''}`} style={style} aria-hidden="true">
       <div className="app-background-image" />
       <div className="app-background-overlay" />
     </div>

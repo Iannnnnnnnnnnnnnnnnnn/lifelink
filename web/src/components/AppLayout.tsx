@@ -17,6 +17,7 @@ import { buildPrimaryNavSections, getPageContext, getRouteRelationshipId, header
 
 const { Header, Content, Footer, Sider } = Layout;
 const { useBreakpoint } = Grid;
+const SIDEBAR_COLLAPSED_STORAGE_KEY = 'lifelink_sidebar_collapsed';
 
 export function AppLayout() {
   const navigate = useNavigate();
@@ -32,7 +33,13 @@ export function AppLayout() {
   const fetchRelationshipThemeStatus = useRelationshipThemeStore((state) => state.fetchRelationshipThemeStatus);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
-  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
+    try {
+      return localStorage.getItem(SIDEBAR_COLLAPSED_STORAGE_KEY) === 'true';
+    } catch {
+      return false;
+    }
+  });
   const [relationships, setRelationships] = useState<RelationshipSummary[]>([]);
   const screens = useBreakpoint();
   const isMobile = !screens.md;
@@ -74,6 +81,18 @@ export function AppLayout() {
     navigate(`/search?keyword=${encodeURIComponent(keyword)}`);
   };
 
+  const handleToggleSidebar = () => {
+    setSidebarCollapsed((value) => {
+      const nextValue = !value;
+      try {
+        localStorage.setItem(SIDEBAR_COLLAPSED_STORAGE_KEY, String(nextValue));
+      } catch {
+        // Ignore storage failures so the layout remains interactive.
+      }
+      return nextValue;
+    });
+  };
+
   useEffect(() => {
     if (isAuthenticated) {
       fetchRelationshipThemeStatus();
@@ -101,6 +120,7 @@ export function AppLayout() {
   }, [isAuthenticated]);
 
   const themeClassName = hasCoupleRelationship ? 'theme-colorful' : 'theme-grayscale';
+  const sidebarStateClassName = sidebarCollapsed ? 'is-collapsed' : 'is-expanded';
 
   const userMenuItems: MenuProps['items'] = [
     {
@@ -134,8 +154,8 @@ export function AppLayout() {
     }
   };
 
-  const renderBrand = (showCollapse = false) => (
-    <div className={`brand ${sidebarCollapsed && showCollapse ? 'brand-collapsed' : ''}`}>
+  const renderBrand = () => (
+    <div className="brand sidebar-brand">
       <span className="brand-mark">
         <HeartOutlined className="brand-icon" />
       </span>
@@ -143,15 +163,6 @@ export function AppLayout() {
         <Typography.Text strong className="brand-name">{appName}</Typography.Text>
         {t('app.subtitle') && <Typography.Text type="secondary" className="brand-subtitle">{t('app.subtitle')}</Typography.Text>}
       </div>
-      {showCollapse && (
-        <Button
-          type="text"
-          className="sidebar-collapse-button"
-          icon={sidebarCollapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
-          onClick={() => setSidebarCollapsed((value) => !value)}
-          aria-label={sidebarCollapsed ? t('menu.expandSidebar') : t('menu.collapseSidebar')}
-        />
-      )}
     </div>
   );
 
@@ -191,12 +202,29 @@ export function AppLayout() {
   );
 
   return (
-    <Layout className={`app-shell ${themeClassName}`}>
-      <BackgroundLayer />
+    <Layout className={`app-shell ${themeClassName} ${sidebarStateClassName}`}>
       {!isMobile && (
-        <Sider width={220} collapsedWidth={72} collapsed={sidebarCollapsed} trigger={null} className="app-sider desktop-sider">
-          {renderBrand(true)}
-          {menu}
+        <Sider
+          width={240}
+          collapsedWidth={72}
+          collapsed={sidebarCollapsed}
+          trigger={null}
+          className={`app-sider desktop-sider sidebar ${sidebarStateClassName}`}
+        >
+          <div className="sidebar-header">
+            {renderBrand()}
+          </div>
+          <div className="sidebar-nav">
+            {menu}
+          </div>
+          <Button
+            type="text"
+            className="sidebar-collapse-trigger"
+            icon={sidebarCollapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+            onClick={handleToggleSidebar}
+            aria-label={sidebarCollapsed ? t('menu.expandSidebar') : t('menu.collapseSidebar')}
+            aria-expanded={!sidebarCollapsed}
+          />
         </Sider>
       )}
       <Drawer
@@ -207,10 +235,15 @@ export function AppLayout() {
         onClose={() => setMobileMenuOpen(false)}
         closable={false}
       >
-        {renderBrand(false)}
-        {menu}
+        <div className="sidebar-header">
+          {renderBrand()}
+        </div>
+        <div className="sidebar-nav">
+          {menu}
+        </div>
       </Drawer>
       <Layout className="app-main-layout">
+        <BackgroundLayer />
         <Header className="app-header">
           {isMobile && (
             <Button

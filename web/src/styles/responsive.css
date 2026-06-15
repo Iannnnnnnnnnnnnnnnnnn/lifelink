@@ -32,12 +32,31 @@
   padding: 0;
 }
 
+.mobile-menu-drawer .sidebar-header {
+  height: var(--sidebar-header-height);
+  justify-content: flex-start;
+}
+
+.mobile-menu-drawer .sidebar-nav {
+  padding-top: 8px;
+  overflow-y: auto;
+}
+
 .mobile-menu-drawer .brand {
-  height: auto;
-  padding: 18px 20px;
+  height: var(--sidebar-header-height);
+  padding: 0 20px;
 }
 
 @media (max-width: 768px) {
+  .app-shell {
+    display: block;
+  }
+
+  .app-main-layout {
+    width: 100%;
+    min-height: 100vh;
+  }
+
   .desktop-sider {
     display: none;
   }
