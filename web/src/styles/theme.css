@@ -1,10 +1,7 @@
-.theme-colorful {
+﻿.theme-colorful {
   color-scheme: light;
 }
 
-<<<<<<< HEAD
-.theme-grayscale .app-sidebar,
-=======
 .theme-grayscale {
   --ll-bg: #f6f6f7;
   --ll-bg-soft: #eeeeef;
@@ -22,8 +19,7 @@
   background: var(--ll-bg);
 }
 
-.theme-grayscale .app-sider,
->>>>>>> 6529f625afb39156fe842b5f2632498ae2ddf6af
+.theme-grayscale .app-sidebar,
 .theme-grayscale .app-header {
   background: rgba(255, 255, 255, 0.78);
   border-color: var(--ll-border-soft);
@@ -38,15 +34,6 @@
 .theme-grayscale .action-icon,
 .theme-grayscale .eyebrow {
   color: #667085;
-}
-
-<<<<<<< HEAD
-.theme-grayscale .app-content > * {
-  filter: grayscale(0.75) saturate(0.55);
-=======
-.theme-grayscale .app-content {
-  background: var(--ll-bg);
->>>>>>> 6529f625afb39156fe842b5f2632498ae2ddf6af
 }
 
 .theme-grayscale .ant-card {

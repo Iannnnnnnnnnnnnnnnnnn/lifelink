@@ -1,4 +1,4 @@
-* {
+﻿* {
   box-sizing: border-box;
 }
 
@@ -32,6 +32,7 @@
   --sidebar-expanded-width: 240px;
   --sidebar-collapsed-width: 72px;
   --sidebar-header-height: 64px;
+  --topbar-height: 64px;
 }
 
 html,
@@ -52,54 +53,13 @@ body {
   -webkit-font-smoothing: antialiased;
 }
 
-<<<<<<< HEAD
-:root {
-  --sidebar-expanded-width: 240px;
-  --sidebar-collapsed-width: 64px;
-  --sidebar-width: var(--sidebar-expanded-width);
-  --topbar-height: 64px;
-  --app-background-image: none;
-  --app-background-size: cover;
-  --app-background-position: center;
-  --app-background-opacity: 1;
-  --app-background-blur: 0;
-  --app-background-mask: rgba(255, 255, 255, 0);
-}
-
 .app-shell {
+  --sidebar-width: var(--sidebar-expanded-width);
   width: 100%;
   height: 100vh;
   display: grid;
   grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
   overflow: hidden;
-  transition: grid-template-columns 0.25s ease;
-}
-
-.app-shell.is-collapsed {
-  --sidebar-width: var(--sidebar-collapsed-width);
-}
-
-.app-shell.is-expanded {
-  --sidebar-width: var(--sidebar-expanded-width);
-}
-
-.app-sidebar {
-  height: 100vh;
-  min-width: 0;
-  min-height: 0;
-  display: flex;
-  flex-direction: column;
-  overflow: hidden;
-  background: #ffffff;
-  border-right: 1px solid #edf0f5;
-  box-shadow: 10px 0 28px rgba(36, 48, 73, 0.04);
-=======
-.app-shell {
-  --sidebar-width: var(--sidebar-expanded-width);
-  display: grid;
-  grid-template-columns: var(--sidebar-width) minmax(0, 1fr);
-  min-height: 100vh;
-  overflow-x: hidden;
   transition: grid-template-columns var(--ll-transition);
 }
 
@@ -113,21 +73,24 @@ body {
 
 .app-main-layout {
   position: relative;
-  display: flex;
   width: 100%;
-  min-height: 100vh;
+  height: 100vh;
   min-width: 0;
-  flex-direction: column;
+  min-height: 0;
   grid-column: 2;
-  overflow-x: hidden;
+  overflow: hidden;
 }
 
-.app-sider {
+.app-sidebar {
+  display: flex;
+  height: 100vh;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
   background: rgba(255, 255, 255, 0.82);
   border-right: 1px solid var(--ll-border-soft);
   box-shadow: 10px 0 32px rgba(29, 29, 31, 0.035);
   backdrop-filter: blur(18px);
-  overflow: visible !important;
   transition: width var(--ll-transition), min-width var(--ll-transition), max-width var(--ll-transition);
 }
 
@@ -139,17 +102,11 @@ body {
   grid-column: 1;
 }
 
-.sidebar .ant-layout-sider-children {
-  display: flex;
-  min-height: 100vh;
-  flex-direction: column;
-  overflow: visible;
-}
-
 .sidebar-header {
   display: flex;
   flex: 0 0 var(--sidebar-header-height);
   height: var(--sidebar-header-height);
+  min-width: 0;
   align-items: center;
   justify-content: center;
   border-bottom: 1px solid var(--ll-border-soft);
@@ -160,21 +117,16 @@ body {
 }
 
 .sidebar-nav {
-  flex: 1;
+  flex: 1 1 auto;
   min-height: 0;
   padding-top: 8px;
-  overflow-x: visible;
+  overflow-x: hidden;
   overflow-y: auto;
+  overscroll-behavior: contain;
 }
 
 .sidebar.is-collapsed .sidebar-nav {
   padding-top: 16px;
->>>>>>> 6529f625afb39156fe842b5f2632498ae2ddf6af
-}
-
-.sidebar-header {
-  flex: 0 0 72px;
-  min-width: 0;
 }
 
 .brand {
@@ -408,6 +360,48 @@ body {
   font-size: 18px;
 }
 
+.sidebar.is-collapsed .grouped-nav {
+  gap: 8px;
+}
+
+.sidebar.is-collapsed .nav-section-items {
+  gap: 8px;
+}
+
+.sidebar.is-collapsed .nav-section-title,
+.sidebar.is-collapsed .nav-item-label,
+.sidebar.is-collapsed .sidebar-collapse-label {
+  display: none;
+}
+
+.sidebar.is-collapsed .nav-item {
+  width: 40px;
+  height: 40px;
+  justify-content: center;
+  gap: 0;
+  margin: 0 auto;
+  padding: 0;
+  border-radius: 14px;
+}
+
+.sidebar.is-collapsed .nav-item-icon {
+  flex-basis: auto;
+  font-size: 18px;
+}
+
+.sidebar.is-collapsed .sidebar-collapse-trigger {
+  width: 40px;
+  min-width: 40px;
+  height: 40px;
+  justify-content: center;
+  margin: 0 auto;
+  border-radius: 14px;
+}
+
+.sidebar.is-collapsed .sidebar-collapse-trigger .ant-btn-icon {
+  margin-inline-end: 0;
+}
+
 .sidebar-scroll {
   flex: 1 1 auto;
   min-height: 0;
@@ -439,16 +433,23 @@ body {
 .sidebar-footer {
   display: flex;
   flex: 0 0 auto;
-  align-items: center;
+  flex-direction: column;
+  align-items: stretch;
   gap: 8px;
   min-width: 0;
   padding: 12px;
-  border-top: 1px solid #edf0f5;
+  border-top: 1px solid var(--ll-border-soft);
+}
+
+.sidebar-footer .sidebar-collapse-row {
+  width: 100%;
+  padding: 0;
 }
 
 .sidebar-user {
   display: inline-flex;
-  flex: 1 1 auto;
+  width: 100%;
+  flex: 0 0 auto;
   min-width: 0;
   height: 38px;
   align-items: center;
@@ -501,14 +502,15 @@ body {
 }
 
 .app-shell.is-collapsed .sidebar-footer {
-  flex-direction: column;
-  padding: 10px 8px;
+  align-items: center;
+  padding: 12px 8px;
 }
 
 .app-shell.is-collapsed .sidebar-user {
   flex: 0 0 auto;
   justify-content: center;
   width: 40px;
+  min-width: 40px;
   padding: 4px;
 }
 
@@ -570,19 +572,6 @@ body {
 }
 
 .app-header-title {
-<<<<<<< HEAD
-  min-width: 0;
-  flex: 0 1 auto;
-}
-
-.global-search {
-  flex: 0 1 360px;
-  min-width: 160px;
-}
-
-.header-actions {
-  min-width: 0;
-=======
   display: flex;
   min-width: 120px;
   height: 100%;
@@ -601,7 +590,6 @@ body {
   color: var(--ll-text-subtle);
   font-size: 12px;
   line-height: 1.2;
->>>>>>> 6529f625afb39156fe842b5f2632498ae2ddf6af
 }
 
 .header-subtitle {
@@ -612,28 +600,23 @@ body {
 }
 
 .app-content {
-<<<<<<< HEAD
-  flex: 1 1 auto;
-  min-height: 0;
-=======
   flex: 1 0 auto;
->>>>>>> 6529f625afb39156fe842b5f2632498ae2ddf6af
+  width: 100%;
   display: flex;
   align-items: flex-start;
   justify-content: center;
-<<<<<<< HEAD
-  padding: 28px;
+  padding: 36px 32px;
+  background: transparent;
 }
 
 .app-content-scroll {
+  flex: 1 1 auto;
+  min-height: 0;
   overflow-x: hidden;
   overflow-y: auto;
   overscroll-behavior: contain;
   scrollbar-width: thin;
   scrollbar-color: rgba(126, 140, 166, 0.34) transparent;
-=======
-  padding: 36px 32px;
-  background: var(--ll-bg);
 }
 
 .app-footer {
@@ -681,7 +664,6 @@ body {
   height: 16px;
   flex: 0 0 16px;
   object-fit: contain;
->>>>>>> 6529f625afb39156fe842b5f2632498ae2ddf6af
 }
 
 .home-page {
@@ -977,16 +959,6 @@ body {
 
 .auth-page {
   display: flex;
-<<<<<<< HEAD
-  align-items: center;
-  justify-content: center;
-  height: 100vh;
-  padding: 24px;
-  overflow-x: hidden;
-  overflow-y: auto;
-  overscroll-behavior: contain;
-  background: #f5f7fb;
-=======
   flex-direction: column;
   align-items: stretch;
   justify-content: flex-start;
@@ -1009,7 +981,6 @@ body {
   position: relative;
   z-index: 1;
   padding-top: 16px;
->>>>>>> 6529f625afb39156fe842b5f2632498ae2ddf6af
 }
 
 .auth-card {

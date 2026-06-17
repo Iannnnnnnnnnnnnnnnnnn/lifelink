@@ -1,29 +1,13 @@
-<<<<<<< HEAD
-.theme-colorful .app-background-layer {
-  --app-background-image:
-    radial-gradient(circle at 12% 8%, rgba(255, 215, 232, 0.42), transparent 28%),
-    radial-gradient(circle at 88% 16%, rgba(206, 232, 255, 0.52), transparent 30%),
-    linear-gradient(135deg, #fff9fb 0%, #f4f9ff 52%, #fffaf2 100%);
+﻿body {
+  background: var(--ll-bg);
 }
 
-.theme-grayscale .app-background-layer {
-  --app-background-image: linear-gradient(135deg, #f0f1f3 0%, #f6f7f8 100%);
-=======
-body {
-  background: linear-gradient(180deg, #fbfbfd 0%, var(--ll-bg) 100%);
-}
-
-.theme-colorful.app-shell,
-.theme-colorful .app-content,
 .theme-colorful .auth-page {
   background: linear-gradient(180deg, #fbfbfd 0%, #f6f8fb 100%);
 }
 
-.theme-grayscale.app-shell,
-.theme-grayscale .app-content,
 .theme-grayscale .auth-page {
   background: linear-gradient(180deg, #fbfbfc 0%, var(--ll-bg) 100%);
->>>>>>> 6529f625afb39156fe842b5f2632498ae2ddf6af
 }
 
 .app-shell {
@@ -37,17 +21,10 @@ body {
   z-index: 1;
 }
 
-<<<<<<< HEAD
 .app-sidebar {
-  border-right: 1px solid rgba(230, 222, 232, 0.9);
-  background: rgba(255, 255, 255, 0.84);
-  backdrop-filter: blur(16px);
-=======
-.app-sider {
   border-right: 1px solid var(--ll-border-soft);
   background: rgba(255, 255, 255, 0.78);
   backdrop-filter: saturate(180%) blur(20px);
->>>>>>> 6529f625afb39156fe842b5f2632498ae2ddf6af
 }
 
 .brand {

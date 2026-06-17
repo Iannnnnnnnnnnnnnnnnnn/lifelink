@@ -22,12 +22,12 @@
 }
 
 .app-background-image {
-  background-image: var(--user-background-image);
+  background-image: var(--app-background-image);
   background-repeat: no-repeat;
-  background-position: var(--user-background-position-x, 50%) var(--user-background-position-y, 50%);
-  background-size: var(--user-background-size, 100% auto);
-  opacity: var(--user-background-opacity, 0);
-  filter: blur(var(--user-background-blur, 0));
+  background-position: var(--app-background-position, 50% 50%);
+  background-size: var(--app-background-size, 100% auto);
+  opacity: var(--app-background-opacity, 0);
+  filter: blur(var(--app-background-blur, 0));
   transition:
     opacity 240ms ease-out,
     filter 240ms ease-out,
@@ -37,15 +37,15 @@
 }
 
 .app-background-layer.has-user-background .app-background-overlay {
-  background: rgba(255, 255, 255, var(--user-background-overlay-opacity, 0.35));
+  background: rgba(255, 255, 255, var(--app-background-overlay-opacity, 0.35));
 }
 
 .theme-grayscale .app-background-layer.has-user-background .app-background-overlay {
-  background: rgba(246, 246, 247, var(--user-background-overlay-opacity, 0.35));
+  background: rgba(246, 246, 247, var(--app-background-overlay-opacity, 0.35));
 }
 
 .app-main-layout,
-.app-sider,
+.app-sidebar,
 .app-header,
 .app-content,
 .app-footer {
@@ -66,7 +66,7 @@
   background: transparent !important;
 }
 
-.app-sider,
+.app-sidebar,
 .app-header,
 .app-content,
 .app-footer {
