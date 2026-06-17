@@ -1,35 +1,26 @@
-body {
-  background:
-    radial-gradient(circle at 8% 8%, rgba(255, 216, 229, 0.64), transparent 30%),
-    radial-gradient(circle at 92% 14%, rgba(207, 232, 255, 0.7), transparent 32%),
-    linear-gradient(135deg, #fff8fb 0%, #f4f9ff 48%, #fffaf2 100%);
-}
-
-.theme-colorful.app-shell,
-.theme-colorful .app-content {
-  background:
+.theme-colorful .app-background-layer {
+  --app-background-image:
     radial-gradient(circle at 12% 8%, rgba(255, 215, 232, 0.42), transparent 28%),
     radial-gradient(circle at 88% 16%, rgba(206, 232, 255, 0.52), transparent 30%),
     linear-gradient(135deg, #fff9fb 0%, #f4f9ff 52%, #fffaf2 100%);
 }
 
-.theme-grayscale.app-shell,
-.theme-grayscale .app-content {
-  background: linear-gradient(135deg, #f0f1f3 0%, #f6f7f8 100%);
+.theme-grayscale .app-background-layer {
+  --app-background-image: linear-gradient(135deg, #f0f1f3 0%, #f6f7f8 100%);
 }
 
 .app-shell {
   position: relative;
 }
 
-.app-sider,
+.app-sidebar,
 .app-header,
 .app-content {
   position: relative;
   z-index: 1;
 }
 
-.app-sider {
+.app-sidebar {
   border-right: 1px solid rgba(230, 222, 232, 0.9);
   background: rgba(255, 255, 255, 0.84);
   backdrop-filter: blur(16px);

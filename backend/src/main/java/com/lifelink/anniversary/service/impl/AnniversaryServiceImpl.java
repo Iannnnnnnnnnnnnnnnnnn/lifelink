@@ -12,6 +12,7 @@ import com.lifelink.anniversary.service.AnniversaryService;
 import com.lifelink.common.BusinessException;
 import com.lifelink.file.entity.FileResource;
 import com.lifelink.file.mapper.FileResourceMapper;
+import com.lifelink.file.service.FileUrlService;
 import com.lifelink.notification.service.NotificationService;
 import com.lifelink.relationship.entity.Relationship;
 import com.lifelink.relationship.entity.RelationshipMember;
@@ -53,6 +54,7 @@ public class AnniversaryServiceImpl implements AnniversaryService {
     private final RelationshipMapper relationshipMapper;
     private final RelationshipPermissionService relationshipPermissionService;
     private final FileResourceMapper fileResourceMapper;
+    private final FileUrlService fileUrlService;
     private final SpaceActivityService spaceActivityService;
     private final NotificationService notificationService;
     private final UserMapper userMapper;
@@ -73,7 +75,7 @@ public class AnniversaryServiceImpl implements AnniversaryService {
         anniversary.setAnniversaryDate(request.getAnniversaryDate());
         anniversary.setRepeatType(StringUtils.hasText(request.getRepeatType()) ? request.getRepeatType() : REPEAT_NONE);
         anniversary.setBackgroundFileId(background == null ? null : background.getId());
-        anniversary.setBackgroundUrl(background == null ? null : background.getFileUrl());
+        anniversary.setBackgroundUrl(background == null ? null : fileUrlService.buildPublicUrl(background));
         anniversary.setCreatedBy(userId);
         anniversary.setUpdatedBy(userId);
         anniversary.setStatus(ACTIVE_STATUS);
@@ -172,7 +174,7 @@ public class AnniversaryServiceImpl implements AnniversaryService {
         anniversary.setAnniversaryDate(request.getAnniversaryDate());
         anniversary.setRepeatType(StringUtils.hasText(request.getRepeatType()) ? request.getRepeatType() : REPEAT_NONE);
         anniversary.setBackgroundFileId(background == null ? null : background.getId());
-        anniversary.setBackgroundUrl(background == null ? null : background.getFileUrl());
+        anniversary.setBackgroundUrl(background == null ? null : fileUrlService.buildPublicUrl(background));
         anniversary.setUpdatedBy(userId);
         anniversary.setUpdatedAt(LocalDateTime.now());
         anniversaryMapper.updateById(anniversary);
@@ -245,7 +247,7 @@ public class AnniversaryServiceImpl implements AnniversaryService {
                 anniversary.getAnniversaryDate(),
                 anniversary.getRepeatType(),
                 anniversary.getBackgroundFileId(),
-                anniversary.getBackgroundUrl(),
+                resolveBackgroundUrl(anniversary),
                 display.dayCount(),
                 display.displayType(),
                 display.passedYears(),
@@ -253,6 +255,14 @@ public class AnniversaryServiceImpl implements AnniversaryService {
                 anniversary.getCreatedAt(),
                 anniversary.getUpdatedAt()
         );
+    }
+
+    private String resolveBackgroundUrl(Anniversary anniversary) {
+        if (anniversary.getBackgroundFileId() == null) {
+            return anniversary.getBackgroundUrl();
+        }
+        FileResource resource = fileResourceMapper.selectById(anniversary.getBackgroundFileId());
+        return resource == null ? anniversary.getBackgroundUrl() : fileUrlService.buildPublicUrl(resource);
     }
 
     private AnniversaryDetailResponse toDetail(Anniversary anniversary, Relationship relationship, LocalDate today) {

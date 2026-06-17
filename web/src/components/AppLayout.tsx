@@ -1,5 +1,5 @@
-import { BulbOutlined, CalendarOutlined, DollarOutlined, HeartOutlined, HomeOutlined, LogoutOutlined, MenuOutlined, ReadOutlined, TeamOutlined, ThunderboltOutlined, UserOutlined } from '@ant-design/icons';
-import { Avatar, Button, Drawer, Dropdown, Grid, Input, Layout, Menu, Space, Typography } from 'antd';
+import { BulbOutlined, CalendarOutlined, DollarOutlined, HeartOutlined, HomeOutlined, LogoutOutlined, MenuFoldOutlined, MenuOutlined, MenuUnfoldOutlined, ReadOutlined, TeamOutlined, ThunderboltOutlined, UserOutlined } from '@ant-design/icons';
+import { Avatar, Button, Dropdown, Grid, Input, Menu, Space, Typography } from 'antd';
 import type { MenuProps } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
@@ -11,7 +11,6 @@ import { useRelationshipThemeStore } from '../store/relationshipThemeStore';
 import { FloatingStickers } from './decorations/FloatingStickers';
 import { getAvatarInitial } from '../utils/avatar';
 
-const { Header, Content, Sider } = Layout;
 const { useBreakpoint } = Grid;
 
 export function AppLayout() {
@@ -27,6 +26,7 @@ export function AppLayout() {
   const fetchRelationshipThemeStatus = useRelationshipThemeStore((state) => state.fetchRelationshipThemeStatus);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const screens = useBreakpoint();
   const isMobile = !screens.md;
 
@@ -76,7 +76,12 @@ export function AppLayout() {
     }
   }, [fetchCurrentUser, isAuthenticated, user]);
 
+  useEffect(() => {
+    setMobileMenuOpen(false);
+  }, [location.pathname]);
+
   const themeClassName = hasCoupleRelationship ? 'theme-colorful' : 'theme-grayscale';
+  const shellStateClassName = sidebarCollapsed && !isMobile ? 'is-collapsed' : 'is-expanded';
   const menuItems: MenuProps['items'] = [
     {
       key: '/',
@@ -180,7 +185,7 @@ export function AppLayout() {
       <span className="brand-mark">
         <HeartOutlined className="brand-icon" />
       </span>
-      <div>
+      <div className="brand-copy">
         <Typography.Text strong className="brand-name">{appName}</Typography.Text>
         <Typography.Text type="secondary" className="brand-subtitle">{t('app.subtitle')}</Typography.Text>
       </div>
@@ -192,74 +197,104 @@ export function AppLayout() {
       mode="inline"
       selectedKeys={[selectedKey]}
       className="app-menu"
+      inlineCollapsed={!isMobile && sidebarCollapsed}
       items={menuItems}
     />
   );
 
   return (
-    <Layout className={`app-shell ${themeClassName}`}>
-      <FloatingStickers />
-      {!isMobile && (
-        <Sider width={220} className="app-sider desktop-sider">
+    <div className={`app-shell ${shellStateClassName} ${themeClassName}`}>
+      <aside className={`app-sidebar ${mobileMenuOpen ? 'is-open' : ''}`} aria-label={t('menu.home')}>
+        <div className="sidebar-header">
           {brand}
+        </div>
+        <nav className="sidebar-scroll" aria-label={t('app.title')}>
           {menu}
-        </Sider>
-      )}
-      <Drawer
-        className="mobile-menu-drawer"
-        placement="left"
-        width={260}
-        open={mobileMenuOpen}
-        onClose={() => setMobileMenuOpen(false)}
-        closable={false}
-      >
-        {brand}
-        {menu}
-      </Drawer>
-      <Layout>
-        <Header className="app-header">
-          {isMobile && (
-            <Button
-              className="mobile-menu-button"
-              icon={<MenuOutlined />}
-              onClick={() => setMobileMenuOpen(true)}
-            />
-          )}
-          <div className="app-header-title">
-            <Typography.Title level={4}>{t('app.title')}</Typography.Title>
-            <Typography.Text type="secondary" className="header-subtitle">{t('app.headerSubtitle')}</Typography.Text>
-          </div>
-          <Input.Search
-            allowClear
-            className="global-search"
-            value={searchKeyword}
-            placeholder={t('search.placeholder')}
-            onChange={(event) => setSearchKeyword(event.target.value)}
-            onSearch={handleGlobalSearch}
+        </nav>
+        <div className="sidebar-footer">
+          <button type="button" className="sidebar-user" onClick={handleOpenProfile}>
+            <Avatar
+              size="small"
+              src={user?.avatarUrl || undefined}
+              className={user?.avatarUrl ? undefined : 'user-avatar-fallback'}
+            >
+              {getAvatarInitial(user?.username)}
+            </Avatar>
+            <span className="sidebar-user-name">{user?.username}</span>
+          </button>
+          <Button
+            className="sidebar-logout"
+            icon={<LogoutOutlined />}
+            onClick={handleLogout}
+            aria-label={t('auth.logout')}
           />
-          <Space className="header-actions">
-            <LanguageSwitcher />
-            <Dropdown menu={{ items: userMenuItems, onClick: handleUserMenuClick }} trigger={['hover']}>
-              <button type="button" className="user-chip user-chip-button" onClick={handleOpenProfile}>
-                <Avatar
-                  size="small"
-                  src={user?.avatarUrl || undefined}
-                  className={user?.avatarUrl ? undefined : 'user-avatar-fallback'}
-                >
-                  {getAvatarInitial(user?.username)}
-                </Avatar>
-                <Typography.Text>{user?.username}</Typography.Text>
-              </button>
-            </Dropdown>
-            <Button icon={<LogoutOutlined />} onClick={handleLogout} className="logout-button">
-              {t('auth.logout')}
-            </Button>
-          </Space>
-        </Header>
-        <Content className="app-content">
-          <Outlet />
-        </Content>
-      </Layout>
-    </Layout>
+        </div>
+      </aside>
+      {isMobile && mobileMenuOpen && (
+        <button
+          type="button"
+          className="sidebar-backdrop"
+          aria-label="Close menu"
+          onClick={() => setMobileMenuOpen(false)}
+        />
+      )}
+      <main className="app-main">
+        <div className="app-background-layer">
+          <FloatingStickers />
+        </div>
+        <div className="app-main-panel">
+          <header className="app-header">
+            {isMobile && (
+              <Button
+                className="mobile-menu-button"
+                icon={<MenuOutlined />}
+                onClick={() => setMobileMenuOpen(true)}
+              />
+            )}
+            {!isMobile && (
+              <Button
+                className="sidebar-toggle-button"
+                icon={sidebarCollapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+                onClick={() => setSidebarCollapsed((value) => !value)}
+                aria-label={sidebarCollapsed ? 'Expand sidebar' : 'Collapse sidebar'}
+              />
+            )}
+            <div className="app-header-title">
+              <Typography.Title level={4}>{t('app.title')}</Typography.Title>
+              <Typography.Text type="secondary" className="header-subtitle">{t('app.headerSubtitle')}</Typography.Text>
+            </div>
+            <Input.Search
+              allowClear
+              className="global-search"
+              value={searchKeyword}
+              placeholder={t('search.placeholder')}
+              onChange={(event) => setSearchKeyword(event.target.value)}
+              onSearch={handleGlobalSearch}
+            />
+            <Space className="header-actions">
+              <LanguageSwitcher />
+              <Dropdown menu={{ items: userMenuItems, onClick: handleUserMenuClick }} trigger={['hover']}>
+                <button type="button" className="user-chip user-chip-button" onClick={handleOpenProfile}>
+                  <Avatar
+                    size="small"
+                    src={user?.avatarUrl || undefined}
+                    className={user?.avatarUrl ? undefined : 'user-avatar-fallback'}
+                  >
+                    {getAvatarInitial(user?.username)}
+                  </Avatar>
+                  <Typography.Text>{user?.username}</Typography.Text>
+                </button>
+              </Dropdown>
+              <Button icon={<LogoutOutlined />} onClick={handleLogout} className="logout-button">
+                {t('auth.logout')}
+              </Button>
+            </Space>
+          </header>
+          <div className="app-content app-content-scroll">
+            <Outlet />
+          </div>
+        </div>
+      </main>
+    </div>
   );
 }

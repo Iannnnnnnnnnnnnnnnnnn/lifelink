@@ -6,6 +6,7 @@ import com.lifelink.file.dto.FileUploadResponse;
 import com.lifelink.file.entity.FileResource;
 import com.lifelink.file.mapper.FileResourceMapper;
 import com.lifelink.file.service.FileService;
+import com.lifelink.file.service.FileUrlService;
 import io.minio.BucketExistsArgs;
 import io.minio.MakeBucketArgs;
 import io.minio.MinioClient;
@@ -32,7 +33,6 @@ import java.util.UUID;
 public class FileServiceImpl implements FileService {
 
     private static final long MAX_FILE_SIZE = 5L * 1024L * 1024L;
-    private static final String DEFAULT_PUBLIC_ENDPOINT = "http://47.97.202.182";
     private static final Set<String> ALLOWED_EXTENSIONS = new HashSet<String>(Arrays.asList("jpg", "jpeg", "png", "webp"));
     private static final Set<String> ALLOWED_CONTENT_TYPES = new HashSet<String>(Arrays.asList("image/jpeg", "image/png", "image/webp"));
     private static final Map<String, String> EXTENSIONS_BY_CONTENT_TYPE = new HashMap<String, String>();
@@ -46,6 +46,7 @@ public class FileServiceImpl implements FileService {
     private final MinioClient minioClient;
     private final MinioProperties minioProperties;
     private final FileResourceMapper fileResourceMapper;
+    private final FileUrlService fileUrlService;
 
     @Override
     @Transactional
@@ -99,7 +100,7 @@ public class FileServiceImpl implements FileService {
         resource.setOriginalName(originalName);
         resource.setContentType(contentType);
         resource.setFileSize(file.getSize());
-        resource.setFileUrl(buildFileUrl(bucket, objectKey));
+        resource.setFileUrl(fileUrlService.buildPublicUrl(bucket, objectKey));
         resource.setCreatedAt(LocalDateTime.now());
         fileResourceMapper.insert(resource);
 
@@ -181,15 +182,4 @@ public class FileServiceImpl implements FileService {
                 + extension;
     }
 
-    private String buildFileUrl(String bucket, String objectKey) {
-        String endpoint = resolvePublicEndpoint();
-        if (endpoint.endsWith("/")) {
-            return endpoint + bucket + "/" + objectKey;
-        }
-        return endpoint + "/" + bucket + "/" + objectKey;
-    }
-
-    private String resolvePublicEndpoint() {
-        return DEFAULT_PUBLIC_ENDPOINT;
-    }
 }

@@ -19,6 +19,7 @@ import com.lifelink.daily.mapper.DailyPostMapper;
 import com.lifelink.daily.service.DailyPostService;
 import com.lifelink.file.entity.FileResource;
 import com.lifelink.file.mapper.FileResourceMapper;
+import com.lifelink.file.service.FileUrlService;
 import com.lifelink.relationship.entity.Relationship;
 import com.lifelink.relationship.mapper.RelationshipMapper;
 import com.lifelink.relationship.service.RelationshipPermissionService;
@@ -54,6 +55,7 @@ public class DailyPostServiceImpl implements DailyPostService {
     private final RelationshipPermissionService relationshipPermissionService;
     private final UserMapper userMapper;
     private final FileResourceMapper fileResourceMapper;
+    private final FileUrlService fileUrlService;
     private final DailyPostImageMapper dailyPostImageMapper;
     private final SpaceActivityService spaceActivityService;
     private final DailyPostLikeMapper dailyPostLikeMapper;
@@ -320,7 +322,7 @@ public class DailyPostServiceImpl implements DailyPostService {
             if (resource != null) {
                 result.add(new DailyPostImageResponse(
                         resource.getId(),
-                        resource.getFileUrl(),
+                        fileUrlService.buildPublicUrl(resource),
                         resource.getOriginalName(),
                         imageRef.getSortOrder()
                 ));

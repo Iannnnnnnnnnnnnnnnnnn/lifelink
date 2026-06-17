@@ -6,6 +6,7 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.lifelink.common.BusinessException;
 import com.lifelink.file.entity.FileResource;
 import com.lifelink.file.mapper.FileResourceMapper;
+import com.lifelink.file.service.FileUrlService;
 import com.lifelink.relationship.entity.Relationship;
 import com.lifelink.relationship.mapper.RelationshipMapper;
 import com.lifelink.relationship.service.RelationshipPermissionService;
@@ -46,6 +47,7 @@ public class RelationshipTimelineServiceImpl implements RelationshipTimelineServ
     private final RelationshipMapper relationshipMapper;
     private final UserMapper userMapper;
     private final FileResourceMapper fileResourceMapper;
+    private final FileUrlService fileUrlService;
     private final ObjectMapper objectMapper;
 
     @Override
@@ -108,7 +110,7 @@ public class RelationshipTimelineServiceImpl implements RelationshipTimelineServ
                 "CUSTOM",
                 null,
                 cover == null ? null : cover.getId(),
-                cover == null ? null : cover.getFileUrl(),
+                cover == null ? null : fileUrlService.buildPublicUrl(cover),
                 request.getEventDate(),
                 request.getImportance(),
                 MANUAL_SOURCE,
@@ -208,13 +210,21 @@ public class RelationshipTimelineServiceImpl implements RelationshipTimelineServ
                 event.getTargetId(),
                 buildTargetUrl(event),
                 event.getCoverFileId(),
-                event.getCoverUrl(),
+                resolveCoverUrl(event),
                 event.getEventDate(),
                 event.getImportance(),
                 event.getSource(),
                 readMetadata(event.getMetadata()),
                 event.getCreatedAt()
         );
+    }
+
+    private String resolveCoverUrl(RelationshipTimelineEvent event) {
+        if (event.getCoverFileId() == null) {
+            return event.getCoverUrl();
+        }
+        FileResource resource = fileResourceMapper.selectById(event.getCoverFileId());
+        return resource == null ? event.getCoverUrl() : fileUrlService.buildPublicUrl(resource);
     }
 
     private String buildTargetUrl(RelationshipTimelineEvent event) {

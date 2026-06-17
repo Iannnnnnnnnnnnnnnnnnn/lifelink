@@ -28,20 +28,7 @@
   display: none;
 }
 
-.mobile-menu-drawer .ant-drawer-body {
-  padding: 0;
-}
-
-.mobile-menu-drawer .brand {
-  height: auto;
-  padding: 18px 20px;
-}
-
 @media (max-width: 768px) {
-  .desktop-sider {
-    display: none;
-  }
-
   .mobile-menu-button {
     display: inline-flex;
   }
