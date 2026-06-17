@@ -33,10 +33,7 @@ import java.util.UUID;
 public class FileServiceImpl implements FileService {
 
     private static final long MAX_FILE_SIZE = 5L * 1024L * 1024L;
-<<<<<<< HEAD
-=======
     private static final long MAX_BACKGROUND_FILE_SIZE = 10L * 1024L * 1024L;
->>>>>>> 6529f625afb39156fe842b5f2632498ae2ddf6af
     private static final Set<String> ALLOWED_EXTENSIONS = new HashSet<String>(Arrays.asList("jpg", "jpeg", "png", "webp"));
     private static final Set<String> ALLOWED_CONTENT_TYPES = new HashSet<String>(Arrays.asList("image/jpeg", "image/png", "image/webp"));
     private static final Map<String, String> EXTENSIONS_BY_CONTENT_TYPE = new HashMap<String, String>();
@@ -216,8 +213,7 @@ public class FileServiceImpl implements FileService {
                 + extension;
     }
 
-<<<<<<< HEAD
-=======
+
     private String buildFileUrl(String bucket, String objectKey) {
         String endpoint = resolvePublicEndpoint();
         if (endpoint.endsWith("/")) {
@@ -235,5 +231,4 @@ public class FileServiceImpl implements FileService {
         }
         throw new BusinessException(500, "MinIO endpoint is not configured");
     }
->>>>>>> 6529f625afb39156fe842b5f2632498ae2ddf6af
 }

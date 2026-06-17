@@ -36,13 +36,8 @@ lifelink:
   minio:
     endpoint: http://localhost:9000
     public-endpoint: http://localhost:9000
-<<<<<<< HEAD
-    access-key: admin
-    secret-key: admin123456
-=======
     access-key: ${MINIO_ROOT_USER:}
     secret-key: ${MINIO_ROOT_PASSWORD:}
->>>>>>> 6529f625afb39156fe842b5f2632498ae2ddf6af
     bucket: lifelink
   cors:
     allowed-origins: http://localhost:5173,http://127.0.0.1:5173
