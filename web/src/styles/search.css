@@ -3,11 +3,11 @@
 }
 
 .search-page {
-  animation: pageFadeIn 220ms ease both;
+  animation: pageFadeUp 220ms cubic-bezier(0.2, 0, 0, 1) both;
 }
 
 .search-panel {
-  border-radius: 14px;
+  border-radius: var(--ll-radius-lg);
 }
 
 .search-controls {
@@ -23,14 +23,14 @@
 }
 
 .search-result-item {
-  border-radius: 10px;
+  border-radius: var(--ll-radius-md);
   cursor: pointer;
   padding-inline: 12px !important;
-  transition: background 180ms ease, transform 180ms ease;
+  transition: background var(--ll-transition-fast), transform var(--ll-transition-fast);
 }
 
 .search-result-item:hover {
-  background: rgba(255, 245, 248, 0.84);
+  background: rgba(47, 111, 237, 0.035);
   transform: translateY(-1px);
 }
 
@@ -40,25 +40,25 @@
   justify-content: center;
   width: 34px;
   height: 34px;
-  border-radius: 10px;
-  background: #fff0f5;
-  color: #d84d7d;
+  border-radius: var(--ll-radius-md);
+  background: var(--ll-primary-soft);
+  color: var(--ll-primary);
 }
 
 .search-highlight {
   border-radius: 4px;
   padding: 0 3px;
-  background: #fff1b8;
+  background: rgba(183, 121, 31, 0.16);
   color: inherit;
 }
 
 .theme-grayscale .search-result-item:hover {
-  background: #f3f4f6;
+  background: rgba(29, 29, 31, 0.04);
 }
 
 .theme-grayscale .search-result-icon,
 .theme-grayscale .search-highlight {
-  filter: grayscale(0.85) saturate(0.45);
+  filter: none;
 }
 
 @media (max-width: 900px) {

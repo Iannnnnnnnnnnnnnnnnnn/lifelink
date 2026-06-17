@@ -8,7 +8,7 @@ spring:
     driver-class-name: org.postgresql.Driver
     url: jdbc:postgresql://localhost:5432/lifelink
     username: lifelink
-    password: lifelink123456
+    password: ${SPRING_DATASOURCE_PASSWORD:}
   data:
     redis:
       host: localhost
@@ -16,7 +16,7 @@ spring:
       database: 0
   servlet:
     multipart:
-      max-file-size: 5MB
+      max-file-size: 10MB
       max-request-size: 50MB
 
 mybatis-plus:
@@ -31,16 +31,32 @@ springdoc:
 
 lifelink:
   jwt:
-    secret: lifelink-jwt-secret-change-me-lifelink-jwt-secret-change-me
+    secret: ${LIFELINK_JWT_SECRET:}
     expiration: 604800000
   minio:
     endpoint: http://localhost:9000
     public-endpoint: http://localhost:9000
+<<<<<<< HEAD
     access-key: admin
     secret-key: admin123456
+=======
+    access-key: ${MINIO_ROOT_USER:}
+    secret-key: ${MINIO_ROOT_PASSWORD:}
+>>>>>>> 6529f625afb39156fe842b5f2632498ae2ddf6af
     bucket: lifelink
   cors:
     allowed-origins: http://localhost:5173,http://127.0.0.1:5173
+  feature:
+    philosophy:
+      allowed-phones: ${LIFELINK_PHILOSOPHY_ALLOWED_PHONES:${LIFELINK_PSYCHOLOGY_TEACHER_ALLOWED_PHONES:}}
+  reward:
+    admin-phones: ${LIFELINK_REWARD_ADMIN_PHONES:}
+  focus-coin:
+    enabled: ${LIFELINK_FOCUS_COIN_ENABLED:true}
+    unit-minutes: ${LIFELINK_FOCUS_COIN_UNIT_MINUTES:5}
+    per-unit: ${LIFELINK_FOCUS_COIN_PER_UNIT:2}
+    max-minutes-per-session: ${LIFELINK_FOCUS_COIN_MAX_MINUTES_PER_SESSION:120}
+    daily-cap: ${LIFELINK_FOCUS_COIN_DAILY_CAP:}
   ai:
     enabled: ${AI_ENABLED:false}
     provider: ${AI_PROVIDER:mock}
@@ -53,3 +69,10 @@ lifelink:
     mock: ${AI_MOCK:true}
     chat-context-messages: ${AI_CHAT_CONTEXT_MESSAGES:16}
     chat-max-user-message-length: ${AI_CHAT_MAX_USER_MESSAGE_LENGTH:2000}
+  cycle-care:
+    daily-advice:
+      enabled: ${LIFELINK_CYCLE_CARE_DAILY_ADVICE_ENABLED:true}
+      cron: "${LIFELINK_CYCLE_CARE_DAILY_ADVICE_CRON:0 5 0 * * ?}"
+      zone: ${LIFELINK_CYCLE_CARE_DAILY_ADVICE_ZONE:Asia/Shanghai}
+      use-ai: ${LIFELINK_CYCLE_CARE_DAILY_ADVICE_USE_AI:true}
+      max-regenerate-days: ${LIFELINK_CYCLE_CARE_DAILY_ADVICE_MAX_REGENERATE_DAYS:30}

@@ -4,10 +4,10 @@ services:
     container_name: lifelink-postgres
     restart: unless-stopped
     environment:
-      POSTGRES_DB: lifelink
-      POSTGRES_USER: lifelink
-      POSTGRES_PASSWORD: lifelink123456
-      TZ: Asia/Shanghai
+      POSTGRES_DB: ${POSTGRES_DB:-lifelink}
+      POSTGRES_USER: ${POSTGRES_USER:-lifelink}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD:?Set POSTGRES_PASSWORD in .env}
+      TZ: ${TZ:-Asia/Shanghai}
     ports:
       - "5432:5432"
     volumes:
@@ -28,9 +28,9 @@ services:
     restart: unless-stopped
     command: server /data --console-address ":9001"
     environment:
-      MINIO_ROOT_USER: admin
-      MINIO_ROOT_PASSWORD: admin123456
-      TZ: Asia/Shanghai
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER:?Set MINIO_ROOT_USER in .env}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD:?Set MINIO_ROOT_PASSWORD in .env}
+      TZ: ${TZ:-Asia/Shanghai}
     ports:
       - "9000:9000"
       - "9001:9001"

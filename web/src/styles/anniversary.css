@@ -8,20 +8,20 @@
   position: relative;
   min-height: 220px;
   overflow: hidden;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #1677ff 0%, #13c2c2 100%);
+  border-radius: var(--ll-radius-lg);
+  background: linear-gradient(180deg, rgba(47, 111, 237, 0.76) 0%, rgba(29, 29, 31, 0.72) 100%);
   background-position: center;
   background-size: cover;
   color: #ffffff;
   cursor: pointer;
-  box-shadow: 0 12px 30px rgba(28, 43, 66, 0.12);
+  box-shadow: var(--ll-shadow-sm);
 }
 
 .anniversary-card::before {
   position: absolute;
   inset: 0;
   content: "";
-  background: linear-gradient(180deg, rgba(11, 18, 32, 0.2), rgba(11, 18, 32, 0.74));
+  background: linear-gradient(180deg, rgba(11, 18, 32, 0.12), rgba(11, 18, 32, 0.66));
 }
 
 .anniversary-card-content {
@@ -47,7 +47,7 @@
 
 .anniversary-day-count {
   font-size: 56px;
-  font-weight: 800;
+  font-weight: 760;
   line-height: 1;
 }
 
@@ -59,7 +59,7 @@
 
 .anniversary-detail-hero {
   min-height: 320px;
-  border-radius: 8px;
+  border-radius: var(--ll-radius-lg);
 }
 
 .anniversary-form-upload .ant-upload-list-picture-card .ant-upload-list-item,

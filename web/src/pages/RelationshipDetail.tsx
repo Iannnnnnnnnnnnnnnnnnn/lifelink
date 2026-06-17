@@ -1,10 +1,9 @@
-import { CalendarOutlined, CheckSquareOutlined, ClockCircleOutlined, DollarOutlined, ReloadOutlined, ShareAltOutlined, ThunderboltOutlined, UserOutlined } from '@ant-design/icons';
+import { CalendarOutlined, CheckSquareOutlined, ClockCircleOutlined, DollarOutlined, HeartOutlined, ReloadOutlined, ShareAltOutlined, ThunderboltOutlined, UserOutlined } from '@ant-design/icons';
 import { Alert, Avatar, Button, Card, Col, Descriptions, Empty, Input, message, Modal, Popconfirm, Row, Space, Table, Tabs, Tag, Typography } from 'antd';
 import type { ColumnsType } from 'antd/es/table';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useParams, useSearchParams } from 'react-router-dom';
 import {
   createRelationshipInvite,
   CreateInviteResponse,
@@ -21,6 +20,7 @@ import {
 } from '../api/relationship';
 import { ErrorState } from '../components/common/ErrorState';
 import { PageLoading } from '../components/common/PageLoading';
+import { RelationshipSubNav } from '../components/navigation/RelationshipSubNav';
 import { useAuthStore } from '../store/authStore';
 import { useRelationshipThemeStore } from '../store/relationshipThemeStore';
 import { formatDateTime } from '../utils/date';
@@ -31,6 +31,7 @@ export function RelationshipDetail() {
   const { t, i18n } = useTranslation();
   const params = useParams();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
   const relationshipId = Number(params.id);
   const user = useAuthStore((state) => state.user);
   const fetchRelationshipThemeStatus = useRelationshipThemeStore((state) => state.fetchRelationshipThemeStatus);
@@ -46,6 +47,7 @@ export function RelationshipDetail() {
 
   const canCreateInvite = detail?.currentUserRole === 'OWNER' || detail?.currentUserRole === 'ADMIN';
   const isOwner = detail?.currentUserRole === 'OWNER';
+  const activeTab = searchParams.get('tab') === 'members' ? 'members' : 'overview';
 
   const loadDetail = async () => {
     setLoading(true);
@@ -259,7 +261,7 @@ export function RelationshipDetail() {
       <div className="page-heading">
         <div>
           <Typography.Title level={2}>{detail?.name || t('relationship.detail')}</Typography.Title>
-          <Typography.Text type="secondary">{detail?.description || t('common.noDescription')}</Typography.Text>
+          {detail?.description && <Typography.Text type="secondary">{detail.description}</Typography.Text>}
         </div>
         <Space>
           <Button icon={<ReloadOutlined />} onClick={loadDetail} loading={loading}>
@@ -273,6 +275,8 @@ export function RelationshipDetail() {
         </Space>
       </div>
 
+      <RelationshipSubNav relationshipId={relationshipId} relationshipName={detail?.name} relationshipType={detail?.type} />
+
       {invite && (
         <Alert
           type="success"
@@ -284,6 +288,14 @@ export function RelationshipDetail() {
 
       <Tabs
         className="content-tabs"
+        activeKey={activeTab}
+        onChange={(key) => {
+          if (key === 'members') {
+            setSearchParams({ tab: 'members' });
+          } else {
+            setSearchParams({});
+          }
+        }}
         items={[
           {
             key: 'overview',
@@ -347,7 +359,24 @@ export function RelationshipDetail() {
                     </Card>
                   </Col>
                   <Col xs={24} md={12}>
-                    <Card className="action-card" hoverable onClick={() => navigate(`/relationships/${relationshipId}/finance`)}>
+                    <Card
+                      className={`action-card relationship-cycle-card ${detail?.type !== 'COUPLE' ? 'action-card-disabled' : ''}`}
+                      hoverable={detail?.type === 'COUPLE'}
+                      onClick={() => detail?.type === 'COUPLE' && navigate(`/relationships/${relationshipId}/cycle-care`)}
+                    >
+                        <Space align="start">
+                          <HeartOutlined className="action-icon" />
+                          <div>
+                            <Typography.Title level={4}>{t('relationship.viewCycleCare')}</Typography.Title>
+                            <Typography.Text type="secondary">
+                              {detail?.type === 'COUPLE' ? t('relationship.cycleCareEntryDescription') : t('relationship.cycleCareUnavailable')}
+                            </Typography.Text>
+                          </div>
+                        </Space>
+                    </Card>
+                  </Col>
+                  <Col xs={24} md={12}>
+                    <Card className="action-card" hoverable onClick={() => navigate(`/finance?scope=space&spaceId=${relationshipId}`)}>
                       <Space align="start">
                         <DollarOutlined className="action-icon" />
                         <div>

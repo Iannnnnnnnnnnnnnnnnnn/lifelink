@@ -30,8 +30,9 @@ function showErrorOnce(content: string) {
   message.error(content);
 }
 
-function getFallbackMessage(status?: number) {
+function getFallbackMessage(status?: number, url?: string) {
   if (status === 401) return i18n.t('error.unauthorized');
+  if (status === 403 && url?.includes('/api/philosophy')) return i18n.t('philosophy.accessDenied');
   if (status === 403) return i18n.t('error.forbidden');
   if (status === 404) return i18n.t('error.notFound');
   if (!status) return i18n.t('error.network');
@@ -51,8 +52,11 @@ request.interceptors.response.use(
   (error) => {
     const status = error.response?.status;
     const backendMessage = error.response?.data?.message;
-    const fallbackMessage = getFallbackMessage(status);
-    const displayMessage = backendMessage || fallbackMessage;
+    const requestUrl = error.config?.url;
+    const fallbackMessage = getFallbackMessage(status, requestUrl);
+    const displayMessage = status === 403 && requestUrl?.includes('/api/philosophy')
+      ? fallbackMessage
+      : backendMessage || fallbackMessage;
     error.__lifelinkHandled = true;
 
     if (status === 401) {

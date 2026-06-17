@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 .floating-stickers {
   position: absolute;
   inset: 0;
@@ -75,40 +76,8 @@
   opacity: 0.32;
 }
 
+=======
+>>>>>>> 6529f625afb39156fe842b5f2632498ae2ddf6af
 .polished-empty {
   padding: 20px 12px;
-}
-
-.empty-illustration {
-  display: flex;
-  justify-content: center;
-  gap: 8px;
-  margin-bottom: -6px;
-  color: #ff8fb3;
-  font-size: 24px;
-}
-
-.empty-illustration span {
-  display: inline-block;
-  animation: stickerFloat 8s ease-in-out infinite;
-}
-
-.empty-illustration span:nth-child(2) {
-  animation-delay: -2s;
-}
-
-.empty-illustration span:nth-child(3) {
-  animation-delay: -4s;
-}
-
-@media (max-width: 720px) {
-  .floating-sticker {
-    opacity: 0.28;
-  }
-
-  .sticker-3,
-  .sticker-6,
-  .sticker-8 {
-    display: none;
-  }
 }

@@ -8,4 +8,8 @@ public interface FileService {
     FileUploadResponse uploadDailyImage(MultipartFile file, Long userId);
 
     FileUploadResponse uploadAvatarImage(MultipartFile file, Long userId);
+
+    FileUploadResponse uploadBackgroundImage(MultipartFile file, Long userId);
+
+    FileUploadResponse uploadRewardCoverImage(MultipartFile file, Long userId);
 }

@@ -5,20 +5,24 @@ import { AnniversaryDetail } from './pages/AnniversaryDetail';
 import { AnniversaryList } from './pages/AnniversaryList';
 import { ProtectedRoute } from './components/ProtectedRoute';
 import { PublicOnlyRoute } from './components/PublicOnlyRoute';
+import { PhilosophyFeatureRoute } from './components/PhilosophyFeatureRoute';
 import { CreateAnniversary } from './pages/CreateAnniversary';
 import { CreateRelationship } from './pages/CreateRelationship';
 import { CreateDailyPost } from './pages/CreateDailyPost';
+import { CycleCarePage } from './pages/CycleCarePage';
+import { CycleDailyReportPage } from './pages/CycleDailyReportPage';
 import { DailyPostDetail } from './pages/DailyPostDetail';
 import { DailyTimeline } from './pages/DailyTimeline';
 import { FinanceCreateTransaction } from './pages/FinanceCreateTransaction';
 import { FinanceDashboard } from './pages/FinanceDashboard';
 import { FinanceTransactionList } from './pages/FinanceTransactionList';
+import { FocusHome } from './pages/Focus/FocusHome';
+import { RewardAdminPage, RewardCenterPage } from './pages/Rewards/RewardCenterPage';
 import { Home } from './pages/Home';
 import { JoinRelationship } from './pages/JoinRelationship';
 import { RelationshipFinance } from './pages/RelationshipFinance';
 import { CalendarPage } from './pages/calendar/CalendarPage';
 import { Login } from './pages/Login';
-import { PhilosophyPage } from './pages/philosophy/PhilosophyPage';
 import { ProfilePage } from './pages/profile/ProfilePage';
 import { RelationshipDetail } from './pages/RelationshipDetail';
 import { RelationshipList } from './pages/RelationshipList';
@@ -94,6 +98,10 @@ export const router = createBrowserRouter([
             element: <AnniversaryList />,
           },
           {
+            path: 'relationships/:relationshipId/cycle-care',
+            element: <CycleCarePage />,
+          },
+          {
             path: 'activities',
             element: <ActivityTimeline />,
           },
@@ -126,8 +134,36 @@ export const router = createBrowserRouter([
             element: <DailyPostDetail />,
           },
           {
+            path: 'cycle-care',
+            element: <CycleCarePage />,
+          },
+          {
+            path: 'cycle-care/daily',
+            element: <CycleDailyReportPage />,
+          },
+          {
             path: 'finance',
             element: <FinanceDashboard />,
+          },
+          {
+            path: 'focus',
+            element: <FocusHome />,
+          },
+          {
+            path: 'focus/timer',
+            element: <FocusHome />,
+          },
+          {
+            path: 'focus-timer',
+            element: <FocusHome />,
+          },
+          {
+            path: 'rewards',
+            element: <RewardCenterPage />,
+          },
+          {
+            path: 'rewards/admin',
+            element: <RewardAdminPage />,
           },
           {
             path: 'finance/transactions',
@@ -139,7 +175,7 @@ export const router = createBrowserRouter([
           },
           {
             path: 'philosophy',
-            element: <PhilosophyPage />,
+            element: <PhilosophyFeatureRoute />,
           },
           {
             path: '*',

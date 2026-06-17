@@ -1,6 +1,7 @@
 import { create } from 'zustand';
 import { getCurrentUser, LoginResponse, UserProfile } from '../api/auth';
 import { TOKEN_STORAGE_KEY } from '../api/request';
+import { useBackgroundStore } from './backgroundStore';
 import { useRelationshipThemeStore } from './relationshipThemeStore';
 
 interface AuthState {
@@ -30,6 +31,8 @@ export const useAuthStore = create<AuthState>((set) => ({
   },
   logout: () => {
     localStorage.removeItem(TOKEN_STORAGE_KEY);
+    sessionStorage.removeItem(TOKEN_STORAGE_KEY);
+    useBackgroundStore.getState().resetLocalSetting();
     useRelationshipThemeStore.getState().resetRelationshipThemeStatus();
     set({
       token: null,

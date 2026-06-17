@@ -22,4 +22,8 @@ public class CalendarMonthQueryRequest {
     private Boolean includeHolidays = true;
 
     private Boolean includeCustomEvents = true;
+
+    private Boolean includeCycleCare = true;
+
+    private Boolean includeFocus = true;
 }

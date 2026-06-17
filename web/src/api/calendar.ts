@@ -8,7 +8,17 @@ export type CalendarItemType =
   | 'TRANSACTION'
   | 'HOLIDAY'
   | 'SOLAR_TERM'
-  | 'CUSTOM_EVENT';
+  | 'CUSTOM_EVENT'
+  | 'FOCUS_SESSION'
+  | 'FOCUS_ROOM_SESSION'
+  | 'FOCUS_DAILY_SUMMARY'
+  | 'CYCLE_PERIOD_ACTUAL'
+  | 'CYCLE_PERIOD_PREDICTED'
+  | 'CYCLE_OVULATION_ESTIMATED'
+  | 'CYCLE_FERTILE_WINDOW_ESTIMATED'
+  | 'CYCLE_WARNING'
+  | 'CYCLE_CARE_DAY'
+  | 'CYCLE_DAILY_REPORT';
 
 export type CalendarEventType = 'CUSTOM' | 'REMINDER' | 'PLAN' | 'APPOINTMENT' | 'OTHER';
 export type CalendarRepeatType = 'NONE' | 'DAILY' | 'WEEKLY' | 'MONTHLY' | 'YEARLY';
@@ -71,6 +81,8 @@ export interface CalendarMonthQuery {
   includeTransactions?: boolean;
   includeHolidays?: boolean;
   includeCustomEvents?: boolean;
+  includeCycleCare?: boolean;
+  includeFocus?: boolean;
 }
 
 export interface CalendarDayQuery {

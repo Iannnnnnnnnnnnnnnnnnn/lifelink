@@ -33,6 +33,10 @@ import java.util.UUID;
 public class FileServiceImpl implements FileService {
 
     private static final long MAX_FILE_SIZE = 5L * 1024L * 1024L;
+<<<<<<< HEAD
+=======
+    private static final long MAX_BACKGROUND_FILE_SIZE = 10L * 1024L * 1024L;
+>>>>>>> 6529f625afb39156fe842b5f2632498ae2ddf6af
     private static final Set<String> ALLOWED_EXTENSIONS = new HashSet<String>(Arrays.asList("jpg", "jpeg", "png", "webp"));
     private static final Set<String> ALLOWED_CONTENT_TYPES = new HashSet<String>(Arrays.asList("image/jpeg", "image/png", "image/webp"));
     private static final Map<String, String> EXTENSIONS_BY_CONTENT_TYPE = new HashMap<String, String>();
@@ -60,12 +64,28 @@ public class FileServiceImpl implements FileService {
         return uploadImage(file, userId, "avatars");
     }
 
+    @Override
+    @Transactional
+    public FileUploadResponse uploadBackgroundImage(MultipartFile file, Long userId) {
+        return uploadImage(file, userId, "backgrounds", MAX_BACKGROUND_FILE_SIZE);
+    }
+
+    @Override
+    @Transactional
+    public FileUploadResponse uploadRewardCoverImage(MultipartFile file, Long userId) {
+        return uploadImage(file, userId, "rewards");
+    }
+
     private FileUploadResponse uploadImage(MultipartFile file, Long userId, String category) {
+        return uploadImage(file, userId, category, MAX_FILE_SIZE);
+    }
+
+    private FileUploadResponse uploadImage(MultipartFile file, Long userId, String category, long maxFileSize) {
         if (file == null || file.isEmpty()) {
             throw new BusinessException(400, "File is required");
         }
-        if (file.getSize() > MAX_FILE_SIZE) {
-            throw new BusinessException(400, "File size cannot exceed 5MB");
+        if (file.getSize() > maxFileSize) {
+            throw new BusinessException(400, "File size cannot exceed " + maxFileSize / 1024L / 1024L + "MB");
         }
 
         String originalName = file.getOriginalFilename();
@@ -171,6 +191,20 @@ public class FileServiceImpl implements FileService {
                     + "."
                     + extension;
         }
+        if ("backgrounds".equals(category)) {
+            return "backgrounds/"
+                    + userId
+                    + "/"
+                    + UUID.randomUUID()
+                    + "."
+                    + extension;
+        }
+        if ("rewards".equals(category)) {
+            return "rewards/covers/"
+                    + UUID.randomUUID()
+                    + "."
+                    + extension;
+        }
         LocalDateTime now = LocalDateTime.now();
         return "daily/"
                 + now.getYear()
@@ -182,4 +216,24 @@ public class FileServiceImpl implements FileService {
                 + extension;
     }
 
+<<<<<<< HEAD
+=======
+    private String buildFileUrl(String bucket, String objectKey) {
+        String endpoint = resolvePublicEndpoint();
+        if (endpoint.endsWith("/")) {
+            return endpoint + bucket + "/" + objectKey;
+        }
+        return endpoint + "/" + bucket + "/" + objectKey;
+    }
+
+    private String resolvePublicEndpoint() {
+        if (StringUtils.hasText(minioProperties.getPublicEndpoint())) {
+            return minioProperties.getPublicEndpoint().trim();
+        }
+        if (StringUtils.hasText(minioProperties.getEndpoint())) {
+            return minioProperties.getEndpoint().trim();
+        }
+        throw new BusinessException(500, "MinIO endpoint is not configured");
+    }
+>>>>>>> 6529f625afb39156fe842b5f2632498ae2ddf6af
 }

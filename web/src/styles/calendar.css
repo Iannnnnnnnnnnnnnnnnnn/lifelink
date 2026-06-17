@@ -1,18 +1,21 @@
 :root {
-  --calendar-bg: #f5f5f7;
-  --calendar-card-bg: #ffffff;
-  --calendar-border: rgba(16, 24, 40, 0.08);
-  --calendar-border-soft: rgba(16, 24, 40, 0.05);
-  --calendar-text-primary: rgba(16, 24, 40, 0.9);
-  --calendar-text-secondary: rgba(71, 84, 103, 0.7);
-  --calendar-hover-bg: rgba(16, 24, 40, 0.035);
-  --calendar-selected-bg: rgba(22, 119, 255, 0.06);
-  --calendar-selected-border: rgba(22, 119, 255, 0.24);
-  --calendar-primary: #1677ff;
+  --calendar-bg: var(--ll-bg);
+  --calendar-card-bg: rgba(255, 255, 255, 0.94);
+  --calendar-border: var(--ll-border);
+  --calendar-border-soft: var(--ll-border-soft);
+  --calendar-text-primary: var(--ll-text);
+  --calendar-text-secondary: var(--ll-text-muted);
+  --calendar-hover-bg: rgba(47, 111, 237, 0.035);
+  --calendar-selected-bg: rgba(47, 111, 237, 0.07);
+  --calendar-selected-border: rgba(47, 111, 237, 0.26);
+  --calendar-primary: var(--ll-primary);
 }
 
 .calendar-page {
-  animation: calendar-page-in 0.26s ease;
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  animation: calendar-page-in 240ms cubic-bezier(0.2, 0, 0, 1);
 }
 
 .calendar-header {
@@ -20,13 +23,13 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 24px;
-  margin-bottom: 18px;
+  margin-bottom: 0;
 }
 
 .calendar-title-block h1 {
   margin: 0 0 6px;
   color: var(--calendar-text-primary);
-  font-size: 34px;
+  font-size: 36px;
   font-weight: 760;
   letter-spacing: 0;
 }
@@ -56,6 +59,7 @@
   border: 1px solid var(--calendar-border);
   border-radius: 999px;
   background: rgba(255, 255, 255, 0.76);
+  backdrop-filter: blur(12px);
 }
 
 .calendar-month-nav .ant-btn {
@@ -72,7 +76,7 @@
 
 .calendar-view-switch {
   border-radius: 999px;
-  background: rgba(16, 24, 40, 0.05);
+  background: rgba(29, 29, 31, 0.045);
 }
 
 .calendar-view-switch .ant-segmented-item {
@@ -84,7 +88,7 @@
   border: 1px solid var(--calendar-border-soft);
   border-radius: 24px;
   background: var(--calendar-card-bg);
-  box-shadow: 0 24px 70px rgba(31, 41, 55, 0.08);
+  box-shadow: var(--ll-shadow-md);
 }
 
 .calendar-shell .ant-card-body {
@@ -93,7 +97,7 @@
 
 .calendar-month-grid {
   opacity: 1;
-  transition: opacity 0.18s ease;
+  transition: opacity var(--ll-transition-fast);
 }
 
 .calendar-month-grid-loading {
@@ -139,7 +143,7 @@
   color: inherit;
   cursor: pointer;
   text-align: left;
-  transition: background 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
+  transition: background var(--ll-transition-fast), box-shadow var(--ll-transition-fast), transform var(--ll-transition-fast);
 }
 
 .calendar-cell:nth-child(7n) {
@@ -148,6 +152,11 @@
 
 .calendar-cell:hover {
   background: var(--calendar-hover-bg);
+  transform: translateY(-1px);
+}
+
+.calendar-cell:active {
+  transform: scale(0.992);
 }
 
 .calendar-cell-selected {
@@ -156,7 +165,7 @@
 }
 
 .calendar-cell-muted {
-  background: rgba(248, 250, 252, 0.6);
+  background: rgba(247, 248, 250, 0.62);
 }
 
 .calendar-cell-muted .day-number,
@@ -190,7 +199,7 @@
 .day-number.today {
   background: var(--calendar-primary);
   color: #ffffff;
-  box-shadow: 0 8px 16px rgba(22, 119, 255, 0.22);
+  box-shadow: 0 8px 16px rgba(47, 111, 237, 0.18);
 }
 
 .today-label {
@@ -218,7 +227,7 @@
   background: var(--event-bg);
   color: var(--event-text);
   font-size: 12px;
-  font-weight: 600;
+  font-weight: 560;
   line-height: 1;
 }
 
@@ -245,7 +254,7 @@
 
 .calendar-day-drawer .ant-drawer-content,
 .calendar-day-drawer .ant-drawer-body {
-  background: #fbfcfe;
+  background: var(--ll-bg);
 }
 
 .calendar-day-drawer .ant-drawer-body {
@@ -262,9 +271,9 @@
   gap: 18px;
   padding: 18px;
   border: 1px solid var(--calendar-border-soft);
-  border-radius: 22px;
+  border-radius: var(--ll-radius-lg);
   background: #ffffff;
-  box-shadow: 0 14px 40px rgba(31, 41, 55, 0.06);
+  box-shadow: var(--ll-shadow-sm);
 }
 
 .day-large {
@@ -274,8 +283,8 @@
   width: 72px;
   height: 72px;
   flex: 0 0 auto;
-  border-radius: 24px;
-  background: #f1f5fb;
+  border-radius: 22px;
+  background: var(--ll-primary-soft);
   color: var(--calendar-text-primary);
   font-size: 34px;
   font-weight: 800;
@@ -302,7 +311,7 @@
 .day-tags .ant-tag {
   margin: 0;
   border-radius: 999px;
-  background: #f5f7fb;
+  background: rgba(247, 248, 250, 0.88);
 }
 
 .day-detail-actions {
@@ -335,8 +344,8 @@
   align-items: center;
   justify-content: center;
   border-radius: 999px;
-  background: #eef1f6;
-  color: #667085;
+  background: rgba(29, 29, 31, 0.05);
+  color: var(--ll-text-muted);
   font-size: 12px;
   font-weight: 700;
 }
@@ -354,11 +363,11 @@
   gap: 10px;
   padding: 12px;
   border: 1px solid var(--detail-border);
-  border-radius: 16px;
+  border-radius: var(--ll-radius-md);
   background: var(--detail-bg);
   color: inherit;
   text-align: left;
-  transition: background 0.18s ease, transform 0.18s ease, box-shadow 0.18s ease;
+  transition: background var(--ll-transition-fast), transform var(--ll-transition-fast), box-shadow var(--ll-transition-fast);
 }
 
 .calendar-detail-item-clickable {
@@ -367,7 +376,7 @@
 
 .calendar-detail-item-clickable:hover {
   transform: translateY(-1px);
-  box-shadow: 0 10px 24px rgba(31, 41, 55, 0.08);
+  box-shadow: var(--ll-shadow-sm);
 }
 
 .item-color-bar {
@@ -430,8 +439,8 @@
   justify-content: center;
   margin-bottom: 14px;
   border-radius: 18px;
-  background: #f2f4f7;
-  color: #98a2b3;
+  background: rgba(29, 29, 31, 0.05);
+  color: var(--ll-text-subtle);
   font-size: 24px;
 }
 
@@ -507,13 +516,13 @@
   z-index: 20;
   width: 48px !important;
   height: 48px !important;
-  box-shadow: 0 16px 34px rgba(22, 119, 255, 0.28);
+  box-shadow: 0 16px 34px rgba(47, 111, 237, 0.18);
 }
 
 .theme-grayscale .calendar-page {
-  --calendar-primary: #4b5563;
-  --calendar-selected-bg: rgba(75, 85, 99, 0.08);
-  --calendar-selected-border: rgba(75, 85, 99, 0.26);
+  --calendar-primary: var(--ll-primary);
+  --calendar-selected-bg: var(--ll-primary-soft);
+  --calendar-selected-border: rgba(98, 106, 115, 0.26);
 }
 
 .theme-grayscale .calendar-shell,
@@ -523,12 +532,12 @@
 }
 
 .theme-grayscale .day-number.today {
-  background: #4b5563;
-  box-shadow: 0 8px 16px rgba(75, 85, 99, 0.18);
+  background: var(--ll-primary);
+  box-shadow: 0 8px 16px rgba(98, 106, 115, 0.16);
 }
 
 .theme-grayscale .today-label {
-  color: #4b5563;
+  color: var(--ll-primary);
 }
 
 .theme-grayscale .calendar-event-pill {

@@ -19,8 +19,12 @@ import com.lifelink.calendar.mapper.CalendarEventMapper;
 import com.lifelink.calendar.mapper.HolidayCalendarMapper;
 import com.lifelink.calendar.service.CalendarService;
 import com.lifelink.common.BusinessException;
+import com.lifelink.cycle.dto.CycleCalendarEventResponse;
+import com.lifelink.cycle.service.CycleCareCalendarService;
 import com.lifelink.daily.entity.DailyPost;
 import com.lifelink.daily.mapper.DailyPostMapper;
+import com.lifelink.focus.dto.FocusSessionResponse;
+import com.lifelink.focus.service.FocusService;
 import com.lifelink.relationship.entity.RelationshipMember;
 import com.lifelink.relationship.service.RelationshipPermissionService;
 import com.lifelink.todo.entity.SpaceTodo;
@@ -65,6 +69,8 @@ public class CalendarServiceImpl implements CalendarService {
     private final CalendarEventMapper calendarEventMapper;
     private final HolidayCalendarMapper holidayCalendarMapper;
     private final RelationshipPermissionService relationshipPermissionService;
+    private final CycleCareCalendarService cycleCareCalendarService;
+    private final FocusService focusService;
 
     @Override
     public CalendarMonthResponse getMonthCalendar(CalendarMonthQueryRequest request, Long userId) {
@@ -106,6 +112,12 @@ public class CalendarServiceImpl implements CalendarService {
         }
         if (enabled(request.getIncludeCustomEvents())) {
             fillCustomEvents(dayMap, relationshipId, startTime, endTime);
+        }
+        if (enabled(request.getIncludeCycleCare())) {
+            fillCycleCareEvents(dayMap, relationshipId, yearMonth, userId);
+        }
+        if (enabled(request.getIncludeFocus())) {
+            fillFocusSessions(dayMap, relationshipId, yearMonth);
         }
 
         List<CalendarDayResponse> days = new ArrayList<CalendarDayResponse>(dayMap.values());
@@ -372,6 +384,38 @@ public class CalendarServiceImpl implements CalendarService {
         }
     }
 
+    private void fillCycleCareEvents(Map<LocalDate, CalendarDayResponse> dayMap, Long relationshipId, YearMonth yearMonth, Long userId) {
+        List<CycleCalendarEventResponse> events;
+        try {
+            events = cycleCareCalendarService.getRelationshipCalendarEvents(relationshipId, yearMonth, userId);
+        } catch (BusinessException ex) {
+            if (ex.getCode() != null && ex.getCode() == 403) {
+                return;
+            }
+            throw ex;
+        }
+        for (CycleCalendarEventResponse event : events) {
+            CalendarDayResponse day = dayMap.get(event.getDate());
+            if (day != null) {
+                day.getItems().add(buildCycleCareItem(event, relationshipId));
+            }
+        }
+    }
+
+    private void fillFocusSessions(Map<LocalDate, CalendarDayResponse> dayMap, Long relationshipId, YearMonth yearMonth) {
+        List<FocusSessionResponse> sessions = focusService.listRelationshipCalendarSessions(relationshipId, yearMonth);
+        for (FocusSessionResponse session : sessions) {
+            if (session.getStartedAt() == null) {
+                continue;
+            }
+            LocalDate date = session.getStartedAt().toLocalDate();
+            CalendarDayResponse day = dayMap.get(date);
+            if (day != null) {
+                day.getItems().add(buildFocusItem(session, date));
+            }
+        }
+    }
+
     private CalendarDayItemResponse buildTodoItem(SpaceTodo todo, LocalDate date, String itemType, LocalDateTime itemTime) {
         Map<String, Object> metadata = new HashMap<String, Object>();
         metadata.put("completedAt", todo.getCompletedAt());
@@ -508,6 +552,84 @@ public class CalendarServiceImpl implements CalendarService {
                 "calendar",
                 metadata
         );
+    }
+
+    private CalendarDayItemResponse buildCycleCareItem(CycleCalendarEventResponse event, Long relationshipId) {
+        Map<String, Object> metadata = new HashMap<String, Object>();
+        if (event.getMetadata() != null) {
+            metadata.putAll(event.getMetadata());
+        }
+        metadata.put("predicted", event.getPredicted());
+        return new CalendarDayItemResponse(
+                event.getId(),
+                event.getType(),
+                event.getTitle(),
+                String.valueOf(metadata.getOrDefault("disclaimer", "周期关怀提醒")),
+                event.getDate(),
+                event.getDate().atStartOfDay(),
+                null,
+                true,
+                relationshipId,
+                "CYCLE_CARE",
+                event.getId(),
+                ACTIVE_STATUS,
+                null,
+                null,
+                null,
+                null,
+                cycleCareColor(event.getType()),
+                "heart",
+                metadata
+        );
+    }
+
+    private CalendarDayItemResponse buildFocusItem(FocusSessionResponse session, LocalDate date) {
+        String title = session.getTodoTitle() == null
+                ? "专注 " + session.getActualMinutes() + " 分钟"
+                : session.getTodoTitle() + " · 专注 " + session.getActualMinutes() + " 分钟";
+        Map<String, Object> metadata = new HashMap<String, Object>();
+        metadata.put("actualMinutes", session.getActualMinutes());
+        metadata.put("plannedMinutes", session.getPlannedMinutes());
+        metadata.put("phase", session.getPhase());
+        metadata.put("sessionType", session.getSessionType());
+        metadata.put("roomId", session.getRoomId());
+        return new CalendarDayItemResponse(
+                session.getSessionId(),
+                "FOCUS_SESSION",
+                title,
+                "完成了一次专注",
+                date,
+                session.getStartedAt(),
+                session.getEndedAt(),
+                false,
+                session.getSpaceId(),
+                "FOCUS_SESSION",
+                session.getSessionId(),
+                session.getStatus(),
+                null,
+                null,
+                null,
+                null,
+                "#6f8fdb",
+                "focus",
+                metadata
+        );
+    }
+
+    private String cycleCareColor(String type) {
+        if ("CYCLE_WARNING".equals(type)) {
+            return "#df746c";
+        }
+        if ("CYCLE_PERIOD_PREDICTED".equals(type)) {
+            return "#e9a34f";
+        }
+        if ("CYCLE_OVULATION_ESTIMATED".equals(type) || "CYCLE_FERTILE_WINDOW_ESTIMATED".equals(type)) {
+            return "#56b39b";
+        }
+        if ("CYCLE_DAILY_REPORT".equals(type)) {
+            return "#7487a8";
+        }
+        return "#c678dd";
     }
 
     private CalendarDayItemResponse buildHolidayItem(HolidayCalendar holiday) {

@@ -1,0 +1,206 @@
+﻿[
+    {
+        "Name":  "01-login",
+        "Path":  "/login",
+        "Exists":  true,
+        "File":  "D:\\vb\\lifelink\\screenshots\\memoryspace-ui-20260611\\01-login.png"
+    },
+    {
+        "Name":  "02-register",
+        "Path":  "/register",
+        "Exists":  true,
+        "File":  "D:\\vb\\lifelink\\screenshots\\memoryspace-ui-20260611\\02-register.png"
+    },
+    {
+        "Name":  "03-home",
+        "Path":  "/",
+        "Exists":  true,
+        "File":  "D:\\vb\\lifelink\\screenshots\\memoryspace-ui-20260611\\03-home.png"
+    },
+    {
+        "Name":  "04-relationships",
+        "Path":  "/relationships",
+        "Exists":  true,
+        "File":  "D:\\vb\\lifelink\\screenshots\\memoryspace-ui-20260611\\04-relationships.png"
+    },
+    {
+        "Name":  "05-relationship-create",
+        "Path":  "/relationships/create",
+        "Exists":  true,
+        "File":  "D:\\vb\\lifelink\\screenshots\\memoryspace-ui-20260611\\05-relationship-create.png"
+    },
+    {
+        "Name":  "06-relationship-join",
+        "Path":  "/relationships/join",
+        "Exists":  true,
+        "File":  "D:\\vb\\lifelink\\screenshots\\memoryspace-ui-20260611\\06-relationship-join.png"
+    },
+    {
+        "Name":  "07-relationship-detail",
+        "Path":  "/relationships/1",
+        "Exists":  true,
+        "File":  "D:\\vb\\lifelink\\screenshots\\memoryspace-ui-20260611\\07-relationship-detail.png"
+    },
+    {
+        "Name":  "08-space-todos",
+        "Path":  "/relationships/1/todos",
+        "Exists":  true,
+        "File":  "D:\\vb\\lifelink\\screenshots\\memoryspace-ui-20260611\\08-space-todos.png"
+    },
+    {
+        "Name":  "09-space-activities",
+        "Path":  "/relationships/1/activities",
+        "Exists":  true,
+        "File":  "D:\\vb\\lifelink\\screenshots\\memoryspace-ui-20260611\\09-space-activities.png"
+    },
+    {
+        "Name":  "10-relationship-timeline",
+        "Path":  "/relationships/1/timeline",
+        "Exists":  true,
+        "File":  "D:\\vb\\lifelink\\screenshots\\memoryspace-ui-20260611\\10-relationship-timeline.png"
+    },
+    {
+        "Name":  "11-calendar",
+        "Path":  "/relationships/1/calendar",
+        "Exists":  true,
+        "File":  "D:\\vb\\lifelink\\screenshots\\memoryspace-ui-20260611\\11-calendar.png"
+    },
+    {
+        "Name":  "12-space-anniversaries",
+        "Path":  "/relationships/1/anniversaries",
+        "Exists":  true,
+        "File":  "D:\\vb\\lifelink\\screenshots\\memoryspace-ui-20260611\\12-space-anniversaries.png"
+    },
+    {
+        "Name":  "13-relationship-finance",
+        "Path":  "/relationships/1/finance",
+        "Exists":  true,
+        "File":  "D:\\vb\\lifelink\\screenshots\\memoryspace-ui-20260611\\13-relationship-finance.png"
+    },
+    {
+        "Name":  "14-search",
+        "Path":  "/search?keyword=%E7%94%9F%E6%B4%BB",
+        "Exists":  true,
+        "File":  "D:\\vb\\lifelink\\screenshots\\memoryspace-ui-20260611\\14-search.png"
+    },
+    {
+        "Name":  "15-profile",
+        "Path":  "/profile",
+        "Exists":  true,
+        "File":  "D:\\vb\\lifelink\\screenshots\\memoryspace-ui-20260611\\15-profile.png"
+    },
+    {
+        "Name":  "16-activities",
+        "Path":  "/activities",
+        "Exists":  true,
+        "File":  "D:\\vb\\lifelink\\screenshots\\memoryspace-ui-20260611\\16-activities.png"
+    },
+    {
+        "Name":  "17-anniversaries",
+        "Path":  "/anniversaries",
+        "Exists":  true,
+        "File":  "D:\\vb\\lifelink\\screenshots\\memoryspace-ui-20260611\\17-anniversaries.png"
+    },
+    {
+        "Name":  "18-anniversary-create",
+        "Path":  "/anniversaries/create",
+        "Exists":  true,
+        "File":  "D:\\vb\\lifelink\\screenshots\\memoryspace-ui-20260611\\18-anniversary-create.png"
+    },
+    {
+        "Name":  "19-anniversary-detail",
+        "Path":  "/anniversaries/1",
+        "Exists":  true,
+        "File":  "D:\\vb\\lifelink\\screenshots\\memoryspace-ui-20260611\\19-anniversary-detail.png"
+    },
+    {
+        "Name":  "20-daily",
+        "Path":  "/daily",
+        "Exists":  true,
+        "File":  "D:\\vb\\lifelink\\screenshots\\memoryspace-ui-20260611\\20-daily.png"
+    },
+    {
+        "Name":  "21-daily-create",
+        "Path":  "/daily/create",
+        "Exists":  true,
+        "File":  "D:\\vb\\lifelink\\screenshots\\memoryspace-ui-20260611\\21-daily-create.png"
+    },
+    {
+        "Name":  "22-daily-detail",
+        "Path":  "/daily/1",
+        "Exists":  true,
+        "File":  "D:\\vb\\lifelink\\screenshots\\memoryspace-ui-20260611\\22-daily-detail.png"
+    },
+    {
+        "Name":  "23-cycle-care",
+        "Path":  "/cycle-care",
+        "Exists":  true,
+        "File":  "D:\\vb\\lifelink\\screenshots\\memoryspace-ui-20260611\\23-cycle-care.png"
+    },
+    {
+        "Name":  "24-cycle-daily-report",
+        "Path":  "/cycle-care/daily",
+        "Exists":  true,
+        "File":  "D:\\vb\\lifelink\\screenshots\\memoryspace-ui-20260611\\24-cycle-daily-report.png"
+    },
+    {
+        "Name":  "25-finance",
+        "Path":  "/finance",
+        "Exists":  true,
+        "File":  "D:\\vb\\lifelink\\screenshots\\memoryspace-ui-20260611\\25-finance.png"
+    },
+    {
+        "Name":  "26-finance-transactions",
+        "Path":  "/finance/transactions",
+        "Exists":  true,
+        "File":  "D:\\vb\\lifelink\\screenshots\\memoryspace-ui-20260611\\26-finance-transactions.png"
+    },
+    {
+        "Name":  "27-finance-create",
+        "Path":  "/finance/create",
+        "Exists":  true,
+        "File":  "D:\\vb\\lifelink\\screenshots\\memoryspace-ui-20260611\\27-finance-create.png"
+    },
+    {
+        "Name":  "28-focus",
+        "Path":  "/focus",
+        "Exists":  true,
+        "File":  "D:\\vb\\lifelink\\screenshots\\memoryspace-ui-20260611\\28-focus.png"
+    },
+    {
+        "Name":  "29-focus-timer",
+        "Path":  "/focus-timer",
+        "Exists":  true,
+        "File":  "D:\\vb\\lifelink\\screenshots\\memoryspace-ui-20260611\\29-focus-timer.png"
+    },
+    {
+        "Name":  "30-rewards",
+        "Path":  "/rewards",
+        "Exists":  true,
+        "File":  "D:\\vb\\lifelink\\screenshots\\memoryspace-ui-20260611\\30-rewards.png"
+    },
+    {
+        "Name":  "31-rewards-admin",
+        "Path":  "/rewards/admin",
+        "Exists":  true,
+        "File":  "D:\\vb\\lifelink\\screenshots\\memoryspace-ui-20260611\\31-rewards-admin.png"
+    },
+    {
+        "Name":  "32-philosophy",
+        "Path":  "/philosophy",
+        "Exists":  true,
+        "File":  "D:\\vb\\lifelink\\screenshots\\memoryspace-ui-20260611\\32-philosophy.png"
+    },
+    {
+        "Name":  "33-forbidden",
+        "Path":  "/403",
+        "Exists":  true,
+        "File":  "D:\\vb\\lifelink\\screenshots\\memoryspace-ui-20260611\\33-forbidden.png"
+    },
+    {
+        "Name":  "34-not-found",
+        "Path":  "/404",
+        "Exists":  true,
+        "File":  "D:\\vb\\lifelink\\screenshots\\memoryspace-ui-20260611\\34-not-found.png"
+    }
+]

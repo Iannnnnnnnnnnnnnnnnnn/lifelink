@@ -17,7 +17,7 @@ spring:
       password: ${SPRING_REDIS_PASSWORD:}
   servlet:
     multipart:
-      max-file-size: ${LIFELINK_MAX_FILE_SIZE:5MB}
+      max-file-size: ${LIFELINK_MAX_FILE_SIZE:10MB}
       max-request-size: ${LIFELINK_MAX_REQUEST_SIZE:50MB}
 
 mybatis-plus:
@@ -36,12 +36,27 @@ lifelink:
     expiration: ${LIFELINK_JWT_EXPIRATION:604800000}
   minio:
     endpoint: ${LIFELINK_MINIO_ENDPOINT:http://minio:9000}
+<<<<<<< HEAD
     public-endpoint: ${LIFELINK_MINIO_PUBLIC_ENDPOINT:}
+=======
+    public-endpoint: ${LIFELINK_MINIO_PUBLIC_ENDPOINT:https://memoryspace.online}
+>>>>>>> 6529f625afb39156fe842b5f2632498ae2ddf6af
     access-key: ${MINIO_ROOT_USER:lifelink_minio}
     secret-key: ${MINIO_ROOT_PASSWORD:change-me}
     bucket: ${LIFELINK_MINIO_BUCKET:lifelink}
   cors:
     allowed-origins: ${LIFELINK_CORS_ALLOWED_ORIGINS:}
+  feature:
+    philosophy:
+      allowed-phones: ${LIFELINK_PHILOSOPHY_ALLOWED_PHONES:${LIFELINK_PSYCHOLOGY_TEACHER_ALLOWED_PHONES:}}
+  reward:
+    admin-phones: ${LIFELINK_REWARD_ADMIN_PHONES:}
+  focus-coin:
+    enabled: ${LIFELINK_FOCUS_COIN_ENABLED:true}
+    unit-minutes: ${LIFELINK_FOCUS_COIN_UNIT_MINUTES:5}
+    per-unit: ${LIFELINK_FOCUS_COIN_PER_UNIT:2}
+    max-minutes-per-session: ${LIFELINK_FOCUS_COIN_MAX_MINUTES_PER_SESSION:120}
+    daily-cap: ${LIFELINK_FOCUS_COIN_DAILY_CAP:}
   ai:
     enabled: ${AI_ENABLED:false}
     provider: ${AI_PROVIDER:mock}
@@ -54,3 +69,10 @@ lifelink:
     mock: ${AI_MOCK:true}
     chat-context-messages: ${AI_CHAT_CONTEXT_MESSAGES:16}
     chat-max-user-message-length: ${AI_CHAT_MAX_USER_MESSAGE_LENGTH:2000}
+  cycle-care:
+    daily-advice:
+      enabled: ${LIFELINK_CYCLE_CARE_DAILY_ADVICE_ENABLED:true}
+      cron: "${LIFELINK_CYCLE_CARE_DAILY_ADVICE_CRON:0 5 0 * * ?}"
+      zone: ${LIFELINK_CYCLE_CARE_DAILY_ADVICE_ZONE:Asia/Shanghai}
+      use-ai: ${LIFELINK_CYCLE_CARE_DAILY_ADVICE_USE_AI:true}
+      max-regenerate-days: ${LIFELINK_CYCLE_CARE_DAILY_ADVICE_MAX_REGENERATE_DAYS:30}

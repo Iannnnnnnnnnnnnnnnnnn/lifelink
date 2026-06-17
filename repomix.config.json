@@ -1,0 +1,37 @@
+{
+  "$schema": "https://repomix.com/schemas/latest/schema.json",
+  "output": {
+    "filePath": "repomix-output.xml",
+    "style": "xml"
+  },
+  "ignore": {
+    "useGitignore": true,
+    "useDefaultPatterns": true,
+    "customPatterns": [
+      "node_modules/**",
+      "target/**",
+      "dist/**",
+      "build/**",
+      ".git/**",
+      ".idea/**",
+      ".vscode/**",
+      "logs/**",
+      "*.log",
+      ".env",
+      ".env.*",
+      "**/application-prod.yml",
+      "**/application-prod.yaml",
+      "*.pem",
+      "*.key",
+      "*.crt",
+      "*.p12",
+      "*.jks",
+      "minio/data/**",
+      "postgres/data/**",
+      "redis/data/**"
+    ]
+  },
+  "security": {
+    "enableSecurityCheck": true
+  }
+}

@@ -8,11 +8,6 @@ interface EmptyStateProps {
 export function EmptyState({ description }: EmptyStateProps) {
   return (
     <div className="polished-empty">
-      <div className="empty-illustration" aria-hidden="true">
-        <span>✨</span>
-        <span>📝</span>
-        <span>💌</span>
-      </div>
       <Empty
         image={Empty.PRESENTED_IMAGE_SIMPLE}
         description={

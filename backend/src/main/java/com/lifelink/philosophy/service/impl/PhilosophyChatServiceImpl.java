@@ -20,6 +20,7 @@ import com.lifelink.philosophy.entity.PhilosophyChatSession;
 import com.lifelink.philosophy.mapper.PhilosopherMapper;
 import com.lifelink.philosophy.mapper.PhilosophyChatMessageMapper;
 import com.lifelink.philosophy.mapper.PhilosophyChatSessionMapper;
+import com.lifelink.philosophy.service.PhilosophyAccessService;
 import com.lifelink.philosophy.service.PhilosophyChatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -50,10 +51,12 @@ public class PhilosophyChatServiceImpl implements PhilosophyChatService {
     private final PhilosopherPersonaPromptBuilder promptBuilder;
     private final AiChatService aiChatService;
     private final AiProperties aiProperties;
+    private final PhilosophyAccessService accessService;
 
     @Override
     @Transactional
     public PhilosophyChatSessionResponse createSession(CreatePhilosophyChatSessionRequest request, Long userId) {
+        accessService.requireAccess(userId);
         String language = normalizeLanguage(request.getLanguage());
         Philosopher philosopher = requireActivePhilosopher(request.getPhilosopherCode());
         LocalDateTime now = LocalDateTime.now();
@@ -76,6 +79,7 @@ public class PhilosophyChatServiceImpl implements PhilosophyChatService {
     @Override
     @Transactional
     public SendPhilosophyChatMessageResponse sendMessage(Long sessionId, SendPhilosophyChatMessageRequest request, Long userId) {
+        accessService.requireAccess(userId);
         PhilosophyChatSession session = requireOwnedActiveSession(sessionId, userId);
         Philosopher philosopher = requireActivePhilosopher(session.getPhilosopherCode());
         String content = normalizeMessageContent(request.getContent());
@@ -118,6 +122,7 @@ public class PhilosophyChatServiceImpl implements PhilosophyChatService {
 
     @Override
     public List<PhilosophyChatSessionResponse> listSessions(Long userId, Integer page, Integer size) {
+        accessService.requireAccess(userId);
         long current = page == null || page < 1 ? 1L : page.longValue();
         long pageSize = size == null || size < 1 ? 20L : Math.min(size.longValue(), 50L);
         Page<PhilosophyChatSession> result = sessionMapper.selectPage(new Page<PhilosophyChatSession>(current, pageSize),
@@ -138,6 +143,7 @@ public class PhilosophyChatServiceImpl implements PhilosophyChatService {
 
     @Override
     public PhilosophyChatSessionResponse getSessionDetail(Long sessionId, Long userId) {
+        accessService.requireAccess(userId);
         PhilosophyChatSession session = requireOwnedActiveSession(sessionId, userId);
         return toSessionResponse(session, loadMessages(sessionId));
     }
@@ -145,6 +151,7 @@ public class PhilosophyChatServiceImpl implements PhilosophyChatService {
     @Override
     @Transactional
     public void deleteSession(Long sessionId, Long userId) {
+        accessService.requireAccess(userId);
         PhilosophyChatSession session = requireOwnedActiveSession(sessionId, userId);
         session.setStatus(DELETED_STATUS);
         session.setUpdatedAt(LocalDateTime.now());
@@ -160,6 +167,7 @@ public class PhilosophyChatServiceImpl implements PhilosophyChatService {
     @Override
     @Transactional
     public PhilosophyChatSessionResponse updateTitle(Long sessionId, UpdatePhilosophyChatTitleRequest request, Long userId) {
+        accessService.requireAccess(userId);
         PhilosophyChatSession session = requireOwnedActiveSession(sessionId, userId);
         String title = request.getTitle() == null ? "" : request.getTitle().trim();
         if (!StringUtils.hasText(title)) {

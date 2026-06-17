@@ -1,0 +1,154 @@
+.cycle-page {
+  width: 100%;
+  animation: pageFadeUp 240ms cubic-bezier(0.2, 0, 0, 1) both;
+}
+
+.cycle-space-select {
+  min-width: 220px;
+}
+
+.cycle-summary-card {
+  height: 100%;
+}
+
+.cycle-locked-card {
+  border-color: rgba(98, 106, 115, 0.12);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.94), rgba(246, 247, 249, 0.9));
+}
+
+.cycle-live-tag {
+  margin-left: 10px;
+  border-color: rgba(183, 119, 151, 0.18);
+  background: rgba(250, 240, 246, 0.86);
+  color: #8d5870;
+}
+
+.cycle-summary-card-live {
+  border-color: rgba(183, 119, 151, 0.18);
+  background:
+    radial-gradient(circle at 86% 14%, rgba(211, 154, 175, 0.14), transparent 30%),
+    linear-gradient(180deg, rgba(255, 255, 255, 0.96), rgba(251, 246, 249, 0.9));
+}
+
+.cycle-summary-card .ant-card-body {
+  min-height: 196px;
+}
+
+.cycle-card-icon {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 46px;
+  height: 46px;
+  border-radius: 18px;
+  background: rgba(185, 130, 157, 0.12);
+  color: #9f607a;
+  font-size: 22px;
+}
+
+.cycle-card-icon-blue {
+  background: var(--ll-primary-soft);
+  color: var(--ll-primary);
+}
+
+.cycle-card-icon-orange {
+  background: rgba(183, 121, 31, 0.1);
+  color: var(--ll-warning);
+}
+
+.cycle-advice-item {
+  min-height: 132px;
+  padding: 16px;
+  border: 1px solid var(--ll-border-soft);
+  border-radius: var(--ll-radius-md);
+  background: rgba(255, 255, 255, 0.72);
+  transition: background var(--ll-transition-fast), transform var(--ll-transition-fast), box-shadow var(--ll-transition-fast);
+}
+
+.cycle-advice-item:hover {
+  background: #ffffff;
+  box-shadow: var(--ll-shadow-sm);
+  transform: translateY(-2px);
+}
+
+.cycle-advice-item:active {
+  transform: translateY(0) scale(0.99);
+}
+
+.cycle-advice-item-partner {
+  border-color: rgba(183, 119, 151, 0.18);
+  background: linear-gradient(180deg, rgba(255, 255, 255, 0.88), rgba(250, 240, 246, 0.72));
+}
+
+.cycle-advice-item .ant-typography {
+  margin-bottom: 0;
+}
+
+.cycle-warning-list {
+  width: 100%;
+}
+
+.cycle-profile-meta {
+  display: block;
+  margin-top: 16px;
+}
+
+.cycle-daily-date-picker {
+  min-width: 150px;
+}
+
+.cycle-daily-summary {
+  font-size: 16px;
+}
+
+.cycle-daily-info-item {
+  min-height: 118px;
+}
+
+.cycle-daily-actions-mobile {
+  width: 100%;
+}
+
+.cycle-daily-actions-mobile .ant-picker,
+.cycle-daily-actions-mobile .ant-btn {
+  width: 100%;
+}
+
+.form-full-width {
+  width: 100%;
+}
+
+.cycle-page .ant-tabs-content-holder {
+  padding-top: 2px;
+}
+
+.cycle-page .ant-alert {
+  border-radius: var(--ll-radius-md);
+}
+
+.theme-grayscale .cycle-card-icon,
+.theme-grayscale .cycle-card-icon-blue,
+.theme-grayscale .cycle-card-icon-orange {
+  background: var(--ll-primary-soft);
+  color: var(--ll-primary);
+}
+
+.theme-grayscale .cycle-live-tag,
+.theme-grayscale .cycle-summary-card-live,
+.theme-grayscale .cycle-advice-item-partner {
+  border-color: var(--ll-border-soft);
+  background: var(--ll-surface);
+  color: var(--ll-text-muted);
+}
+
+@media (max-width: 767px) {
+  .cycle-space-select {
+    width: 100%;
+  }
+
+  .cycle-live-tag {
+    display: inline-flex;
+    margin-top: 8px;
+    margin-left: 0;
+  }
+}

@@ -20,9 +20,13 @@ LifeLink is a relationship-oriented daily record and life ledger system. This ba
 When using Windows + Rancher Desktop, start the required services in PowerShell:
 
 ```powershell
-docker run --name lifelink-postgres -e POSTGRES_DB=lifelink -e POSTGRES_USER=lifelink -e POSTGRES_PASSWORD=lifelink123456 -p 5432:5432 -d postgres:15
+$env:POSTGRES_PASSWORD="<local-postgres-password>"
+$env:MINIO_ROOT_USER="<local-minio-user>"
+$env:MINIO_ROOT_PASSWORD="<local-minio-password>"
+
+docker run --name lifelink-postgres -e POSTGRES_DB=lifelink -e POSTGRES_USER=lifelink -e POSTGRES_PASSWORD=$env:POSTGRES_PASSWORD -p 5432:5432 -d postgres:15
 docker run --name lifelink-redis -p 6379:6379 -d redis:7
-docker run --name lifelink-minio -p 9000:9000 -p 9001:9001 -e MINIO_ROOT_USER=admin -e MINIO_ROOT_PASSWORD=admin123456 -d minio/minio server /data --console-address ":9001"
+docker run --name lifelink-minio -p 9000:9000 -p 9001:9001 -e MINIO_ROOT_USER=$env:MINIO_ROOT_USER -e MINIO_ROOT_PASSWORD=$env:MINIO_ROOT_PASSWORD -d minio/minio server /data --console-address ":9001"
 ```
 
 Create the MinIO bucket after MinIO starts:
@@ -30,8 +34,8 @@ Create the MinIO bucket after MinIO starts:
 ```text
 bucket: lifelink
 console: http://localhost:9001
-accessKey: admin
-secretKey: admin123456
+accessKey: value of MINIO_ROOT_USER
+secretKey: value of MINIO_ROOT_PASSWORD
 ```
 
 ## Database Init
@@ -50,7 +54,7 @@ PostgreSQL connection:
 ```text
 url: jdbc:postgresql://localhost:5432/lifelink
 username: lifelink
-password: lifelink123456
+password: value of SPRING_DATASOURCE_PASSWORD or POSTGRES_PASSWORD
 driver: org.postgresql.Driver
 ```
 
@@ -61,6 +65,10 @@ Open PowerShell in the backend directory:
 ```powershell
 cd D:\vb\lifelink\backend
 $env:JAVA_HOME="C:\Program Files\Java\jdk-17"
+$env:SPRING_DATASOURCE_PASSWORD="<local-postgres-password>"
+$env:LIFELINK_JWT_SECRET="<local-jwt-secret-at-least-32-bytes>"
+$env:MINIO_ROOT_USER="<local-minio-user>"
+$env:MINIO_ROOT_PASSWORD="<local-minio-password>"
 $env:Path="$env:JAVA_HOME\bin;$env:Path"
 mvn -s settings.xml spring-boot:run
 ```

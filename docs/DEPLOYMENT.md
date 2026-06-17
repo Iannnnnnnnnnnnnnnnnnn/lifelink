@@ -34,6 +34,10 @@ Update at least these values:
 - `LIFELINK_JWT_SECRET`
 - `LIFELINK_MINIO_ENDPOINT`
 - `LIFELINK_MINIO_PUBLIC_ENDPOINT`
+<<<<<<< HEAD
+=======
+- `LIFELINK_PHILOSOPHY_ALLOWED_PHONES`
+>>>>>>> 6529f625afb39156fe842b5f2632498ae2ddf6af
 
 `VITE_API_BASE_URL` defaults to an empty value. In that mode, the frontend calls `/api/...` on the same origin and Nginx proxies requests to the backend container. For a separate API domain, set it to that origin, for example:
 
@@ -46,6 +50,8 @@ VITE_API_BASE_URL=https://api.example.com
 ```env
 LIFELINK_CORS_ALLOWED_ORIGINS=https://example.com,https://www.example.com
 ```
+
+`LIFELINK_PHILOSOPHY_ALLOWED_PHONES` controls access to the Philosophy Dialogues module. Leave it empty to disable the module for all users, or set a comma-separated phone allowlist in production.
 
 ## Start
 
@@ -75,12 +81,19 @@ docker compose -f docker-compose.prod.yml exec -T postgres psql -U lifelink -d l
 
 ## MinIO URL Note
 
+<<<<<<< HEAD
 The backend connects to MinIO using `LIFELINK_MINIO_ENDPOINT`. For Docker production, keep this as the internal Compose service name:
+=======
+The backend connects to MinIO using `lifelink.minio.endpoint`, but stores uploaded file URLs with `lifelink.minio.public-endpoint`. This keeps uploaded image URLs browser-reachable over HTTPS even when the backend talks to MinIO through Docker's internal service name.
+
+For Docker production, keep the internal endpoint as the Compose service name:
+>>>>>>> 6529f625afb39156fe842b5f2632498ae2ddf6af
 
 ```env
 LIFELINK_MINIO_ENDPOINT=http://minio:9000
 ```
 
+<<<<<<< HEAD
 Uploaded file URLs are generated from `LIFELINK_MINIO_PUBLIC_ENDPOINT`. If it is empty, the backend returns same-origin URLs like `/lifelink/daily/...`, which work when the Nginx templates proxy `/lifelink/` to MinIO. For miniapps or a separate file domain, set it to an HTTPS URL reachable by browsers:
 
 ```env
@@ -88,6 +101,17 @@ LIFELINK_MINIO_PUBLIC_ENDPOINT=https://example.com
 ```
 
 The Nginx templates proxy `/lifelink/` to MinIO, so uploaded images will look like `https://example.com/lifelink/daily/2026/05/xxx.jpg`.
+=======
+Set the public endpoint to the HTTPS domain that serves the frontend:
+
+```env
+LIFELINK_MINIO_PUBLIC_ENDPOINT=https://memoryspace.online
+```
+
+The frontend Nginx template proxies `/lifelink/` to MinIO, so URLs like `https://memoryspace.online/lifelink/daily/2026/05/xxx.jpg` can be served from the same public host.
+
+New uploads will use the public URL. Existing rows in `file_resources.file_url`, `anniversaries.background_url`, and `relationship_timeline_events.cover_url` must be updated separately if they already contain an old host such as `http://47.97.202.182` or `http://minio:9000`.
+>>>>>>> 6529f625afb39156fe842b5f2632498ae2ddf6af
 
 ## Health Checks
 

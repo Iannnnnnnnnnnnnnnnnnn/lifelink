@@ -4,7 +4,7 @@
   justify-content: space-between;
   gap: 12px;
   padding-top: 10px;
-  border-top: 1px solid rgba(240, 243, 248, 0.9);
+  border-top: 1px solid var(--ll-border-soft);
 }
 
 .daily-interaction-actions {
@@ -14,13 +14,13 @@
 }
 
 .daily-like-button.liked {
-  color: #eb5f8d;
-  border-color: #ffd6e4;
-  background: #fff3f7;
+  color: #9f607a;
+  border-color: rgba(159, 96, 122, 0.18);
+  background: rgba(185, 130, 157, 0.1);
 }
 
 .daily-comment-card {
-  border-radius: 16px;
+  border-radius: var(--ll-radius-lg);
 }
 
 .daily-comment-form {
@@ -36,7 +36,9 @@
 }
 
 .theme-grayscale .daily-like-button.liked {
-  filter: grayscale(0.75) saturate(0.5);
+  color: var(--ll-primary);
+  border-color: rgba(98, 106, 115, 0.18);
+  background: var(--ll-primary-soft);
 }
 
 @media (max-width: 720px) {

@@ -19,6 +19,7 @@ import {
 import type { ApiResult } from '../api/request';
 import { EmptyState } from '../components/decorations/EmptyState';
 import { ErrorState } from '../components/common/ErrorState';
+import { RelationshipSubNav } from '../components/navigation/RelationshipSubNav';
 import { formatDateTime } from '../utils/date';
 import { getTodoPriorityColor, getTodoPriorityLabel, getTodoStatusColor, getTodoStatusLabel } from '../utils/display';
 import { getPageErrorType, PageErrorType } from '../utils/error';
@@ -138,6 +139,7 @@ export function SpaceTodoList() {
   return (
     <Space direction="vertical" size={16} className="page-wide">
       {contextHolder}
+      <RelationshipSubNav relationshipId={relationshipId} />
       <div className="page-heading">
         <div>
           <Typography.Title level={2}>{t('todo.title')}</Typography.Title>

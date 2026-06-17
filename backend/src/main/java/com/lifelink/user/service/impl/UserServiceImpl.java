@@ -4,12 +4,17 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.lifelink.common.BusinessException;
 import com.lifelink.file.dto.FileUploadResponse;
 import com.lifelink.file.service.FileService;
+import com.lifelink.philosophy.service.PhilosophyAccessService;
+import com.lifelink.reward.service.RewardAdminAccessService;
 import com.lifelink.security.JwtUtil;
 import com.lifelink.user.dto.AvatarUploadResponse;
+import com.lifelink.user.dto.ChangePasswordRequest;
+import com.lifelink.user.dto.ChangePasswordResponse;
 import com.lifelink.user.dto.LoginRequest;
 import com.lifelink.user.dto.LoginResponse;
 import com.lifelink.user.dto.RegisterRequest;
 import com.lifelink.user.dto.UpdateUserProfileRequest;
+import com.lifelink.user.dto.UserFeaturesResponse;
 import com.lifelink.user.dto.UserProfileResponse;
 import com.lifelink.user.entity.User;
 import com.lifelink.user.mapper.UserMapper;
@@ -29,6 +34,9 @@ import java.util.regex.Pattern;
 public class UserServiceImpl implements UserService {
 
     private static final String ACTIVE_STATUS = "ACTIVE";
+    private static final int MAX_BCRYPT_PASSWORD_LENGTH = 72;
+    private static final String CHANGE_PASSWORD_SUCCESS_MESSAGE = "密码修改成功，请重新登录";
+    private static final String PASSWORD_POLICY_MESSAGE = "新密码至少 8 位，并包含字母、数字或符号中的至少两类";
     private static final Pattern PHONE_PATTERN = Pattern.compile("^[+0-9][0-9\\-\\s()]{5,29}$");
 
     private final UserMapper userMapper;
@@ -38,6 +46,10 @@ public class UserServiceImpl implements UserService {
     private final PasswordEncoder passwordEncoder;
 
     private final JwtUtil jwtUtil;
+
+    private final PhilosophyAccessService philosophyAccessService;
+
+    private final RewardAdminAccessService rewardAdminAccessService;
 
     @Override
     @Transactional
@@ -138,6 +150,29 @@ public class UserServiceImpl implements UserService {
         return new AvatarUploadResponse(user.getAvatarUrl());
     }
 
+    @Override
+    @Transactional
+    public ChangePasswordResponse changePassword(Long userId, ChangePasswordRequest request) {
+        validateChangePasswordRequest(request);
+
+        User user = userMapper.selectById(userId);
+        if (user == null) {
+            throw new BusinessException(404, "User not found");
+        }
+        if (!passwordEncoder.matches(request.getCurrentPassword(), user.getPasswordHash())) {
+            throw new BusinessException(400, "当前密码不正确");
+        }
+        if (request.getNewPassword().equals(request.getCurrentPassword())) {
+            throw new BusinessException(400, "新密码不能与当前密码相同");
+        }
+        validateNewPasswordPolicy(request.getNewPassword());
+
+        user.setPasswordHash(passwordEncoder.encode(request.getNewPassword()));
+        user.setUpdatedAt(LocalDateTime.now());
+        userMapper.updateById(user);
+        return new ChangePasswordResponse(CHANGE_PASSWORD_SUCCESS_MESSAGE);
+    }
+
     private User findByAccount(String account) {
         return userMapper.selectOne(new LambdaQueryWrapper<User>()
                 .eq(User::getUsername, account)
@@ -184,6 +219,59 @@ public class UserServiceImpl implements UserService {
         }
     }
 
+    private void validateChangePasswordRequest(ChangePasswordRequest request) {
+        if (request == null || !StringUtils.hasText(request.getCurrentPassword())) {
+            throw new BusinessException(400, "当前密码不能为空");
+        }
+        if (!StringUtils.hasText(request.getNewPassword())) {
+            throw new BusinessException(400, "新密码不能为空");
+        }
+        if (!StringUtils.hasText(request.getConfirmPassword())) {
+            throw new BusinessException(400, "确认新密码不能为空");
+        }
+
+        String newPassword = request.getNewPassword();
+        if (!newPassword.equals(request.getConfirmPassword())) {
+            throw new BusinessException(400, "两次输入的新密码不一致");
+        }
+    }
+
+    private void validateNewPasswordPolicy(String newPassword) {
+        if (!newPassword.equals(newPassword.trim())) {
+            throw new BusinessException(400, PASSWORD_POLICY_MESSAGE);
+        }
+        if (newPassword.length() < 8 || newPassword.length() > MAX_BCRYPT_PASSWORD_LENGTH || passwordCategoryCount(newPassword) < 2) {
+            throw new BusinessException(400, PASSWORD_POLICY_MESSAGE);
+        }
+    }
+
+    private int passwordCategoryCount(String password) {
+        boolean hasLetter = false;
+        boolean hasDigit = false;
+        boolean hasSymbol = false;
+        for (int i = 0; i < password.length(); i++) {
+            char character = password.charAt(i);
+            if (Character.isLetter(character)) {
+                hasLetter = true;
+            } else if (Character.isDigit(character)) {
+                hasDigit = true;
+            } else {
+                hasSymbol = true;
+            }
+        }
+        int count = 0;
+        if (hasLetter) {
+            count++;
+        }
+        if (hasDigit) {
+            count++;
+        }
+        if (hasSymbol) {
+            count++;
+        }
+        return count;
+    }
+
     private UserProfileResponse toProfile(User user) {
         return new UserProfileResponse(
                 user.getId(),
@@ -192,6 +280,10 @@ public class UserServiceImpl implements UserService {
                 user.getPhone(),
                 user.getAvatarUrl(),
                 user.getStatus(),
+                new UserFeaturesResponse(
+                        philosophyAccessService.canAccess(user.getId()),
+                        rewardAdminAccessService.isRewardAdmin(user.getId())
+                ),
                 user.getCreatedAt(),
                 user.getUpdatedAt()
         );

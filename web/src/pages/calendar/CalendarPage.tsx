@@ -14,6 +14,7 @@ import { CalendarHeader } from '../../components/calendar/CalendarHeader';
 import { CalendarMonthGrid } from '../../components/calendar/CalendarMonthGrid';
 import { CalendarTodoModal, type CalendarTodoFormValues } from '../../components/calendar/CalendarTodoModal';
 import { ErrorState } from '../../components/common/ErrorState';
+import { RelationshipSubNav } from '../../components/navigation/RelationshipSubNav';
 import { getPageErrorType, type PageErrorType } from '../../utils/error';
 
 export function CalendarPage() {
@@ -238,6 +239,12 @@ export function CalendarPage() {
       navigate(`/daily/${item.targetId}`);
     } else if (item.type === 'TRANSACTION') {
       navigate('/finance/transactions');
+    } else if (item.type === 'CYCLE_DAILY_REPORT') {
+      navigate('/cycle-care/daily');
+    } else if (item.type.startsWith('CYCLE_')) {
+      navigate('/cycle-care');
+    } else if (item.type.startsWith('FOCUS_')) {
+      navigate('/focus');
     } else if (item.type === 'CUSTOM_EVENT') {
       openEditEvent(item);
     }
@@ -246,6 +253,7 @@ export function CalendarPage() {
   return (
     <div className="page-wide calendar-page">
       {contextHolder}
+      {currentRelationshipId && <RelationshipSubNav relationshipId={currentRelationshipId} />}
       <CalendarHeader
         relationships={relationships}
         relationshipId={currentRelationshipId}

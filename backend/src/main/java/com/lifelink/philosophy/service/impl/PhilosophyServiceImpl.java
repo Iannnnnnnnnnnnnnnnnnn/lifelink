@@ -16,6 +16,7 @@ import com.lifelink.philosophy.mapper.PhilosopherMapper;
 import com.lifelink.philosophy.mapper.PhilosophyResponseMapper;
 import com.lifelink.philosophy.mapper.PhilosophySessionMapper;
 import com.lifelink.philosophy.service.PhilosophyAiService;
+import com.lifelink.philosophy.service.PhilosophyAccessService;
 import com.lifelink.philosophy.service.PhilosophyService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -46,10 +47,12 @@ public class PhilosophyServiceImpl implements PhilosophyService {
     private final PhilosophySessionMapper sessionMapper;
     private final PhilosophyResponseMapper responseMapper;
     private final PhilosophyAiService aiService;
+    private final PhilosophyAccessService accessService;
     private final ObjectMapper objectMapper;
 
     @Override
-    public List<PhilosopherResponse> listPhilosophers(String language) {
+    public List<PhilosopherResponse> listPhilosophers(String language, Long userId) {
+        accessService.requireAccess(userId);
         String normalizedLanguage = normalizeLanguage(language);
         List<Philosopher> philosophers = philosopherMapper.selectList(new LambdaQueryWrapper<Philosopher>()
                 .eq(Philosopher::getStatus, ACTIVE_STATUS)
@@ -65,6 +68,7 @@ public class PhilosophyServiceImpl implements PhilosophyService {
     @Override
     @Transactional
     public PhilosophySessionResponse createSession(CreatePhilosophySessionRequest request, Long userId) {
+        accessService.requireAccess(userId);
         String question = request.getQuestion() == null ? "" : request.getQuestion().trim();
         if (!StringUtils.hasText(question)) {
             throw new BusinessException(400, "Question is required");
@@ -119,6 +123,7 @@ public class PhilosophyServiceImpl implements PhilosophyService {
 
     @Override
     public List<PhilosophySessionResponse> listMySessions(Long userId, Integer page, Integer size) {
+        accessService.requireAccess(userId);
         long current = page == null || page < 1 ? 1L : page.longValue();
         long pageSize = size == null || size < 1 ? 10L : Math.min(size.longValue(), 50L);
         Page<PhilosophySession> result = sessionMapper.selectPage(new Page<PhilosophySession>(current, pageSize),
@@ -135,6 +140,7 @@ public class PhilosophyServiceImpl implements PhilosophyService {
 
     @Override
     public PhilosophySessionResponse getSessionDetail(Long sessionId, Long userId) {
+        accessService.requireAccess(userId);
         PhilosophySession session = requireOwnedActiveSession(sessionId, userId);
         return toSessionResponse(session, loadResponses(session.getId()));
     }
@@ -142,6 +148,7 @@ public class PhilosophyServiceImpl implements PhilosophyService {
     @Override
     @Transactional
     public void deleteSession(Long sessionId, Long userId) {
+        accessService.requireAccess(userId);
         PhilosophySession session = requireOwnedActiveSession(sessionId, userId);
         session.setStatus(DELETED_STATUS);
         session.setUpdatedAt(LocalDateTime.now());
