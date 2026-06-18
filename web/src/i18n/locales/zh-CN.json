@@ -480,7 +480,7 @@
     "loadFailed": "加载日常失败",
     "uploadImages": "上传图片",
     "imageLimitHint": "最多 9 张图片",
-    "imageSizeLimit": "图片大小不能超过 5MB",
+    "imageSizeLimit": "图片大小不能超过 10MB",
     "imageTypeLimit": "仅支持 jpg、jpeg、png、webp",
     "uploadFailed": "上传失败",
     "previewImage": "预览图片"

@@ -161,7 +161,7 @@ Rules:
 
 Request:
 
-- `file`: jpg, jpeg, png, or webp image, up to 5MB.
+- `file`: jpg, jpeg, png, or webp image, up to 10MB.
 
 Response:
 
@@ -501,7 +501,7 @@ Rules:
 Rules:
 
 - Only `jpg`, `jpeg`, `png`, `webp` are allowed.
-- Max size is 5MB.
+- Max size is 10MB.
 - Uploaded to MinIO bucket `lifelink`.
 - File metadata is stored in `file_resources`.
 

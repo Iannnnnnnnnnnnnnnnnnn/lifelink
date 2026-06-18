@@ -112,7 +112,7 @@ services:
     environment:
       BACKEND_UPSTREAM: http://backend:8081
       MINIO_UPSTREAM: http://minio:9000
-      NGINX_CLIENT_MAX_BODY_SIZE: ${NGINX_CLIENT_MAX_BODY_SIZE}
+      NGINX_CLIENT_MAX_BODY_SIZE: ${NGINX_CLIENT_MAX_BODY_SIZE:-50m}
     ports:
       - "${WEB_PORT}:80"
 

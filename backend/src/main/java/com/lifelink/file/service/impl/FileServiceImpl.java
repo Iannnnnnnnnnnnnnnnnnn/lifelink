@@ -32,7 +32,7 @@ import java.util.UUID;
 @RequiredArgsConstructor
 public class FileServiceImpl implements FileService {
 
-    private static final long MAX_FILE_SIZE = 5L * 1024L * 1024L;
+    private static final long MAX_FILE_SIZE = 10L * 1024L * 1024L;
     private static final long MAX_BACKGROUND_FILE_SIZE = 10L * 1024L * 1024L;
     private static final Set<String> ALLOWED_EXTENSIONS = new HashSet<String>(Arrays.asList("jpg", "jpeg", "png", "webp"));
     private static final Set<String> ALLOWED_CONTENT_TYPES = new HashSet<String>(Arrays.asList("image/jpeg", "image/png", "image/webp"));

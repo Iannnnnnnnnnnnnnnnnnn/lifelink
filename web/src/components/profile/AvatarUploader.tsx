@@ -12,7 +12,7 @@ interface AvatarUploaderProps {
   onUploaded: (avatarUrl: string) => void;
 }
 
-const MAX_AVATAR_SIZE_MB = 5;
+const MAX_AVATAR_SIZE_MB = 10;
 const ALLOWED_IMAGE_TYPES = ['image/jpeg', 'image/png', 'image/webp'];
 
 export function AvatarUploader({ username, avatarUrl, onUploaded }: AvatarUploaderProps) {

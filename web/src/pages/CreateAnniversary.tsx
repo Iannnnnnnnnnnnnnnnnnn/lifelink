@@ -59,8 +59,8 @@ export function CreateAnniversary() {
         messageApi.error(t('daily.imageTypeLimit'));
         return Upload.LIST_IGNORE;
       }
-      const isLt5M = file.size / 1024 / 1024 <= 5;
-      if (!isLt5M) {
+      const isLt10M = file.size / 1024 / 1024 <= 10;
+      if (!isLt10M) {
         messageApi.error(t('daily.imageSizeLimit'));
         return Upload.LIST_IGNORE;
       }

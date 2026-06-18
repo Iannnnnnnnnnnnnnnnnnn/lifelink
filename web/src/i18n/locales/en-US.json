@@ -480,7 +480,7 @@
     "loadFailed": "Failed to load daily posts",
     "uploadImages": "Upload images",
     "imageLimitHint": "Up to 9 images",
-    "imageSizeLimit": "Image size cannot exceed 5MB",
+    "imageSizeLimit": "Image size cannot exceed 10MB",
     "imageTypeLimit": "Only jpg, jpeg, png, webp are supported",
     "uploadFailed": "Upload failed",
     "previewImage": "Preview images"
