@@ -20,6 +20,7 @@ import { FocusHome } from './pages/Focus/FocusHome';
 import { RewardAdminPage, RewardCenterPage } from './pages/Rewards/RewardCenterPage';
 import { Home } from './pages/Home';
 import { JoinRelationship } from './pages/JoinRelationship';
+import { LearningCssDemo } from './pages/LearningCssDemo';
 import { RelationshipFinance } from './pages/RelationshipFinance';
 import { CalendarPage } from './pages/calendar/CalendarPage';
 import { Login } from './pages/Login';
@@ -34,6 +35,10 @@ import { ForbiddenPage } from './pages/error/ForbiddenPage';
 import { NotFoundPage } from './pages/error/NotFoundPage';
 
 export const router = createBrowserRouter([
+  {
+    path: '/learning-css-demo',
+    element: <LearningCssDemo />,
+  },
   {
     element: <ProtectedRoute />,
     children: [
