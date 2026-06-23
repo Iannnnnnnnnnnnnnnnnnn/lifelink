@@ -4,7 +4,7 @@ import type { UploadFile, UploadProps } from 'antd';
 import type { Dayjs } from 'dayjs';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { createAnniversary, AnniversaryRepeatType } from '../api/anniversary';
 import { uploadFile, UploadFileResponse } from '../api/file';
 import { getRelationships, RelationshipSummary } from '../api/relationship';
@@ -17,19 +17,37 @@ interface AnniversaryFormValues {
   repeatType: AnniversaryRepeatType;
 }
 
+function getRelationshipIdFromSearch(searchParams: URLSearchParams) {
+  const value = searchParams.get('relationshipId') || searchParams.get('spaceId');
+  if (!value) {
+    return undefined;
+  }
+  const id = Number(value);
+  return Number.isFinite(id) ? id : undefined;
+}
+
 export function CreateAnniversary() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const routeRelationshipId = getRelationshipIdFromSearch(searchParams);
   const [relationships, setRelationships] = useState<RelationshipSummary[]>([]);
   const [backgroundFileId, setBackgroundFileId] = useState<number | undefined>();
   const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [form] = Form.useForm<AnniversaryFormValues>();
   const [messageApi, contextHolder] = message.useMessage();
 
   useEffect(() => {
     getRelationships()
-      .then((response) => setRelationships(response.data.data))
+      .then((response) => {
+        const items = response.data.data;
+        setRelationships(items);
+        if (routeRelationshipId && items.some((item) => item.id === routeRelationshipId)) {
+          form.setFieldValue('relationshipId', routeRelationshipId);
+        }
+      })
       .catch(() => messageApi.error(t('relationship.loadFailed')));
-  }, []);
+  }, [form, messageApi, routeRelationshipId, t]);
 
   const handleSubmit = async (values: AnniversaryFormValues) => {
     try {
@@ -89,7 +107,7 @@ export function CreateAnniversary() {
       {contextHolder}
       <Typography.Title level={2}>{t('anniversary.create')}</Typography.Title>
       <Card>
-        <Form layout="vertical" initialValues={{ repeatType: 'NONE' }} onFinish={handleSubmit}>
+        <Form form={form} layout="vertical" initialValues={{ repeatType: 'NONE' }} onFinish={handleSubmit}>
           <Form.Item name="relationshipId" label={t('anniversary.selectRelationship')} rules={[{ required: true, message: t('anniversary.relationshipRequired') }]}>
             <Select options={relationships.map((item) => ({ value: item.id, label: item.name }))} placeholder={t('anniversary.selectRelationship')} />
           </Form.Item>

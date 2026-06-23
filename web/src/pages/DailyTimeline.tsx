@@ -2,7 +2,7 @@ import { DeleteOutlined, HeartFilled, HeartOutlined, MessageOutlined, PlusOutlin
 import { Button, Card, Image, message, Popconfirm, Select, Skeleton, Space, Tag, Typography } from 'antd';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { deleteDailyPost, DailyPost, getDailyPosts, likeDailyPost, unlikeDailyPost } from '../api/daily';
 import { getRelationships, RelationshipSummary } from '../api/relationship';
 import { useAuthStore } from '../store/authStore';
@@ -11,13 +11,24 @@ import { ErrorState } from '../components/common/ErrorState';
 import { formatDateTime } from '../utils/date';
 import { getPageErrorType, PageErrorType } from '../utils/error';
 
+function getRelationshipIdFromSearch(searchParams: URLSearchParams) {
+  const value = searchParams.get('relationshipId') || searchParams.get('spaceId');
+  if (!value) {
+    return undefined;
+  }
+  const id = Number(value);
+  return Number.isFinite(id) ? id : undefined;
+}
+
 export function DailyTimeline() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams, setSearchParams] = useSearchParams();
+  const routeRelationshipId = getRelationshipIdFromSearch(searchParams);
   const currentUser = useAuthStore((state) => state.user);
   const [posts, setPosts] = useState<DailyPost[]>([]);
   const [relationships, setRelationships] = useState<RelationshipSummary[]>([]);
-  const [relationshipId, setRelationshipId] = useState<number | undefined>();
+  const [relationshipId, setRelationshipId] = useState<number | undefined>(routeRelationshipId);
   const [loading, setLoading] = useState(false);
   const [likingIds, setLikingIds] = useState<number[]>([]);
   const [pageError, setPageError] = useState<PageErrorType | null>(null);
@@ -68,10 +79,26 @@ export function DailyTimeline() {
     }
   };
 
+  const handleRelationshipChange = (value?: number) => {
+    const nextParams = new URLSearchParams(searchParams);
+    if (value) {
+      nextParams.set('relationshipId', String(value));
+    } else {
+      nextParams.delete('relationshipId');
+    }
+    nextParams.delete('spaceId');
+    setRelationshipId(value);
+    setSearchParams(nextParams, { replace: true });
+  };
+
   useEffect(() => {
     loadRelationships();
-    loadPosts();
   }, []);
+
+  useEffect(() => {
+    setRelationshipId(routeRelationshipId);
+    loadPosts(routeRelationshipId);
+  }, [routeRelationshipId]);
 
   return (
     <Space direction="vertical" size={16} className="page-wide">
@@ -88,15 +115,12 @@ export function DailyTimeline() {
             className="relationship-filter"
             value={relationshipId}
             options={relationships.map((item) => ({ value: item.id, label: item.name }))}
-            onChange={(value) => {
-              setRelationshipId(value);
-              loadPosts(value);
-            }}
+            onChange={handleRelationshipChange}
           />
           <Button icon={<ReloadOutlined />} loading={loading} onClick={() => loadPosts()}>
             {t('common.refresh')}
           </Button>
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/daily/create')}>
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate(relationshipId ? `/daily/create?relationshipId=${relationshipId}` : '/daily/create')}>
             {t('daily.create')}
           </Button>
         </Space>

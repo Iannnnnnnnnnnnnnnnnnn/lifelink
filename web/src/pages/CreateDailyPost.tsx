@@ -3,7 +3,7 @@ import { Button, Card, Form, Input, message, Select, Typography, Upload } from '
 import type { UploadFile, UploadProps } from 'antd';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useSearchParams } from 'react-router-dom';
 import { createDailyPost } from '../api/daily';
 import { uploadFile, UploadFileResponse } from '../api/file';
 import { getRelationships, RelationshipSummary } from '../api/relationship';
@@ -14,12 +14,24 @@ interface CreateDailyPostValues {
   mood?: string;
 }
 
+function getRelationshipIdFromSearch(searchParams: URLSearchParams) {
+  const value = searchParams.get('relationshipId') || searchParams.get('spaceId');
+  if (!value) {
+    return undefined;
+  }
+  const id = Number(value);
+  return Number.isFinite(id) ? id : undefined;
+}
+
 export function CreateDailyPost() {
   const { t } = useTranslation();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const routeRelationshipId = getRelationshipIdFromSearch(searchParams);
   const [relationships, setRelationships] = useState<RelationshipSummary[]>([]);
   const [imageIds, setImageIds] = useState<number[]>([]);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [form] = Form.useForm<CreateDailyPostValues>();
   const [messageApi, contextHolder] = message.useMessage();
 
   const handleSubmit = async (values: CreateDailyPostValues) => {
@@ -32,15 +44,21 @@ export function CreateDailyPost() {
         imageIds,
       });
       messageApi.success(t('daily.publishSuccess'));
-      navigate('/daily');
+      navigate(`/daily?relationshipId=${values.relationshipId}`);
     } catch (error) {
       messageApi.error(t('daily.publishFailed'));
     }
   };
 
   useEffect(() => {
-    getRelationships().then((response) => setRelationships(response.data.data));
-  }, []);
+    getRelationships().then((response) => {
+      const items = response.data.data;
+      setRelationships(items);
+      if (routeRelationshipId && items.some((item) => item.id === routeRelationshipId)) {
+        form.setFieldValue('relationshipId', routeRelationshipId);
+      }
+    });
+  }, [form, routeRelationshipId]);
 
   const uploadProps: UploadProps = {
     listType: 'picture-card',
@@ -88,7 +106,7 @@ export function CreateDailyPost() {
       {contextHolder}
       <Typography.Title level={2}>{t('daily.createTitle')}</Typography.Title>
       <Card>
-        <Form layout="vertical" onFinish={handleSubmit}>
+        <Form form={form} layout="vertical" onFinish={handleSubmit}>
           <Form.Item
             name="relationshipId"
             label={t('daily.relationship')}

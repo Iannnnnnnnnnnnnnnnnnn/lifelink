@@ -25,6 +25,7 @@ export function AnniversaryList() {
   const [loading, setLoading] = useState(false);
   const [pageError, setPageError] = useState<PageErrorType | null>(null);
   const [messageApi, contextHolder] = message.useMessage();
+  const selectedRelationshipId = routeRelationshipId || relationshipId;
 
   const loadData = async (nextRelationshipId = relationshipId) => {
     setLoading(true);
@@ -95,7 +96,11 @@ export function AnniversaryList() {
           <Button icon={<ReloadOutlined />} loading={loading} onClick={() => loadData()}>
             {t('common.refresh')}
           </Button>
-          <Button type="primary" icon={<PlusOutlined />} onClick={() => navigate('/anniversaries/create')}>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={() => navigate(selectedRelationshipId ? `/anniversaries/create?relationshipId=${selectedRelationshipId}` : '/anniversaries/create')}
+          >
             {t('anniversary.create')}
           </Button>
         </Space>

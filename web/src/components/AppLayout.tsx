@@ -18,6 +18,62 @@ import { buildPrimaryNavSections, getPageContext, getRouteRelationshipId, header
 const { useBreakpoint } = Grid;
 const SIDEBAR_COLLAPSED_STORAGE_KEY = 'lifelink_sidebar_collapsed';
 
+function getCreatedAtTime(item: RelationshipSummary) {
+  const time = new Date(item.createdAt).getTime();
+  return Number.isFinite(time) ? time : Number.MAX_SAFE_INTEGER;
+}
+
+function sortRelationshipsByCreatedAt(items: RelationshipSummary[]) {
+  return [...items].sort((a, b) => {
+    const timeDiff = getCreatedAtTime(a) - getCreatedAtTime(b);
+    return timeDiff || a.id - b.id;
+  });
+}
+
+function hasRelationship(items: RelationshipSummary[], id?: number) {
+  return Boolean(id && items.some((item) => item.id === id));
+}
+
+function buildScopedPathForSelectedSpace(location: ReturnType<typeof useLocation>, relationshipId: number) {
+  const { pathname, search, hash } = location;
+  const searchParams = new URLSearchParams(search);
+  const relationshipPath = pathname.match(/^\/relationships\/\d+/);
+
+  if (relationshipPath) {
+    return `${pathname.replace(/^\/relationships\/\d+/, `/relationships/${relationshipId}`)}${search}${hash}`;
+  }
+
+  if (pathname === '/activities') {
+    return `/relationships/${relationshipId}/activities`;
+  }
+
+  if (pathname === '/anniversaries') {
+    return `/relationships/${relationshipId}/anniversaries`;
+  }
+
+  if (pathname === '/cycle-care') {
+    return `/relationships/${relationshipId}/cycle-care`;
+  }
+
+  if (pathname === '/daily' || pathname === '/daily/create') {
+    searchParams.set('relationshipId', String(relationshipId));
+    searchParams.delete('spaceId');
+    return `${pathname}?${searchParams.toString()}${hash}`;
+  }
+
+  if (
+    pathname.startsWith('/finance')
+    && (searchParams.get('scope') === 'space' || searchParams.has('spaceId') || searchParams.has('relationshipId'))
+  ) {
+    searchParams.set('scope', 'space');
+    searchParams.set('spaceId', String(relationshipId));
+    searchParams.delete('relationshipId');
+    return `${pathname}?${searchParams.toString()}${hash}`;
+  }
+
+  return null;
+}
+
 export function AppLayout() {
   const navigate = useNavigate();
   const location = useLocation();
@@ -40,10 +96,12 @@ export function AppLayout() {
     }
   });
   const [relationships, setRelationships] = useState<RelationshipSummary[]>([]);
+  const [selectedRelationshipId, setSelectedRelationshipId] = useState<number | undefined>();
   const screens = useBreakpoint();
   const isMobile = !screens.md;
   const philosophyEnabled = Boolean(user?.features?.philosophyEnabled);
-  const currentRelationshipId = getRouteRelationshipId(location.pathname, location.search);
+  const routeRelationshipId = getRouteRelationshipId(location.pathname, location.search);
+  const currentRelationshipId = selectedRelationshipId;
   const currentRelationship = relationships.find((item) => item.id === currentRelationshipId);
   const pageContext = useMemo(() => getPageContext(t, location), [t, location]);
   const navSections = useMemo(
@@ -80,6 +138,17 @@ export function AppLayout() {
     navigate(`/search?keyword=${encodeURIComponent(keyword)}`);
   };
 
+  const handleSpaceChange = (value?: number) => {
+    if (!value) {
+      return;
+    }
+    setSelectedRelationshipId(value);
+    const nextPath = buildScopedPathForSelectedSpace(location, value);
+    if (nextPath) {
+      navigate(nextPath);
+    }
+  };
+
   const handleToggleSidebar = () => {
     setSidebarCollapsed((value) => {
       const nextValue = !value;
@@ -111,12 +180,33 @@ export function AppLayout() {
   }, [fetchBackgroundSetting, isAuthenticated]);
 
   useEffect(() => {
-    if (isAuthenticated) {
-      getRelationships()
-        .then((response) => setRelationships(response.data.data))
-        .catch(() => setRelationships([]));
+    if (!isAuthenticated) {
+      setRelationships([]);
+      setSelectedRelationshipId(undefined);
+      return;
     }
+
+    getRelationships()
+      .then((response) => setRelationships(sortRelationshipsByCreatedAt(response.data.data)))
+      .catch(() => setRelationships([]));
   }, [isAuthenticated]);
+
+  useEffect(() => {
+    if (relationships.length === 0) {
+      setSelectedRelationshipId(undefined);
+      return;
+    }
+
+    setSelectedRelationshipId((current) => {
+      if (hasRelationship(relationships, routeRelationshipId)) {
+        return routeRelationshipId;
+      }
+      if (hasRelationship(relationships, current)) {
+        return current;
+      }
+      return relationships[0].id;
+    });
+  }, [relationships, routeRelationshipId]);
 
   useEffect(() => {
     setMobileMenuOpen(false);
@@ -284,12 +374,7 @@ export function AppLayout() {
                   className="header-space-switcher"
                   placeholder={t('menu.currentSpace')}
                   value={currentRelationshipId}
-                  allowClear
-                  onChange={(value) => {
-                    if (value) {
-                      navigate(`/relationships/${value}`);
-                    }
-                  }}
+                  onChange={handleSpaceChange}
                   options={relationships.map((item) => ({ value: item.id, label: item.name }))}
                 />
               )}

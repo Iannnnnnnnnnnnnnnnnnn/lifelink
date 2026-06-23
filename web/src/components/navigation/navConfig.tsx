@@ -77,6 +77,7 @@ export function buildPrimaryNavSections({
   const pathname = location.pathname;
   const relationshipBase = currentRelationshipId ? `/relationships/${currentRelationshipId}` : '/relationships';
   const spaceName = currentRelationship?.name || t('menu.currentSpace');
+  const dailyPath = currentRelationshipId ? `/daily?relationshipId=${currentRelationshipId}` : '/daily';
   const spaceFinanceActive = isSpaceFinance(location);
   const personalFinanceActive = pathname.startsWith('/finance') && !spaceFinanceActive;
 
@@ -126,15 +127,17 @@ export function buildPrimaryNavSections({
       key: 'space-activities',
       label: t('menu.spaceActivities'),
       icon: <ThunderboltOutlined />,
-      to: currentRelationshipId ? `${relationshipBase}/activities` : '/activities',
-      active: isRelationshipChild(pathname, 'activities') || pathname === '/activities',
+      to: currentRelationshipId ? `${relationshipBase}/activities` : '/relationships',
+      active: isRelationshipChild(pathname, 'activities'),
+      disabled: !currentRelationshipId,
     },
     {
       key: 'daily',
       label: t('menu.daily'),
       icon: <ReadOutlined />,
-      to: '/daily',
+      to: currentRelationshipId ? dailyPath : '/relationships',
       active: pathname.startsWith('/daily'),
+      disabled: !currentRelationshipId,
     },
     {
       key: 'space-timeline',
@@ -156,23 +159,25 @@ export function buildPrimaryNavSections({
       key: 'space-anniversaries',
       label: t('menu.spaceAnniversaries'),
       icon: <CalendarOutlined />,
-      to: currentRelationshipId ? `${relationshipBase}/anniversaries` : '/anniversaries',
-      active: isRelationshipChild(pathname, 'anniversaries') || pathname.startsWith('/anniversaries'),
+      to: currentRelationshipId ? `${relationshipBase}/anniversaries` : '/relationships',
+      active: isRelationshipChild(pathname, 'anniversaries'),
+      disabled: !currentRelationshipId,
     },
     {
       key: 'space-finance',
       label: t('menu.spaceFinance'),
       icon: <DollarOutlined />,
-      to: currentRelationshipId ? `/finance?scope=space&spaceId=${currentRelationshipId}` : '/finance?scope=space',
+      to: currentRelationshipId ? `/finance?scope=space&spaceId=${currentRelationshipId}` : '/relationships',
       active: spaceFinanceActive,
+      disabled: !currentRelationshipId,
     },
     {
       key: 'space-cycle-care',
       label: t('menu.cycleCare'),
       icon: <HeartOutlined />,
-      to: currentRelationshipId ? `${relationshipBase}/cycle-care` : '/cycle-care',
+      to: currentRelationshipId ? `${relationshipBase}/cycle-care` : '/relationships',
       active: pathname.startsWith('/cycle-care') || isRelationshipChild(pathname, 'cycle-care'),
-      disabled: Boolean(currentRelationshipId && currentRelationship?.type && currentRelationship.type !== 'COUPLE'),
+      disabled: !currentRelationshipId || Boolean(currentRelationship?.type && currentRelationship.type !== 'COUPLE'),
     },
   ];
 
