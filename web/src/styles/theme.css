@@ -2,6 +2,206 @@
   color-scheme: light;
 }
 
+.theme-colorful {
+  --ll-bg: #f7f9fd;
+  --ll-bg-soft: #eef5fb;
+  --ll-surface: rgba(255, 255, 255, 0.9);
+  --ll-surface-muted: rgba(248, 251, 255, 0.82);
+  --ll-border: rgba(32, 60, 96, 0.12);
+  --ll-border-soft: rgba(46, 92, 146, 0.08);
+  --ll-primary: #2f6fed;
+  --ll-primary-hover: #245fd5;
+  --ll-primary-active: #1e52bd;
+  --ll-primary-soft: rgba(47, 111, 237, 0.12);
+  --ll-accent-rose: #e85d75;
+  --ll-accent-amber: #d99622;
+  --ll-accent-teal: #0f9f94;
+  --ll-accent-violet: #7c65d6;
+  --ll-colorful-rose-soft: rgba(232, 93, 117, 0.13);
+  --ll-colorful-amber-soft: rgba(217, 150, 34, 0.14);
+  --ll-colorful-teal-soft: rgba(15, 159, 148, 0.13);
+  --ll-colorful-blue-soft: rgba(47, 111, 237, 0.13);
+  background:
+    linear-gradient(135deg, rgba(232, 93, 117, 0.08), transparent 28%),
+    linear-gradient(225deg, rgba(15, 159, 148, 0.08), transparent 30%),
+    var(--ll-bg);
+}
+
+.theme-colorful .app-sidebar {
+  background:
+    linear-gradient(180deg, rgba(255, 255, 255, 0.92) 0%, rgba(249, 253, 255, 0.84) 46%, rgba(255, 250, 246, 0.88) 100%);
+  border-right-color: rgba(47, 111, 237, 0.16);
+  box-shadow: 14px 0 34px rgba(47, 111, 237, 0.07);
+}
+
+.theme-colorful .app-sidebar::before {
+  position: absolute;
+  inset: 0 0 auto;
+  height: 4px;
+  content: "";
+  background: linear-gradient(90deg, var(--ll-accent-rose), var(--ll-accent-amber), var(--ll-accent-teal), var(--ll-primary));
+}
+
+.theme-colorful .sidebar-header {
+  border-bottom-color: rgba(47, 111, 237, 0.12);
+  background: linear-gradient(90deg, rgba(47, 111, 237, 0.06), rgba(232, 93, 117, 0.06), rgba(15, 159, 148, 0.05));
+}
+
+.theme-colorful .brand-mark {
+  border-color: rgba(255, 255, 255, 0.72);
+  background: linear-gradient(135deg, var(--ll-accent-rose), var(--ll-accent-amber) 48%, var(--ll-primary));
+  color: #ffffff;
+  box-shadow: 0 10px 22px rgba(232, 93, 117, 0.24);
+}
+
+.theme-colorful .brand-icon {
+  color: #ffffff;
+}
+
+.theme-colorful .brand-name {
+  color: #1d2a42;
+}
+
+.theme-colorful .nav-section {
+  --section-color: var(--ll-primary);
+  --section-soft: var(--ll-colorful-blue-soft);
+}
+
+.theme-colorful .nav-section:nth-child(1) {
+  --section-color: var(--ll-accent-teal);
+  --section-soft: var(--ll-colorful-teal-soft);
+}
+
+.theme-colorful .nav-section:nth-child(2) {
+  --section-color: var(--ll-accent-rose);
+  --section-soft: var(--ll-colorful-rose-soft);
+}
+
+.theme-colorful .nav-section:nth-child(3) {
+  --section-color: var(--ll-accent-amber);
+  --section-soft: var(--ll-colorful-amber-soft);
+}
+
+.theme-colorful .nav-section:nth-child(4) {
+  --section-color: var(--ll-accent-violet);
+  --section-soft: rgba(124, 101, 214, 0.13);
+}
+
+.theme-colorful .nav-section-title {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  color: color-mix(in srgb, var(--section-color) 72%, #526173);
+}
+
+.theme-colorful .nav-section-title::before {
+  width: 7px;
+  height: 7px;
+  border-radius: 999px;
+  content: "";
+  background: var(--section-color);
+  box-shadow: 0 0 0 4px var(--section-soft);
+}
+
+.theme-colorful .nav-item {
+  color: #526173;
+}
+
+.theme-colorful .nav-item:hover {
+  background: linear-gradient(90deg, var(--section-soft), rgba(255, 255, 255, 0.42));
+  color: #1f2d3d;
+}
+
+.theme-colorful .nav-item:hover .nav-item-icon {
+  color: var(--section-color);
+}
+
+.theme-colorful .nav-item.is-active {
+  background: linear-gradient(90deg, var(--section-soft), rgba(255, 255, 255, 0.68));
+  color: var(--section-color);
+  box-shadow: inset 3px 0 0 var(--section-color), 0 8px 18px rgba(47, 111, 237, 0.07);
+}
+
+.theme-colorful .nav-item.is-active .nav-item-icon {
+  color: var(--section-color);
+}
+
+.theme-colorful .sidebar-collapse-trigger:hover,
+.theme-colorful .sidebar-collapse-trigger:focus-visible,
+.theme-colorful .sidebar-user:hover {
+  background: linear-gradient(90deg, rgba(47, 111, 237, 0.09), rgba(15, 159, 148, 0.08));
+  color: var(--ll-primary);
+}
+
+.theme-colorful .app-header {
+  background:
+    linear-gradient(90deg, rgba(255, 255, 255, 0.9) 0%, rgba(246, 251, 255, 0.88) 44%, rgba(255, 249, 244, 0.86) 100%);
+  border-bottom-color: rgba(47, 111, 237, 0.13);
+  box-shadow: 0 10px 28px rgba(47, 111, 237, 0.07);
+}
+
+.theme-colorful .app-header::after {
+  position: absolute;
+  inset: auto 0 0;
+  height: 2px;
+  content: "";
+  background: linear-gradient(90deg, var(--ll-primary), var(--ll-accent-teal), var(--ll-accent-amber), var(--ll-accent-rose));
+  opacity: 0.72;
+}
+
+.theme-colorful .app-header-title h4 {
+  color: #213047;
+}
+
+.theme-colorful .global-search .ant-input-affix-wrapper,
+.theme-colorful .global-search .ant-input-group-addon .ant-btn,
+.theme-colorful .header-space-switcher .ant-select-selector,
+.theme-colorful .user-chip,
+.theme-colorful .header-icon-button {
+  border-color: rgba(47, 111, 237, 0.15) !important;
+  background: rgba(255, 255, 255, 0.76) !important;
+  box-shadow: 0 8px 18px rgba(47, 111, 237, 0.055);
+}
+
+.theme-colorful .global-search .ant-input-affix-wrapper:focus,
+.theme-colorful .global-search .ant-input-affix-wrapper-focused,
+.theme-colorful .header-space-switcher.ant-select-focused .ant-select-selector,
+.theme-colorful .header-space-switcher .ant-select-focused .ant-select-selector {
+  border-color: rgba(15, 159, 148, 0.42) !important;
+  box-shadow: 0 0 0 3px rgba(15, 159, 148, 0.12) !important;
+}
+
+.theme-colorful .global-search .ant-input-group-addon .ant-btn,
+.theme-colorful .header-icon-button {
+  color: var(--ll-primary);
+}
+
+.theme-colorful .header-icon-button:hover {
+  border-color: rgba(232, 93, 117, 0.25) !important;
+  background: linear-gradient(135deg, rgba(232, 93, 117, 0.12), rgba(47, 111, 237, 0.1)) !important;
+  color: var(--ll-accent-rose);
+}
+
+.theme-colorful .user-chip:hover,
+.theme-colorful .user-chip-button:hover {
+  border-color: rgba(15, 159, 148, 0.26);
+  background: rgba(255, 255, 255, 0.94);
+}
+
+.theme-colorful .header-space-switcher .ant-select-selection-item {
+  color: #213047;
+  font-weight: 650;
+}
+
+.theme-colorful .ant-btn-primary {
+  background: linear-gradient(135deg, var(--ll-primary), var(--ll-accent-teal));
+  border-color: transparent;
+}
+
+.theme-colorful .ant-btn-primary:not(:disabled):not(.ant-btn-disabled):hover {
+  background: linear-gradient(135deg, var(--ll-primary-hover), #0c8f85);
+}
+
 .theme-grayscale {
   --ll-bg: #f6f6f7;
   --ll-bg-soft: #eeeeef;

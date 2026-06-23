@@ -530,7 +530,7 @@ public class FocusServiceImpl implements FocusService {
     private FocusSessionResponse toSessionResponse(FocusSession session) {
         Relationship relationship = session.getSpaceId() == null ? null : relationshipMapper.selectById(session.getSpaceId());
         LocalDateTime expectedEndAt = resolveExpectedEndAt(session);
-        long remainingSeconds = Math.max(0, Duration.between(LocalDateTime.now(), expectedEndAt).getSeconds());
+        long remainingSeconds = expectedEndAt == null ? 0 : Math.max(0, Duration.between(LocalDateTime.now(), expectedEndAt).getSeconds());
         return new FocusSessionResponse(
                 session.getId(),
                 session.getUserId(),
@@ -653,6 +653,9 @@ public class FocusServiceImpl implements FocusService {
     }
 
     private LocalDateTime resolveExpectedEndAt(FocusSession session) {
+        if (session.getStartedAt() == null || session.getPlannedMinutes() == null) {
+            return session.getEndedAt();
+        }
         if (PAUSED.equals(session.getStatus())) {
             return LocalDateTime.now().plusSeconds(Math.max(0, session.getPlannedMinutes() * 60L - elapsedFocusSeconds(session, LocalDateTime.now())));
         }
