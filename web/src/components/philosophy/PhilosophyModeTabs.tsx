@@ -1,4 +1,4 @@
-import { Tabs } from 'antd';
+import { Segmented } from 'antd';
 
 interface PhilosophyModeTabsProps {
   activeKey: string;
@@ -8,14 +8,14 @@ interface PhilosophyModeTabsProps {
 
 export function PhilosophyModeTabs({ activeKey, onChange, t }: PhilosophyModeTabsProps) {
   return (
-    <Tabs
+    <Segmented<string>
       className="philosophy-mode-tabs"
-      activeKey={activeKey}
+      value={activeKey}
       onChange={onChange}
-      items={[
+      options={[
         { key: 'perspectives', label: t('philosophy.modePerspectives') },
         { key: 'chat', label: t('philosophy.modeChat') },
-      ]}
+      ].map(({ key, label }) => ({ value: key, label }))}
     />
   );
 }

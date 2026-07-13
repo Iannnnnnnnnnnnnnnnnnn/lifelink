@@ -2,12 +2,15 @@ import { PlusOutlined } from '@ant-design/icons';
 import { Button, Card, DatePicker, Form, Input, message, Select, Typography, Upload } from 'antd';
 import type { UploadFile, UploadProps } from 'antd';
 import type { Dayjs } from 'dayjs';
+import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate, useSearchParams } from 'react-router-dom';
 import { createAnniversary, AnniversaryRepeatType } from '../api/anniversary';
 import { uploadFile, UploadFileResponse } from '../api/file';
 import { getRelationships, RelationshipSummary } from '../api/relationship';
+
+const ANNIVERSARY_DRAFT_STORAGE_KEY = 'lifelink_draft_anniversary';
 
 interface AnniversaryFormValues {
   relationshipId: number;
@@ -34,6 +37,8 @@ export function CreateAnniversary() {
   const [relationships, setRelationships] = useState<RelationshipSummary[]>([]);
   const [backgroundFileId, setBackgroundFileId] = useState<number | undefined>();
   const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [submitting, setSubmitting] = useState(false);
+  const [dirty, setDirty] = useState(false);
   const [form] = Form.useForm<AnniversaryFormValues>();
   const [messageApi, contextHolder] = message.useMessage();
 
@@ -49,7 +54,41 @@ export function CreateAnniversary() {
       .catch(() => messageApi.error(t('relationship.loadFailed')));
   }, [form, messageApi, routeRelationshipId, t]);
 
+  useEffect(() => {
+    try {
+      const savedDraft = localStorage.getItem(ANNIVERSARY_DRAFT_STORAGE_KEY);
+      if (savedDraft) {
+        const draft = JSON.parse(savedDraft) as Partial<AnniversaryFormValues> & { anniversaryDate?: string };
+        form.setFieldsValue({
+          ...draft,
+          anniversaryDate: draft.anniversaryDate ? dayjs(draft.anniversaryDate) : undefined,
+        });
+        setDirty(true);
+      }
+    } catch {
+      localStorage.removeItem(ANNIVERSARY_DRAFT_STORAGE_KEY);
+    }
+  }, [form]);
+
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (!dirty) return;
+      event.preventDefault();
+      event.returnValue = '';
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [dirty]);
+
+  const handleValuesChange = () => {
+    const values = form.getFieldsValue();
+    localStorage.setItem(ANNIVERSARY_DRAFT_STORAGE_KEY, JSON.stringify(values));
+    setDirty(Boolean(values.relationshipId || values.title || values.description || values.anniversaryDate));
+  };
+
   const handleSubmit = async (values: AnniversaryFormValues) => {
+    if (submitting) return;
+    setSubmitting(true);
     try {
       const response = await createAnniversary({
         relationshipId: values.relationshipId,
@@ -60,9 +99,13 @@ export function CreateAnniversary() {
         backgroundFileId,
       });
       messageApi.success(t('anniversary.createSuccess'));
+      localStorage.removeItem(ANNIVERSARY_DRAFT_STORAGE_KEY);
+      setDirty(false);
       navigate(`/anniversaries/${response.data.data.id}`);
     } catch (error) {
       messageApi.error(t('anniversary.createFailed'));
+    } finally {
+      setSubmitting(false);
     }
   };
 
@@ -107,7 +150,7 @@ export function CreateAnniversary() {
       {contextHolder}
       <Typography.Title level={2}>{t('anniversary.create')}</Typography.Title>
       <Card>
-        <Form form={form} layout="vertical" initialValues={{ repeatType: 'NONE' }} onFinish={handleSubmit}>
+        <Form form={form} layout="vertical" initialValues={{ repeatType: 'NONE' }} onFinish={handleSubmit} onValuesChange={handleValuesChange}>
           <Form.Item name="relationshipId" label={t('anniversary.selectRelationship')} rules={[{ required: true, message: t('anniversary.relationshipRequired') }]}>
             <Select options={relationships.map((item) => ({ value: item.id, label: item.name }))} placeholder={t('anniversary.selectRelationship')} />
           </Form.Item>
@@ -138,7 +181,7 @@ export function CreateAnniversary() {
               )}
             </Upload>
           </Form.Item>
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" htmlType="submit" loading={submitting} disabled={submitting}>
             {t('common.create')}
           </Button>
         </Form>

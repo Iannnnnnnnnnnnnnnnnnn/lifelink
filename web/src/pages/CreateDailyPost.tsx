@@ -8,6 +8,8 @@ import { createDailyPost } from '../api/daily';
 import { uploadFile, UploadFileResponse } from '../api/file';
 import { getRelationships, RelationshipSummary } from '../api/relationship';
 
+const DAILY_DRAFT_STORAGE_KEY = 'lifelink_draft_daily_post';
+
 interface CreateDailyPostValues {
   relationshipId: number;
   content: string;
@@ -31,10 +33,14 @@ export function CreateDailyPost() {
   const [relationships, setRelationships] = useState<RelationshipSummary[]>([]);
   const [imageIds, setImageIds] = useState<number[]>([]);
   const [fileList, setFileList] = useState<UploadFile[]>([]);
+  const [submitting, setSubmitting] = useState(false);
+  const [dirty, setDirty] = useState(false);
   const [form] = Form.useForm<CreateDailyPostValues>();
   const [messageApi, contextHolder] = message.useMessage();
 
   const handleSubmit = async (values: CreateDailyPostValues) => {
+    if (submitting) return;
+    setSubmitting(true);
     try {
       await createDailyPost({
         relationshipId: values.relationshipId,
@@ -44,10 +50,42 @@ export function CreateDailyPost() {
         imageIds,
       });
       messageApi.success(t('daily.publishSuccess'));
+      localStorage.removeItem(DAILY_DRAFT_STORAGE_KEY);
+      setDirty(false);
       navigate(`/daily?relationshipId=${values.relationshipId}`);
     } catch (error) {
       messageApi.error(t('daily.publishFailed'));
+    } finally {
+      setSubmitting(false);
     }
+  };
+
+  useEffect(() => {
+    try {
+      const savedDraft = localStorage.getItem(DAILY_DRAFT_STORAGE_KEY);
+      if (savedDraft) {
+        form.setFieldsValue(JSON.parse(savedDraft) as Partial<CreateDailyPostValues>);
+        setDirty(true);
+      }
+    } catch {
+      localStorage.removeItem(DAILY_DRAFT_STORAGE_KEY);
+    }
+  }, [form]);
+
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (!dirty) return;
+      event.preventDefault();
+      event.returnValue = '';
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [dirty]);
+
+  const handleValuesChange = () => {
+    const values = form.getFieldsValue();
+    localStorage.setItem(DAILY_DRAFT_STORAGE_KEY, JSON.stringify(values));
+    setDirty(Boolean(values.relationshipId || values.content || values.mood));
   };
 
   useEffect(() => {
@@ -106,7 +144,7 @@ export function CreateDailyPost() {
       {contextHolder}
       <Typography.Title level={2}>{t('daily.createTitle')}</Typography.Title>
       <Card>
-        <Form form={form} layout="vertical" onFinish={handleSubmit}>
+        <Form form={form} layout="vertical" onFinish={handleSubmit} onValuesChange={handleValuesChange}>
           <Form.Item
             name="relationshipId"
             label={t('daily.relationship')}
@@ -133,7 +171,7 @@ export function CreateDailyPost() {
               )}
             </Upload>
           </Form.Item>
-          <Button type="primary" htmlType="submit">
+          <Button type="primary" htmlType="submit" loading={submitting} disabled={submitting}>
             {t('daily.create')}
           </Button>
         </Form>

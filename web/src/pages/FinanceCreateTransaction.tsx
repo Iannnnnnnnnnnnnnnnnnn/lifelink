@@ -7,6 +7,8 @@ import { useNavigate, useSearchParams } from 'react-router-dom';
 import { AccountBook, createTransaction, getAccountBooks, getTransactionCategories, TransactionCategory, TransactionType } from '../api/accounting';
 import { getTransactionCategoryLabel } from '../utils/display';
 
+const FINANCE_DRAFT_STORAGE_KEY = 'lifelink_draft_finance_transaction';
+
 interface TransactionFormValues {
   accountBookId: number;
   type: TransactionType;
@@ -27,8 +29,43 @@ export function FinanceCreateTransaction() {
   const [books, setBooks] = useState<AccountBook[]>([]);
   const [categories, setCategories] = useState<TransactionCategory[]>([]);
   const [type, setType] = useState<TransactionType>('EXPENSE');
+  const [submitting, setSubmitting] = useState(false);
+  const [dirty, setDirty] = useState(false);
   const [form] = Form.useForm<TransactionFormValues>();
   const [messageApi, contextHolder] = message.useMessage();
+
+  useEffect(() => {
+    try {
+      const savedDraft = localStorage.getItem(FINANCE_DRAFT_STORAGE_KEY);
+      if (savedDraft) {
+        const draft = JSON.parse(savedDraft) as Omit<Partial<TransactionFormValues>, 'transactionTime'> & { transactionTime?: string };
+        form.setFieldsValue({
+          ...draft,
+          transactionTime: draft.transactionTime ? dayjs(draft.transactionTime) : dayjs(),
+        });
+        if (draft.type) setType(draft.type);
+        setDirty(true);
+      }
+    } catch {
+      localStorage.removeItem(FINANCE_DRAFT_STORAGE_KEY);
+    }
+  }, [form]);
+
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (!dirty) return;
+      event.preventDefault();
+      event.returnValue = '';
+    };
+    window.addEventListener('beforeunload', handleBeforeUnload);
+    return () => window.removeEventListener('beforeunload', handleBeforeUnload);
+  }, [dirty]);
+
+  const handleValuesChange = () => {
+    const values = form.getFieldsValue();
+    localStorage.setItem(FINANCE_DRAFT_STORAGE_KEY, JSON.stringify(values));
+    setDirty(Boolean(values.amount || values.title || values.note || values.categoryId));
+  };
 
   useEffect(() => {
     getAccountBooks().then((response) => {
@@ -48,17 +85,27 @@ export function FinanceCreateTransaction() {
   }, [type]);
 
   const handleSubmit = async (values: TransactionFormValues) => {
-    await createTransaction({
-      accountBookId: values.accountBookId,
-      type: values.type,
-      amount: values.amount,
-      categoryId: values.categoryId,
-      title: values.title,
-      note: values.note,
-      transactionTime: values.transactionTime.format('YYYY-MM-DDTHH:mm:ss'),
-    });
-    messageApi.success(t('finance.createSuccess'));
-    navigate(relationshipId ? `/finance?scope=space&spaceId=${relationshipId}` : '/finance');
+    if (submitting) return;
+    setSubmitting(true);
+    try {
+      await createTransaction({
+        accountBookId: values.accountBookId,
+        type: values.type,
+        amount: values.amount,
+        categoryId: values.categoryId,
+        title: values.title,
+        note: values.note,
+        transactionTime: values.transactionTime.format('YYYY-MM-DDTHH:mm:ss'),
+      });
+      localStorage.removeItem(FINANCE_DRAFT_STORAGE_KEY);
+      setDirty(false);
+      messageApi.success(t('finance.createSuccess'));
+      navigate(relationshipId ? `/finance?scope=space&spaceId=${relationshipId}` : '/finance');
+    } catch {
+      messageApi.error(t('message.operationFailed'));
+    } finally {
+      setSubmitting(false);
+    }
   };
 
   return (
@@ -69,7 +116,7 @@ export function FinanceCreateTransaction() {
         <Space wrap className="finance-create-scope">
           <Tag>{t('finance.currentScope')}: {scope === 'space' ? t('finance.spaceLedger') : t('finance.personalLedger')}</Tag>
         </Space>
-        <Form form={form} layout="vertical" onFinish={handleSubmit} initialValues={{ type: 'EXPENSE', transactionTime: dayjs() }}>
+        <Form form={form} layout="vertical" onFinish={handleSubmit} onValuesChange={handleValuesChange} initialValues={{ type: 'EXPENSE', transactionTime: dayjs() }}>
           <Form.Item name="accountBookId" label={t('finance.accountBook')} rules={[{ required: true, message: t('finance.accountBookRequired') }]}>
             <Select options={books.map((book) => ({ value: book.id, label: book.name }))} />
           </Form.Item>
@@ -100,7 +147,7 @@ export function FinanceCreateTransaction() {
           <Form.Item name="transactionTime" label={t('finance.transactionTime')} rules={[{ required: true }]}>
             <DatePicker showTime className="full-width" />
           </Form.Item>
-          <Button type="primary" htmlType="submit">{t('common.save')}</Button>
+          <Button type="primary" htmlType="submit" loading={submitting} disabled={submitting}>{t('common.save')}</Button>
         </Form>
       </Card>
     </div>

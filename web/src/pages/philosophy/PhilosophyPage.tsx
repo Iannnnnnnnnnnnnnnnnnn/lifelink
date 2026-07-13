@@ -3,6 +3,7 @@ import { Card, Grid, message, Typography } from 'antd';
 import dayjs from 'dayjs';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { useSearchParams } from 'react-router-dom';
 import type { Philosopher, PhilosophyResponseItem, PhilosophySession } from '../../api/philosophy';
 import {
   createPhilosophySession,
@@ -26,6 +27,7 @@ export function PhilosophyPage() {
   const { t, i18n } = useTranslation();
   const screens = Grid.useBreakpoint();
   const isMobile = !screens.lg;
+  const [searchParams, setSearchParams] = useSearchParams();
   const [messageApi, contextHolder] = message.useMessage();
   const [philosophers, setPhilosophers] = useState<Philosopher[]>([]);
   const [question, setQuestion] = useState('');
@@ -35,7 +37,11 @@ export function PhilosophyPage() {
   const [loadingPhilosophers, setLoadingPhilosophers] = useState(false);
   const [generating, setGenerating] = useState(false);
   const [loadingHistory, setLoadingHistory] = useState(false);
-  const [activeMode, setActiveMode] = useState('perspectives');
+  const activeMode = searchParams.get('mode') === 'chat' ? 'chat' : 'perspectives';
+  const chatSessionIdValue = Number(searchParams.get('sessionId'));
+  const selectedChatSessionId = Number.isInteger(chatSessionIdValue) && chatSessionIdValue > 0
+    ? chatSessionIdValue
+    : undefined;
 
   const language = i18n.resolvedLanguage === 'en-US' ? 'en-US' : 'zh-CN';
   const resultItems = currentSession?.responses || [];
@@ -170,23 +176,48 @@ export function PhilosophyPage() {
     return dayjs(value).format(language === 'en-US' ? 'MMM D, YYYY HH:mm' : 'YYYY年M月D日 HH:mm');
   };
 
-  return (
-    <div className="philosophy-page page-wide">
-      {contextHolder}
-      <Card className="philosophy-hero-card">
-        <div className="philosophy-hero-content">
-          <span className="philosophy-hero-icon">
-            <BulbOutlined />
-          </span>
-          <div>
-            <Typography.Title level={2}>{t('philosophy.title')}</Typography.Title>
-            <Typography.Paragraph>{t('philosophy.subtitle')}</Typography.Paragraph>
-          </div>
-        </div>
-        <PhilosophyDisclaimer />
-      </Card>
+  const handleModeChange = (mode: string) => {
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.set('mode', mode === 'chat' ? 'chat' : 'perspectives');
+    if (mode !== 'chat') {
+      nextParams.delete('sessionId');
+    }
+    setSearchParams(nextParams, { replace: true });
+  };
 
-      <PhilosophyModeTabs activeKey={activeMode} onChange={setActiveMode} t={tString} />
+  const handleChatSessionChange = (sessionId?: number) => {
+    const nextParams = new URLSearchParams(searchParams);
+    nextParams.set('mode', 'chat');
+    if (sessionId) {
+      nextParams.set('sessionId', String(sessionId));
+    } else {
+      nextParams.delete('sessionId');
+    }
+    setSearchParams(nextParams, { replace: true });
+  };
+
+  return (
+    <div className={`philosophy-page${activeMode === 'chat' ? ' chat-mode' : ' page-wide'}`}>
+      {contextHolder}
+      {activeMode === 'perspectives' && (
+        <>
+          <div className="philosophy-page-toolbar">
+            <PhilosophyModeTabs activeKey={activeMode} onChange={handleModeChange} t={tString} />
+          </div>
+          <Card className="philosophy-hero-card">
+            <div className="philosophy-hero-content">
+              <span className="philosophy-hero-icon">
+                <BulbOutlined />
+              </span>
+              <div>
+                <Typography.Title level={2}>{t('philosophy.title')}</Typography.Title>
+                <Typography.Paragraph>{t('philosophy.subtitle')}</Typography.Paragraph>
+              </div>
+            </div>
+            <PhilosophyDisclaimer />
+          </Card>
+        </>
+      )}
 
       {activeMode === 'perspectives' ? (
         <div className={isMobile ? 'philosophy-layout mobile' : 'philosophy-layout'}>
@@ -227,7 +258,15 @@ export function PhilosophyPage() {
           </aside>
         </div>
       ) : (
-        <CharacterChatPanel philosophers={philosophers} language={language} t={tString} />
+        <CharacterChatPanel
+          philosophers={philosophers}
+          language={language}
+          selectedSessionId={selectedChatSessionId}
+          onSessionChange={handleChatSessionChange}
+          activeMode={activeMode}
+          onModeChange={handleModeChange}
+          t={tString}
+        />
       )}
     </div>
   );

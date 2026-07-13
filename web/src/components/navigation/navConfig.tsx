@@ -188,13 +188,6 @@ export function buildPrimaryNavSections({
       to: '/focus',
       active: pathname.startsWith('/focus') || pathname.startsWith('/focus-timer') || pathname.startsWith('/rewards'),
     },
-    {
-      key: 'finance',
-      label: t('menu.finance'),
-      icon: <DollarOutlined />,
-      to: '/finance',
-      active: personalFinanceActive,
-    },
     ...(philosophyEnabled
       ? [{
         key: 'philosophy',
@@ -204,6 +197,13 @@ export function buildPrimaryNavSections({
         active: pathname.startsWith('/philosophy'),
       }]
       : []),
+    {
+      key: 'finance',
+      label: t('menu.finance'),
+      icon: <DollarOutlined />,
+      to: '/finance',
+      active: personalFinanceActive,
+    },
   ];
 
   const accountItems: PrimaryNavItem[] = [

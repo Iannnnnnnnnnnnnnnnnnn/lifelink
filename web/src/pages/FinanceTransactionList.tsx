@@ -26,16 +26,40 @@ interface EditValues {
   transactionTime: Dayjs;
 }
 
+function getTransactionType(value: string | null): TransactionType | undefined {
+  return value === 'INCOME' || value === 'EXPENSE' ? value : undefined;
+}
+
+function getMonth(value: string | null) {
+  if (value && /^\d{4}-(0[1-9]|1[0-2])$/.test(value)) {
+    return value;
+  }
+  return dayjs().format('YYYY-MM');
+}
+
+function getPositiveInteger(value: string | null, fallback: number) {
+  const parsed = Number(value);
+  return Number.isInteger(parsed) && parsed > 0 ? parsed : fallback;
+}
+
+function getPageSize(value: string | null) {
+  const parsed = getPositiveInteger(value, 10);
+  return [10, 20, 50].includes(parsed) ? parsed : 10;
+}
+
 export function FinanceTransactionList() {
   const { t, i18n } = useTranslation();
   const navigate = useNavigate();
-  const [searchParams] = useSearchParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const scope = searchParams.get('scope') === 'space' || searchParams.get('spaceId') || searchParams.get('relationshipId') ? 'space' : 'personal';
   const relationshipId = searchParams.get('spaceId') || searchParams.get('relationshipId');
   const accountBookId = searchParams.get('accountBookId');
+  const type = getTransactionType(searchParams.get('type'));
+  const monthValue = getMonth(searchParams.get('month'));
+  const month = dayjs(`${monthValue}-01`);
+  const page = getPositiveInteger(searchParams.get('page'), 1);
+  const pageSize = getPageSize(searchParams.get('pageSize'));
   const [items, setItems] = useState<Transaction[]>([]);
-  const [type, setType] = useState<TransactionType | undefined>();
-  const [month, setMonth] = useState<Dayjs>(dayjs());
   const [loading, setLoading] = useState(false);
   const [editing, setEditing] = useState<Transaction | null>(null);
   const [categories, setCategories] = useState<TransactionCategory[]>([]);
@@ -108,7 +132,38 @@ export function FinanceTransactionList() {
 
   useEffect(() => {
     loadData();
-  }, [type, month, accountBookId, relationshipId]);
+  }, [type, monthValue, accountBookId, relationshipId]);
+
+  const updateFilters = (updates: { type?: TransactionType; month?: string }) => {
+    const nextParams = new URLSearchParams(searchParams);
+    if (updates.type !== undefined || Object.prototype.hasOwnProperty.call(updates, 'type')) {
+      if (updates.type) {
+        nextParams.set('type', updates.type);
+      } else {
+        nextParams.delete('type');
+      }
+    }
+    if (updates.month) {
+      nextParams.set('month', updates.month);
+    }
+    nextParams.delete('page');
+    setSearchParams(nextParams, { replace: true });
+  };
+
+  const updatePagination = (nextPage: number, nextPageSize: number) => {
+    const nextParams = new URLSearchParams(searchParams);
+    if (nextPage > 1) {
+      nextParams.set('page', String(nextPage));
+    } else {
+      nextParams.delete('page');
+    }
+    if (nextPageSize !== 10) {
+      nextParams.set('pageSize', String(nextPageSize));
+    } else {
+      nextParams.delete('pageSize');
+    }
+    setSearchParams(nextParams, { replace: true });
+  };
 
   const buildCreatePath = () => {
     const params = new URLSearchParams();
@@ -136,13 +191,13 @@ export function FinanceTransactionList() {
           </Typography.Text>
         </div>
         <Space wrap>
-          <DatePicker picker="month" value={month} onChange={(value) => value && setMonth(value)} />
+          <DatePicker picker="month" value={month} onChange={(value) => value && updateFilters({ month: value.format('YYYY-MM') })} />
           <Select
             allowClear
             className="todo-status-filter"
             placeholder={t('finance.type')}
             value={type}
-            onChange={setType}
+            onChange={(value) => updateFilters({ type: value })}
             options={[
               { value: 'EXPENSE', label: t('finance.expense') },
               { value: 'INCOME', label: t('finance.income') },
@@ -159,6 +214,13 @@ export function FinanceTransactionList() {
         loading={loading}
         dataSource={items}
         scroll={{ x: 920 }}
+        pagination={{
+          current: page,
+          pageSize,
+          pageSizeOptions: [10, 20, 50],
+          showSizeChanger: true,
+          onChange: updatePagination,
+        }}
         columns={[
           { title: t('finance.titleField'), dataIndex: 'title' },
           { title: t('finance.accountBook'), dataIndex: 'accountBookName' },
