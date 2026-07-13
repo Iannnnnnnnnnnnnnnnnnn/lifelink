@@ -161,6 +161,20 @@
     "collapseSidebar": "Collapse sidebar",
     "expandSidebar": "Expand sidebar"
   },
+  "theme": {
+    "title": "Appearance",
+    "colorful": "Warm Color",
+    "minimal": "Minimal Gray"
+  },
+  "notification": {
+    "title": "Notifications",
+    "unread": "Unread",
+    "read": "Read",
+    "markAllRead": "Mark all read",
+    "markAllSuccess": "All notifications marked as read",
+    "delete": "Delete notification",
+    "loadFailed": "Failed to load notifications"
+  },
   "background": {
     "personalBackground": "Personal Background",
     "customBackground": "Custom Background",

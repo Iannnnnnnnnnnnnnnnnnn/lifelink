@@ -29,6 +29,7 @@ import './styles/ui-polish.css';
 import './styles/responsive.css';
 import './styles/profile.css';
 import './styles/background.css';
+import './styles/notifications.css';
 
 function AppProviders() {
   const { i18n } = useTranslation();
@@ -41,23 +42,23 @@ function AppProviders() {
       wave={{ disabled: true }}
       theme={{
         token: {
-          colorPrimary: '#2f6fed',
+          colorPrimary: '#0071e3',
           colorSuccess: '#4f9f6b',
           colorWarning: '#b7791f',
           colorError: '#d04444',
           colorText: '#1d1d1f',
           colorTextSecondary: '#6e6e73',
           colorTextTertiary: '#86868b',
-          colorBgLayout: '#f7f8fa',
+          colorBgLayout: '#f5f5f7',
           colorBgContainer: 'rgba(255, 255, 255, 0.92)',
           colorBorder: 'rgba(0, 0, 0, 0.08)',
           colorBorderSecondary: 'rgba(0, 0, 0, 0.06)',
-          borderRadius: 16,
-          borderRadiusLG: 22,
-          borderRadiusSM: 10,
+          borderRadius: 18,
+          borderRadiusLG: 24,
+          borderRadiusSM: 12,
           controlHeight: 38,
           controlHeightLG: 46,
-          fontFamily: 'Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif',
+          fontFamily: '-apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Arial, sans-serif',
         },
         components: {
           Button: {

@@ -161,6 +161,20 @@
     "collapseSidebar": "折叠菜单",
     "expandSidebar": "展开菜单"
   },
+  "theme": {
+    "title": "外观主题",
+    "colorful": "温暖彩色",
+    "minimal": "极简灰白"
+  },
+  "notification": {
+    "title": "通知中心",
+    "unread": "未读",
+    "read": "已读",
+    "markAllRead": "全部已读",
+    "markAllSuccess": "已将全部通知标为已读",
+    "delete": "删除通知",
+    "loadFailed": "通知加载失败"
+  },
   "background": {
     "personalBackground": "个性化背景",
     "customBackground": "自定义背景",

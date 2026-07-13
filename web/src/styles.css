@@ -3,8 +3,8 @@
 }
 
 :root {
-  --ll-bg: #f7f8fa;
-  --ll-bg-soft: #f2f4f7;
+  --ll-bg: #f5f5f7;
+  --ll-bg-soft: #ececf0;
   --ll-surface: rgba(255, 255, 255, 0.92);
   --ll-surface-solid: #ffffff;
   --ll-surface-muted: rgba(247, 248, 250, 0.86);
@@ -13,20 +13,20 @@
   --ll-text-subtle: #86868b;
   --ll-border: rgba(0, 0, 0, 0.08);
   --ll-border-soft: rgba(0, 0, 0, 0.06);
-  --ll-primary: #2f6fed;
-  --ll-primary-hover: #245fd5;
-  --ll-primary-active: #1e52bd;
-  --ll-primary-soft: rgba(47, 111, 237, 0.1);
+  --ll-primary: #0071e3;
+  --ll-primary-hover: #0077ed;
+  --ll-primary-active: #0064c8;
+  --ll-primary-soft: rgba(0, 113, 227, 0.1);
   --ll-success: #4f9f6b;
   --ll-warning: #b7791f;
   --ll-danger: #d04444;
-  --ll-radius-sm: 10px;
-  --ll-radius-md: 16px;
+  --ll-radius-sm: 12px;
+  --ll-radius-md: 18px;
   --ll-radius-lg: 24px;
   --ll-radius-pill: 999px;
-  --ll-shadow-sm: 0 8px 24px rgba(29, 29, 31, 0.05);
-  --ll-shadow-md: 0 18px 54px rgba(29, 29, 31, 0.08);
-  --ll-shadow-hover: 0 22px 60px rgba(29, 29, 31, 0.1);
+  --ll-shadow-sm: 0 4px 18px rgba(29, 29, 31, 0.045);
+  --ll-shadow-md: 0 16px 48px rgba(29, 29, 31, 0.075);
+  --ll-shadow-hover: 0 20px 52px rgba(29, 29, 31, 0.09);
   --ll-transition-fast: 160ms cubic-bezier(0.2, 0, 0, 1);
   --ll-transition: 220ms cubic-bezier(0.2, 0, 0, 1);
   --sidebar-expanded-width: 240px;
@@ -46,7 +46,7 @@ body,
 }
 
 body {
-  font-family: Inter, -apple-system, BlinkMacSystemFont, "Segoe UI", Arial, sans-serif;
+  font-family: -apple-system, BlinkMacSystemFont, "SF Pro Display", "Segoe UI", Arial, sans-serif;
   background: var(--ll-bg);
   color: var(--ll-text);
   text-rendering: optimizeLegibility;
@@ -668,12 +668,12 @@ body {
 
 .home-page {
   width: 100%;
-  max-width: 1180px;
+  max-width: 1280px;
 }
 
 .page-wide {
   width: 100%;
-  max-width: 1180px;
+  max-width: 1280px;
 }
 
 .page-narrow {

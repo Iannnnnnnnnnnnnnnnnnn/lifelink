@@ -1,22 +1,37 @@
 ﻿import { DownOutlined, HeartOutlined, LogoutOutlined, MenuFoldOutlined, MenuOutlined, MenuUnfoldOutlined, SettingOutlined, UserOutlined } from '@ant-design/icons';
 import { Avatar, Button, Dropdown, Grid, Input, Select, Space, Tooltip, Typography } from 'antd';
 import type { MenuProps } from 'antd';
+import { Badge } from 'antd';
+import { BgColorsOutlined } from '@ant-design/icons';
 import { useTranslation } from 'react-i18next';
 import { Outlet, useLocation, useNavigate } from 'react-router-dom';
 import { useEffect, useMemo, useState } from 'react';
 import { LanguageSwitcher } from './LanguageSwitcher';
 import { SiteFooter } from './SiteFooter';
 import { BackgroundLayer } from './background/BackgroundLayer';
+import { NotificationDrawer } from './notifications/NotificationDrawer';
 import { useAppStore } from '../store/appStore';
 import { useAuthStore } from '../store/authStore';
 import { useBackgroundStore } from '../store/backgroundStore';
 import { useRelationshipThemeStore } from '../store/relationshipThemeStore';
 import { getAvatarInitial } from '../utils/avatar';
 import { getRelationships, type RelationshipSummary } from '../api/relationship';
+import { getNotificationUnreadCount } from '../api/notification';
 import { buildPrimaryNavSections, getPageContext, getRouteRelationshipId, headerActionIcons } from './navigation/navConfig';
 
 const { useBreakpoint } = Grid;
 const SIDEBAR_COLLAPSED_STORAGE_KEY = 'lifelink_sidebar_collapsed';
+const THEME_STORAGE_KEY = 'lifelink_theme';
+
+type ThemePreference = 'colorful' | 'minimal';
+
+function getInitialTheme(): ThemePreference {
+  try {
+    return localStorage.getItem(THEME_STORAGE_KEY) === 'minimal' ? 'minimal' : 'colorful';
+  } catch {
+    return 'colorful';
+  }
+}
 
 function getCreatedAtTime(item: RelationshipSummary) {
   const time = new Date(item.createdAt).getTime();
@@ -88,6 +103,9 @@ export function AppLayout() {
   const fetchRelationshipThemeStatus = useRelationshipThemeStore((state) => state.fetchRelationshipThemeStatus);
   const [searchKeyword, setSearchKeyword] = useState('');
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
+  const [notificationOpen, setNotificationOpen] = useState(false);
+  const [notificationUnreadCount, setNotificationUnreadCount] = useState(0);
+  const [themePreference, setThemePreference] = useState<ThemePreference>(getInitialTheme);
   const [sidebarCollapsed, setSidebarCollapsed] = useState(() => {
     try {
       return localStorage.getItem(SIDEBAR_COLLAPSED_STORAGE_KEY) === 'true';
@@ -161,6 +179,15 @@ export function AppLayout() {
     });
   };
 
+  const handleThemeChange = (theme: ThemePreference) => {
+    setThemePreference(theme);
+    try {
+      localStorage.setItem(THEME_STORAGE_KEY, theme);
+    } catch {
+      // Ignore storage failures and keep the selected theme for this session.
+    }
+  };
+
   useEffect(() => {
     if (isAuthenticated) {
       fetchRelationshipThemeStatus();
@@ -178,6 +205,22 @@ export function AppLayout() {
       fetchBackgroundSetting().catch(() => undefined);
     }
   }, [fetchBackgroundSetting, isAuthenticated]);
+
+  useEffect(() => {
+    if (!isAuthenticated) {
+      setNotificationUnreadCount(0);
+      return undefined;
+    }
+
+    const refreshUnreadCount = () => {
+      getNotificationUnreadCount()
+        .then((response) => setNotificationUnreadCount(response.data.data.count))
+        .catch(() => undefined);
+    };
+    refreshUnreadCount();
+    const timer = window.setInterval(refreshUnreadCount, 60_000);
+    return () => window.clearInterval(timer);
+  }, [isAuthenticated]);
 
   useEffect(() => {
     if (!isAuthenticated) {
@@ -212,7 +255,7 @@ export function AppLayout() {
     setMobileMenuOpen(false);
   }, [location.pathname, location.search]);
 
-  const themeClassName = hasCoupleRelationship ? 'theme-colorful' : 'theme-grayscale';
+  const themeClassName = themePreference === 'colorful' ? 'theme-colorful' : 'theme-grayscale';
   const sidebarStateClassName = sidebarCollapsed ? 'is-collapsed' : 'is-expanded';
   const sidebarLayoutClassName = isMobile ? 'is-expanded' : sidebarStateClassName;
 
@@ -228,6 +271,21 @@ export function AppLayout() {
       label: t('menu.settings'),
     },
     {
+      key: 'theme',
+      icon: <BgColorsOutlined />,
+      label: t('theme.title'),
+      children: [
+        {
+          key: 'theme-colorful',
+          label: `${themePreference === 'colorful' ? '✓ ' : ''}${t('theme.colorful')}`,
+        },
+        {
+          key: 'theme-minimal',
+          label: `${themePreference === 'minimal' ? '✓ ' : ''}${t('theme.minimal')}`,
+        },
+      ],
+    },
+    {
       key: 'logout',
       icon: <LogoutOutlined />,
       label: t('auth.logout'),
@@ -241,6 +299,14 @@ export function AppLayout() {
     }
     if (key === 'settings') {
       handleOpenSettings();
+      return;
+    }
+    if (key === 'theme-colorful') {
+      handleThemeChange('colorful');
+      return;
+    }
+    if (key === 'theme-minimal') {
+      handleThemeChange('minimal');
       return;
     }
     if (key === 'logout') {
@@ -378,8 +444,15 @@ export function AppLayout() {
                   options={relationships.map((item) => ({ value: item.id, label: item.name }))}
                 />
               )}
-              <Tooltip title={t('empty.noNotifications')}>
-                <Button className="header-icon-button" icon={headerActionIcons.notification} />
+              <Tooltip title={t('notification.title')}>
+                <Badge count={notificationUnreadCount} size="small" overflowCount={99}>
+                  <Button
+                    className="header-icon-button notification-button"
+                    icon={headerActionIcons.notification}
+                    aria-label={t('notification.title')}
+                    onClick={() => setNotificationOpen(true)}
+                  />
+                </Badge>
               </Tooltip>
               <Tooltip title={t('menu.settings')}>
                 <Button className="header-icon-button" icon={<SettingOutlined />} onClick={handleOpenSettings} />
@@ -410,6 +483,11 @@ export function AppLayout() {
           </div>
         </div>
       </main>
+      <NotificationDrawer
+        open={notificationOpen}
+        onClose={() => setNotificationOpen(false)}
+        onUnreadCountChange={setNotificationUnreadCount}
+      />
     </div>
   );
 }

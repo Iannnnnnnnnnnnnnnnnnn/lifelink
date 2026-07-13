@@ -7,29 +7,32 @@
   display: flex;
   align-items: flex-end;
   justify-content: space-between;
-  min-height: 138px;
+  min-height: 260px;
   overflow: hidden;
-  padding: 24px 28px;
+  padding: 40px 44px;
   border: 1px solid var(--ll-border-soft);
   border-radius: var(--ll-radius-lg);
-  background: linear-gradient(180deg, #ffffff 0%, #f6f8fb 100%);
-  box-shadow: var(--ll-shadow-sm);
+  background:
+    radial-gradient(circle at 88% 12%, rgba(255, 77, 141, 0.13), transparent 32%),
+    radial-gradient(circle at 72% 88%, rgba(0, 113, 227, 0.12), transparent 34%),
+    linear-gradient(135deg, #ffffff 0%, #f8f8fa 100%);
+  box-shadow: var(--ll-shadow-md);
 }
 
 .dashboard-hero-copy {
   position: relative;
   z-index: 1;
-  max-width: 680px;
+  max-width: 720px;
 }
 
 .dashboard-hero-copy h1,
 .dashboard-hero-copy h2 {
-  margin: 12px 0 0;
+  margin: 18px 0 0;
   color: var(--ll-text);
-  font-size: 30px;
-  font-weight: 780;
-  line-height: 1.12;
-  letter-spacing: 0;
+  font-size: clamp(36px, 4vw, 54px);
+  font-weight: 760;
+  line-height: 1.06;
+  letter-spacing: -0.035em;
 }
 
 .dashboard-hero-copy .ant-typography {
@@ -42,13 +45,14 @@
   margin: 0;
   border-color: var(--ll-border-soft);
   border-radius: 999px;
-  background: rgba(47, 111, 237, 0.06);
+  background: rgba(255, 255, 255, 0.72);
   color: var(--ll-primary);
 }
 
 .dashboard-hero-actions {
   position: relative;
   z-index: 1;
+  align-self: flex-end;
 }
 
 .dashboard-soft-alert {
@@ -59,10 +63,11 @@
   display: flex;
   align-items: center;
   gap: 8px;
-  margin: 10px 0 14px;
+  margin: 18px 0 14px;
   color: var(--ll-text);
-  font-size: 15px;
-  font-weight: 650;
+  font-size: 20px;
+  font-weight: 700;
+  letter-spacing: -0.02em;
 }
 
 .dashboard-stat-card {
@@ -295,12 +300,21 @@
     align-items: flex-start;
     flex-direction: column;
     min-height: auto;
-    padding: 20px;
+    padding: 28px 24px;
   }
 
   .dashboard-hero-copy h1,
   .dashboard-hero-copy h2 {
-    font-size: 24px;
+    font-size: 34px;
+  }
+
+  .dashboard-hero-actions {
+    width: 100%;
+    align-self: stretch;
+  }
+
+  .dashboard-hero-actions .ant-btn {
+    flex: 1;
   }
 
   .dashboard-action-grid,
