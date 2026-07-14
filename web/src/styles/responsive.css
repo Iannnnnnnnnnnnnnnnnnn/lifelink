@@ -30,12 +30,14 @@
 
 @media (max-width: 768px) {
   .app-shell {
-    display: block;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
     height: 100vh;
     overflow: hidden;
   }
 
   .app-main-layout {
+    grid-column: 1;
     width: 100%;
     height: 100vh;
     min-height: 0;
