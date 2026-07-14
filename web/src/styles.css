@@ -964,7 +964,9 @@ body {
 
 @media (max-width: 768px) {
   .app-shell {
-    display: block;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    grid-template-rows: minmax(0, 1fr);
     height: 100vh;
     overflow: hidden;
   }
@@ -995,6 +997,8 @@ body {
   }
 
   .app-main {
+    grid-column: 1;
+    grid-row: 1;
     width: 100%;
     height: 100vh;
   }
