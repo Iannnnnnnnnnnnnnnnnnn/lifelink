@@ -163,6 +163,14 @@ export function buildPrimaryNavSections({
       disabled: !currentRelationshipId,
     },
     {
+      key: 'space-dating-records',
+      label: t('menu.spaceDatingRecords'),
+      icon: <HeartOutlined />,
+      to: currentRelationshipId ? `${relationshipBase}/dating-records` : '/relationships',
+      active: isRelationshipChild(pathname, 'dating-records'),
+      disabled: !currentRelationshipId,
+    },
+    {
       key: 'space-finance',
       label: t('menu.spaceFinance'),
       icon: <DollarOutlined />,
@@ -248,6 +256,7 @@ export function getPageContext(t: TFunction, location: Location) {
   if (isRelationshipChild(pathname, 'timeline')) return { title: t('timeline.title'), crumbs: [t('menu.groupRelationships'), t('menu.spaceTimeline')] };
   if (isRelationshipChild(pathname, 'calendar')) return { title: t('calendar.title'), crumbs: [t('menu.groupRelationships'), t('menu.spaceCalendar')] };
   if (isRelationshipChild(pathname, 'anniversaries')) return { title: t('anniversary.title'), crumbs: [t('menu.groupRelationships'), t('menu.spaceAnniversaries')] };
+  if (isRelationshipChild(pathname, 'dating-records')) return { title: t('datingRecord.title'), crumbs: [t('menu.groupRelationships'), t('menu.spaceDatingRecords')] };
   if (isRelationshipChild(pathname, 'cycle-care') || pathname.startsWith('/cycle-care')) return { title: t('cycle.title'), crumbs: [t('menu.groupRelationships'), t('menu.cycleCare')] };
   if (/^\/relationships\/\d+/.test(pathname)) return { title: t('relationship.detail'), crumbs: [t('menu.groupRelationships'), t('menu.currentSpace')] };
   if (pathname.startsWith('/daily')) return { title: t('daily.title'), crumbs: [t('menu.groupRelationships'), t('menu.daily')] };

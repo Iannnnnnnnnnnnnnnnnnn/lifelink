@@ -13,6 +13,7 @@ import './i18n';
 import './styles.css';
 import './styles/theme.css';
 import './styles/anniversary.css';
+import './styles/dating-records.css';
 import './styles/activity.css';
 import './styles/dashboard.css';
 import './styles/daily-interaction.css';

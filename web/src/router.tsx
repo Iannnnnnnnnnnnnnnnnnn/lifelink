@@ -13,6 +13,7 @@ import { CycleCarePage } from './pages/CycleCarePage';
 import { CycleDailyReportPage } from './pages/CycleDailyReportPage';
 import { DailyPostDetail } from './pages/DailyPostDetail';
 import { DailyTimeline } from './pages/DailyTimeline';
+import { DatingRecordsPage } from './pages/DatingRecordsPage';
 import { FinanceCreateTransaction } from './pages/FinanceCreateTransaction';
 import { FinanceDashboard } from './pages/FinanceDashboard';
 import { FinanceTransactionList } from './pages/FinanceTransactionList';
@@ -96,6 +97,10 @@ export const router = createBrowserRouter([
           {
             path: 'relationships/:relationshipId/anniversaries',
             element: <AnniversaryList />,
+          },
+          {
+            path: 'relationships/:relationshipId/dating-records',
+            element: <DatingRecordsPage />,
           },
           {
             path: 'relationships/:relationshipId/cycle-care',

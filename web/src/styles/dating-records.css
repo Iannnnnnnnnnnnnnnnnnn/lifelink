@@ -1,0 +1,87 @@
+.dating-record-page {
+  --dating-rose: #d85a82;
+  --dating-rose-soft: #fff1f5;
+}
+
+.dating-record-summary {
+  overflow: hidden;
+  border-color: rgba(216, 90, 130, 0.16);
+  background: linear-gradient(135deg, rgba(255, 241, 245, 0.96), rgba(255, 250, 242, 0.94));
+}
+
+.dating-record-summary-content {
+  display: flex;
+  align-items: center;
+  gap: 18px;
+}
+
+.dating-record-summary-icon {
+  display: grid;
+  width: 56px;
+  height: 56px;
+  flex: 0 0 56px;
+  place-items: center;
+  border-radius: 50%;
+  background: rgba(216, 90, 130, 0.12);
+  color: var(--dating-rose);
+  font-size: 26px;
+}
+
+.dating-record-summary .ant-statistic-content {
+  color: #8d3653;
+}
+
+.dating-record-summary-copy {
+  margin-left: auto;
+  color: #8a6873;
+}
+
+.dating-record-list-card .ant-card-body {
+  padding-top: 8px;
+  padding-bottom: 8px;
+}
+
+.dating-record-item {
+  gap: 16px;
+  padding: 20px 4px !important;
+}
+
+.dating-record-sequence {
+  min-width: 74px;
+  padding: 9px 12px;
+  border: 1px solid rgba(216, 90, 130, 0.14);
+  border-radius: 999px;
+  background: var(--dating-rose-soft);
+  color: #a33f60;
+  text-align: center;
+  font-weight: 650;
+}
+
+.dating-record-item .ant-list-item-meta-description .ant-typography {
+  margin-bottom: 0;
+}
+
+@media (max-width: 720px) {
+  .dating-record-summary-content {
+    align-items: flex-start;
+    flex-wrap: wrap;
+  }
+
+  .dating-record-summary-copy {
+    width: 100%;
+    margin-left: 0;
+  }
+
+  .dating-record-item {
+    align-items: flex-start !important;
+    flex-direction: column;
+  }
+
+  .dating-record-item .ant-list-item-action {
+    margin-inline-start: 0;
+  }
+
+  .dating-record-item .ant-list-item-meta {
+    width: 100%;
+  }
+}
