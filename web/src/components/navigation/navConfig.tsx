@@ -9,6 +9,7 @@ import {
   HeartOutlined,
   HomeOutlined,
   ReadOutlined,
+  RobotOutlined,
   SearchOutlined,
   SettingOutlined,
   TeamOutlined,
@@ -145,6 +146,14 @@ export function buildPrimaryNavSections({
       disabled: !currentRelationshipId,
     },
     {
+      key: 'memory-ai',
+      label: '\u8bb0\u5fc6 AI \u52a9\u624b',
+      icon: <RobotOutlined />,
+      to: currentRelationshipId ? `${relationshipBase}/memory-ai` : '/relationships',
+      active: isRelationshipChild(pathname, 'memory-ai'),
+      disabled: !currentRelationshipId,
+    },
+    {
       key: 'space-calendar',
       label: t('menu.spaceCalendar'),
       icon: <CalendarOutlined />,
@@ -242,6 +251,7 @@ export function getPageContext(t: TFunction, location: Location) {
   if (isRelationshipChild(pathname, 'todos')) return { title: t('todo.title'), crumbs: [t('menu.groupRelationships'), t('menu.spaceTodos')] };
   if (isRelationshipChild(pathname, 'activities')) return { title: t('activity.title'), crumbs: [t('menu.groupRelationships'), t('menu.spaceActivities')] };
   if (isRelationshipChild(pathname, 'timeline')) return { title: t('timeline.title'), crumbs: [t('menu.groupRelationships'), t('menu.spaceTimeline')] };
+  if (isRelationshipChild(pathname, 'memory-ai')) return { title: '\u8bb0\u5fc6 AI \u52a9\u624b', crumbs: [t('menu.groupRelationships'), '\u8bb0\u5fc6 AI \u52a9\u624b'] };
   if (isRelationshipChild(pathname, 'calendar')) return { title: t('calendar.title'), crumbs: [t('menu.groupRelationships'), t('menu.spaceCalendar')] };
   if (isRelationshipChild(pathname, 'anniversaries')) return { title: t('anniversary.title'), crumbs: [t('menu.groupRelationships'), t('menu.spaceAnniversaries')] };
   if (isRelationshipChild(pathname, 'cycle-care') || pathname.startsWith('/cycle-care')) return { title: t('cycle.title'), crumbs: [t('menu.groupRelationships'), t('menu.cycleCare')] };

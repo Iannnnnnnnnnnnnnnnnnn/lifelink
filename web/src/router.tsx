@@ -27,6 +27,7 @@ import { ProfilePage } from './pages/profile/ProfilePage';
 import { RelationshipDetail } from './pages/RelationshipDetail';
 import { RelationshipList } from './pages/RelationshipList';
 import { RelationshipTimelinePage } from './pages/RelationshipTimelinePage';
+import { MemoryAiAssistant } from './pages/MemoryAiAssistant';
 import { Register } from './pages/Register';
 import { SearchPage } from './pages/SearchPage';
 import { SpaceTodoList } from './pages/SpaceTodoList';
@@ -88,6 +89,10 @@ export const router = createBrowserRouter([
           {
             path: 'relationships/:relationshipId/timeline',
             element: <RelationshipTimelinePage />,
+          },
+          {
+            path: 'relationships/:relationshipId/memory-ai',
+            element: <MemoryAiAssistant />,
           },
           {
             path: 'relationships/:relationshipId/calendar',

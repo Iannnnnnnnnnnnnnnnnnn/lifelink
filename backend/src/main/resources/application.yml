@@ -29,6 +29,18 @@ springdoc:
   swagger-ui:
     path: /swagger-ui.html
 
+ai:
+  deepseek:
+    api-key: ${AI_DEEPSEEK_API_KEY:}
+    base-url: ${AI_DEEPSEEK_BASE_URL:https://api.deepseek.com/v1}
+    model: ${AI_DEEPSEEK_MODEL:deepseek-chat}
+    timeout-seconds: ${AI_DEEPSEEK_TIMEOUT_SECONDS:60}
+    max-tokens: ${AI_DEEPSEEK_MAX_TOKENS:1200}
+    temperature: ${AI_DEEPSEEK_TEMPERATURE:0.2}
+  embedding:
+    url: ${AI_EMBEDDING_URL:}
+    timeout-seconds: ${AI_EMBEDDING_TIMEOUT_SECONDS:60}
+
 lifelink:
   jwt:
     secret: ${LIFELINK_JWT_SECRET:}

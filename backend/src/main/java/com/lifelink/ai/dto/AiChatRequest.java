@@ -11,6 +11,10 @@ import java.util.List;
 @AllArgsConstructor
 public class AiChatRequest {
 
+    private Long spaceId;
+
+    private String question;
+
     private String systemPrompt;
 
     private String userPrompt;
