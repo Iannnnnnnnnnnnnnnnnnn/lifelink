@@ -61,6 +61,8 @@ services:
         condition: service_healthy
       minio:
         condition: service_healthy
+      embedding:
+        condition: service_started
     environment:
       SPRING_PROFILES_ACTIVE: prod
       SERVER_PORT: 8081
@@ -94,7 +96,7 @@ services:
       AI_DEEPSEEK_API_KEY: ${AI_DEEPSEEK_API_KEY}
       AI_DEEPSEEK_BASE_URL: ${AI_DEEPSEEK_BASE_URL}
       AI_DEEPSEEK_MODEL: ${AI_DEEPSEEK_MODEL}
-      AI_EMBEDDING_URL: ${AI_EMBEDDING_URL}
+      AI_EMBEDDING_URL: ${AI_EMBEDDING_URL:-http://embedding:80/embed}
       LIFELINK_CYCLE_CARE_DAILY_ADVICE_ENABLED: ${LIFELINK_CYCLE_CARE_DAILY_ADVICE_ENABLED:-true}
       LIFELINK_CYCLE_CARE_DAILY_ADVICE_CRON: "${LIFELINK_CYCLE_CARE_DAILY_ADVICE_CRON:-0 5 0 * * ?}"
       LIFELINK_CYCLE_CARE_DAILY_ADVICE_ZONE: ${LIFELINK_CYCLE_CARE_DAILY_ADVICE_ZONE:-Asia/Shanghai}
@@ -103,6 +105,13 @@ services:
       TZ: ${TZ}
     expose:
       - "8081"
+
+  embedding:
+    image: ghcr.io/huggingface/text-embeddings-inference:cpu-1.7
+    restart: unless-stopped
+    command: --model-id BAAI/bge-m3
+    volumes:
+      - embedding_model_cache:/data
 
   web:
     build:
@@ -124,3 +133,4 @@ volumes:
   postgres_data:
   redis_data:
   minio_data:
+  embedding_model_cache:

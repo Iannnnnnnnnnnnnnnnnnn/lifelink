@@ -36,7 +36,9 @@ public class BgeEmbeddingServiceImpl implements EmbeddingService {
         try {
             HttpHeaders headers = new HttpHeaders();
             headers.setContentType(MediaType.APPLICATION_JSON);
-            Map<String, Object> payload = Map.of("input", text, "model", "bge-m3");
+            Map<String, Object> payload = isTeiEndpoint()
+                    ? Map.of("inputs", text)
+                    : Map.of("input", text, "model", "bge-m3");
             ResponseEntity<String> response = restTemplate().postForEntity(
                     properties.getUrl().trim(),
                     new HttpEntity<String>(objectMapper.writeValueAsString(payload), headers),
@@ -56,7 +58,10 @@ public class BgeEmbeddingServiceImpl implements EmbeddingService {
     }
 
     private float[] toEmbedding(JsonNode root) {
-        JsonNode vector = root.path("data").path(0).path("embedding");
+        JsonNode vector = root.isArray() ? root : root.path("data").path(0).path("embedding");
+        if (vector.isArray() && vector.size() > 0 && vector.get(0).isArray()) {
+            vector = vector.get(0);
+        }
         if (!vector.isArray()) {
             vector = root.path("embedding");
         }
@@ -77,6 +82,11 @@ public class BgeEmbeddingServiceImpl implements EmbeddingService {
             }
         }
         return values;
+    }
+
+    private boolean isTeiEndpoint() {
+        String url = properties.getUrl().trim();
+        return url.endsWith("/embed") || url.endsWith("/embed/");
     }
 
     private RestTemplate restTemplate() {
