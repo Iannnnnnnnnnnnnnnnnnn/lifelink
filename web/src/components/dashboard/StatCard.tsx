@@ -1,5 +1,5 @@
 import { Card, Typography } from 'antd';
-import { ReactNode } from 'react';
+import { KeyboardEventHandler, ReactNode } from 'react';
 
 interface StatCardProps {
   icon: ReactNode;
@@ -10,8 +10,23 @@ interface StatCardProps {
 }
 
 export function StatCard({ icon, title, value, description, onClick }: StatCardProps) {
+  const handleKeyDown: KeyboardEventHandler<HTMLDivElement> = (event) => {
+    if (event.key === 'Enter' || event.key === ' ') {
+      event.preventDefault();
+      onClick();
+    }
+  };
+
   return (
-    <Card className="dashboard-stat-card" hoverable onClick={onClick}>
+    <Card
+      className="dashboard-stat-card"
+      hoverable
+      role="button"
+      tabIndex={0}
+      aria-label={title}
+      onClick={onClick}
+      onKeyDown={handleKeyDown}
+    >
       <div className="dashboard-stat-icon">{icon}</div>
       <div>
         <Typography.Text type="secondary">{title}</Typography.Text>

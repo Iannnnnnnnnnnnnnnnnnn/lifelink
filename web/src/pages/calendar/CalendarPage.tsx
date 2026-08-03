@@ -14,7 +14,6 @@ import { CalendarHeader } from '../../components/calendar/CalendarHeader';
 import { CalendarMonthGrid } from '../../components/calendar/CalendarMonthGrid';
 import { CalendarTodoModal, type CalendarTodoFormValues } from '../../components/calendar/CalendarTodoModal';
 import { ErrorState } from '../../components/common/ErrorState';
-import { RelationshipSubNav } from '../../components/navigation/RelationshipSubNav';
 import { getPageErrorType, type PageErrorType } from '../../utils/error';
 
 export function CalendarPage() {
@@ -253,7 +252,6 @@ export function CalendarPage() {
   return (
     <div className="page-wide calendar-page">
       {contextHolder}
-      {currentRelationshipId && <RelationshipSubNav relationshipId={currentRelationshipId} />}
       <CalendarHeader
         relationships={relationships}
         relationshipId={currentRelationshipId}

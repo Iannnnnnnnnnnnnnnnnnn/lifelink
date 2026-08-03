@@ -47,9 +47,9 @@ export default function DailyCreatePage() {
     const remain = 9 - images.length;
     if (remain <= 0) return;
     const result = await Taro.chooseImage({ count: remain, sizeType: ['compressed'], sourceType: ['album', 'camera'] });
-    const accepted = result.tempFiles.filter((file) => file.size <= 5 * 1024 * 1024);
+    const accepted = result.tempFiles.filter((file) => file.size <= 10 * 1024 * 1024);
     if (accepted.length !== result.tempFiles.length) {
-      Taro.showToast({ title: '单张图片不能超过 5MB', icon: 'none' });
+      Taro.showToast({ title: '单张图片不能超过 10MB', icon: 'none' });
     }
 
     setUploading(true);

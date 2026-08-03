@@ -6,7 +6,7 @@ import type { Dayjs } from 'dayjs';
 import dayjs from 'dayjs';
 import { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useParams } from 'react-router-dom';
+import { useParams, useSearchParams } from 'react-router-dom';
 import {
   createSpaceTodo,
   deleteSpaceTodo,
@@ -19,7 +19,6 @@ import {
 import type { ApiResult } from '../api/request';
 import { EmptyState } from '../components/decorations/EmptyState';
 import { ErrorState } from '../components/common/ErrorState';
-import { RelationshipSubNav } from '../components/navigation/RelationshipSubNav';
 import { formatDateTime } from '../utils/date';
 import { getTodoPriorityColor, getTodoPriorityLabel, getTodoStatusColor, getTodoStatusLabel } from '../utils/display';
 import { getPageErrorType, PageErrorType } from '../utils/error';
@@ -31,13 +30,20 @@ interface TodoFormValues {
   dueTime?: Dayjs;
 }
 
+function getTodoStatus(searchParams: URLSearchParams): 'ALL' | 'TODO' | 'DONE' {
+  const value = searchParams.get('status');
+  return value === 'TODO' || value === 'DONE' ? value : 'ALL';
+}
+
 export function SpaceTodoList() {
   const { t, i18n } = useTranslation();
   const params = useParams();
+  const [searchParams, setSearchParams] = useSearchParams();
   const relationshipId = Number(params.relationshipId);
+  const status = getTodoStatus(searchParams);
+  const activeKeyword = searchParams.get('keyword')?.trim() || '';
   const [todos, setTodos] = useState<SpaceTodo[]>([]);
-  const [status, setStatus] = useState<'ALL' | 'TODO' | 'DONE'>('ALL');
-  const [keyword, setKeyword] = useState('');
+  const [keyword, setKeyword] = useState(activeKeyword);
   const [open, setOpen] = useState(false);
   const [editing, setEditing] = useState<SpaceTodo | null>(null);
   const [loading, setLoading] = useState(false);
@@ -51,7 +57,7 @@ export function SpaceTodoList() {
     try {
       const response = await getSpaceTodos(relationshipId, {
         status: status === 'ALL' ? undefined : status,
-        keyword: keyword || undefined,
+        keyword: activeKeyword || undefined,
         page: 1,
         size: 50,
       });
@@ -130,16 +136,46 @@ export function SpaceTodoList() {
     }
   };
 
+  const updateSearchParams = (updates: { status?: 'ALL' | 'TODO' | 'DONE'; keyword?: string }) => {
+    const nextParams = new URLSearchParams(searchParams);
+    if (updates.status !== undefined) {
+      if (updates.status === 'ALL') {
+        nextParams.delete('status');
+      } else {
+        nextParams.set('status', updates.status);
+      }
+    }
+    if (updates.keyword !== undefined) {
+      const nextKeyword = updates.keyword.trim();
+      if (nextKeyword) {
+        nextParams.set('keyword', nextKeyword);
+      } else {
+        nextParams.delete('keyword');
+      }
+    }
+    setSearchParams(nextParams, { replace: true });
+  };
+
+  const handleKeywordChange = (value: string) => {
+    setKeyword(value);
+    if (!value) {
+      updateSearchParams({ keyword: '' });
+    }
+  };
+
   useEffect(() => {
     if (relationshipId) {
       loadTodos();
     }
-  }, [relationshipId, status]);
+  }, [relationshipId, status, activeKeyword]);
+
+  useEffect(() => {
+    setKeyword(activeKeyword);
+  }, [activeKeyword]);
 
   return (
     <Space direction="vertical" size={16} className="page-wide">
       {contextHolder}
-      <RelationshipSubNav relationshipId={relationshipId} />
       <div className="page-heading">
         <div>
           <Typography.Title level={2}>{t('todo.title')}</Typography.Title>
@@ -149,14 +185,20 @@ export function SpaceTodoList() {
           <Select
             value={status}
             className="todo-status-filter"
-            onChange={setStatus}
+            onChange={(value) => updateSearchParams({ status: value })}
             options={[
               { value: 'ALL', label: t('todo.statusAll') },
               { value: 'TODO', label: t('todo.statusTodo') },
               { value: 'DONE', label: t('todo.statusDone') },
             ]}
           />
-          <Input.Search placeholder={t('todo.searchPlaceholder')} allowClear value={keyword} onChange={(event) => setKeyword(event.target.value)} onSearch={loadTodos} />
+          <Input.Search
+            placeholder={t('todo.searchPlaceholder')}
+            allowClear
+            value={keyword}
+            onChange={(event) => handleKeywordChange(event.target.value)}
+            onSearch={(value) => updateSearchParams({ keyword: value })}
+          />
           <Button icon={<ReloadOutlined />} loading={loading} onClick={loadTodos}>
             {t('common.refresh')}
           </Button>

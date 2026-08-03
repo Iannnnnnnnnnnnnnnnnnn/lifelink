@@ -13,6 +13,7 @@ import { CycleCarePage } from './pages/CycleCarePage';
 import { CycleDailyReportPage } from './pages/CycleDailyReportPage';
 import { DailyPostDetail } from './pages/DailyPostDetail';
 import { DailyTimeline } from './pages/DailyTimeline';
+import { DatingRecordsPage } from './pages/DatingRecordsPage';
 import { FinanceCreateTransaction } from './pages/FinanceCreateTransaction';
 import { FinanceDashboard } from './pages/FinanceDashboard';
 import { FinanceTransactionList } from './pages/FinanceTransactionList';
@@ -103,16 +104,20 @@ export const router = createBrowserRouter([
             element: <AnniversaryList />,
           },
           {
+            path: 'relationships/:relationshipId/dating-records',
+            element: <DatingRecordsPage />,
+          },
+          {
             path: 'relationships/:relationshipId/cycle-care',
             element: <CycleCarePage />,
           },
           {
-            path: 'activities',
-            element: <ActivityTimeline />,
-          },
-          {
             path: 'relationships/:relationshipId/finance',
             element: <RelationshipFinance />,
+          },
+          {
+            path: 'activities',
+            element: <ActivityTimeline />,
           },
           {
             path: 'anniversaries',
@@ -151,6 +156,14 @@ export const router = createBrowserRouter([
             element: <FinanceDashboard />,
           },
           {
+            path: 'finance/transactions',
+            element: <FinanceTransactionList />,
+          },
+          {
+            path: 'finance/create',
+            element: <FinanceCreateTransaction />,
+          },
+          {
             path: 'focus',
             element: <FocusHome />,
           },
@@ -169,14 +182,6 @@ export const router = createBrowserRouter([
           {
             path: 'rewards/admin',
             element: <RewardAdminPage />,
-          },
-          {
-            path: 'finance/transactions',
-            element: <FinanceTransactionList />,
-          },
-          {
-            path: 'finance/create',
-            element: <FinanceCreateTransaction />,
           },
           {
             path: 'philosophy',

@@ -105,7 +105,6 @@ LIFELINK_MINIO_PUBLIC_ENDPOINT=https://memoryspace.online
 The frontend Nginx template proxies `/lifelink/` to MinIO, so URLs like `https://memoryspace.online/lifelink/daily/2026/05/xxx.jpg` can be served from the same public host.
 
 New uploads will use the public URL. Existing rows in `file_resources.file_url`, `anniversaries.background_url`, and `relationship_timeline_events.cover_url` must be updated separately if they already contain an old host such as `http://47.97.202.182` or `http://minio:9000`.
->>>>>>> 6529f625afb39156fe842b5f2632498ae2ddf6af
 
 ## Health Checks
 

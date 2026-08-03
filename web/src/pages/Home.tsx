@@ -2,15 +2,17 @@ import {
   CalendarOutlined,
   CheckSquareOutlined,
   ClockCircleOutlined,
+  DownOutlined,
   DollarOutlined,
   HeartOutlined,
   PlusOutlined,
   ReadOutlined,
   TeamOutlined,
   ThunderboltOutlined,
+  UpOutlined,
   UsergroupAddOutlined,
 } from '@ant-design/icons';
-import { Alert, Col, Row, Space, message } from 'antd';
+import { Alert, Button, Col, Row, Space, message } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useNavigate } from 'react-router-dom';
@@ -52,6 +54,7 @@ export function Home() {
   const [loading, setLoading] = useState(initialLoading);
   const [errors, setErrors] = useState<Partial<Record<DashboardModule, boolean>>>({});
   const [togglingIds, setTogglingIds] = useState<number[]>([]);
+  const [showAllActions, setShowAllActions] = useState(false);
   const [messageApi, contextHolder] = message.useMessage();
 
   const unfinishedTodos = useMemo(() => todos.filter((todo) => todo.status === 'TODO'), [todos]);
@@ -63,6 +66,7 @@ export function Home() {
     () => relationships.some((item) => item.type === 'COUPLE' && item.status === 'ACTIVE'),
     [relationships],
   );
+  const isDashboardLoading = Object.values(loading).some(Boolean);
 
   const setModuleLoading = (module: DashboardModule, value: boolean) => {
     setLoading((current) => ({ ...current, [module]: value }));
@@ -168,7 +172,17 @@ export function Home() {
       />
 
       {Object.values(errors).some(Boolean) && (
-        <Alert showIcon type="warning" className="dashboard-soft-alert" message={t('dashboard.partialLoadFailed')} />
+        <Alert
+          showIcon
+          type="warning"
+          className="dashboard-soft-alert"
+          message={t('dashboard.partialLoadFailed')}
+          action={(
+            <Button size="small" onClick={loadDashboard} loading={isDashboardLoading}>
+              {t('error.retry')}
+            </Button>
+          )}
+        />
       )}
 
       <section>
@@ -231,6 +245,21 @@ export function Home() {
       <section>
         <div className="dashboard-section-heading">
           <span>{t('dashboard.quickActions')}</span>
+          <Button
+            type="text"
+            className="dashboard-actions-toggle"
+            icon={showAllActions ? <UpOutlined /> : <DownOutlined />}
+            aria-expanded={showAllActions}
+            aria-controls="dashboard-secondary-actions"
+            aria-label={showAllActions
+              ? t('dashboard.collapseFeatures', { defaultValue: t('common.cancel') })
+              : t('dashboard.allFeatures', { defaultValue: t('dashboard.viewAll') })}
+            onClick={() => setShowAllActions((visible) => !visible)}
+          >
+            {showAllActions
+              ? t('dashboard.collapseFeatures', { defaultValue: t('common.cancel') })
+              : t('dashboard.allFeatures', { defaultValue: t('dashboard.viewAll') })}
+          </Button>
         </div>
         <div className="dashboard-action-grid">
           <QuickActionCard icon={<ReadOutlined />} title={t('dashboard.createDaily')} description={t('dashboard.createDailyDesc')} onClick={() => navigate('/daily/create')} />
@@ -238,18 +267,22 @@ export function Home() {
           <QuickActionCard icon={<CalendarOutlined />} title={t('dashboard.createAnniversary')} description={t('dashboard.createAnniversaryDesc')} onClick={() => navigate('/anniversaries/create')} />
           <QuickActionCard icon={<ClockCircleOutlined />} title={t('dashboard.startFocus')} description={t('dashboard.startFocusDesc')} onClick={() => navigate('/focus/timer')} />
           <QuickActionCard icon={<DollarOutlined />} title={t('dashboard.createFinance')} description={t('dashboard.createFinanceDesc')} onClick={() => navigate('/finance/create')} />
-          <QuickActionCard
-            icon={<HeartOutlined />}
-            title={t('dashboard.cycleCare')}
-            description={hasCoupleRelationship ? t('dashboard.cycleCareDesc') : t('dashboard.cycleCareLockedDesc')}
-            meta={hasCoupleRelationship ? t('dashboard.cycleCareReady') : t('dashboard.createCoupleSpace')}
-            tone={hasCoupleRelationship ? 'couple' : 'locked'}
-            onClick={() => navigate(hasCoupleRelationship ? '/cycle-care' : '/relationships/create')}
-          />
-          <QuickActionCard icon={<PlusOutlined />} title={t('dashboard.createSpace')} description={t('dashboard.createSpaceDesc')} onClick={() => navigate('/relationships/create')} />
-          <QuickActionCard icon={<UsergroupAddOutlined />} title={t('dashboard.joinSpace')} description={t('dashboard.joinSpaceDesc')} onClick={() => navigate('/relationships/join')} />
-          <QuickActionCard icon={<ThunderboltOutlined />} title={t('dashboard.viewActivities')} description={t('dashboard.viewActivitiesDesc')} onClick={() => navigate('/activities')} />
         </div>
+        {showAllActions && (
+          <div id="dashboard-secondary-actions" className="dashboard-action-grid dashboard-action-grid-secondary">
+            <QuickActionCard
+              icon={<HeartOutlined />}
+              title={t('dashboard.cycleCare')}
+              description={hasCoupleRelationship ? t('dashboard.cycleCareDesc') : t('dashboard.cycleCareLockedDesc')}
+              meta={hasCoupleRelationship ? t('dashboard.cycleCareReady') : t('dashboard.createCoupleSpace')}
+              tone={hasCoupleRelationship ? 'couple' : 'locked'}
+              onClick={() => navigate(hasCoupleRelationship ? '/cycle-care' : '/relationships/create')}
+            />
+            <QuickActionCard icon={<PlusOutlined />} title={t('dashboard.createSpace')} description={t('dashboard.createSpaceDesc')} onClick={() => navigate('/relationships/create')} />
+            <QuickActionCard icon={<UsergroupAddOutlined />} title={t('dashboard.joinSpace')} description={t('dashboard.joinSpaceDesc')} onClick={() => navigate('/relationships/join')} />
+            <QuickActionCard icon={<ThunderboltOutlined />} title={t('dashboard.viewActivities')} description={t('dashboard.viewActivitiesDesc')} onClick={() => navigate('/activities')} />
+          </div>
+        )}
       </section>
 
       <Row gutter={[16, 16]}>

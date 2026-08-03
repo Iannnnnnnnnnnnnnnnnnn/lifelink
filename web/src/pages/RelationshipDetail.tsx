@@ -20,7 +20,6 @@ import {
 } from '../api/relationship';
 import { ErrorState } from '../components/common/ErrorState';
 import { PageLoading } from '../components/common/PageLoading';
-import { RelationshipSubNav } from '../components/navigation/RelationshipSubNav';
 import { useAuthStore } from '../store/authStore';
 import { useRelationshipThemeStore } from '../store/relationshipThemeStore';
 import { formatDateTime } from '../utils/date';
@@ -275,7 +274,6 @@ export function RelationshipDetail() {
         </Space>
       </div>
 
-      <RelationshipSubNav relationshipId={relationshipId} relationshipName={detail?.name} relationshipType={detail?.type} />
 
       {invite && (
         <Alert

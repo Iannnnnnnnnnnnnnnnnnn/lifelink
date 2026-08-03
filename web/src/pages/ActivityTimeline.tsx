@@ -7,7 +7,6 @@ import { getMyActivities, getRelationshipActivities, SpaceActivity } from '../ap
 import { getActivityIcon, getActivityTag, getActivityText, shouldShowActivityContent } from '../utils/activity';
 import { EmptyState } from '../components/decorations/EmptyState';
 import { ErrorState } from '../components/common/ErrorState';
-import { RelationshipSubNav } from '../components/navigation/RelationshipSubNav';
 import { formatDateTime } from '../utils/date';
 import { getPageErrorType, PageErrorType } from '../utils/error';
 
@@ -54,7 +53,6 @@ export function ActivityTimeline() {
   return (
     <Space direction="vertical" size={16} className="page-wide">
       {contextHolder}
-      {relationshipId && <RelationshipSubNav relationshipId={relationshipId} />}
       <div className="page-heading">
         <div>
           <Typography.Title level={2}>{relationshipId ? t('activity.title') : t('activity.allActivities')}</Typography.Title>

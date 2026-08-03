@@ -30,6 +30,7 @@ import com.lifelink.relationship.service.RelationshipPermissionService;
 import com.lifelink.todo.entity.SpaceTodo;
 import com.lifelink.todo.mapper.SpaceTodoMapper;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
@@ -48,6 +49,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
+@Slf4j
 public class CalendarServiceImpl implements CalendarService {
 
     private static final String ACTIVE_STATUS = "ACTIVE";
@@ -96,28 +98,28 @@ public class CalendarServiceImpl implements CalendarService {
         Map<LocalDate, CalendarDayResponse> dayMap = initDays(relationshipId, yearMonth);
 
         if (enabled(request.getIncludeHolidays())) {
-            fillHolidays(dayMap, startDate, endDate);
+            fillOptionalSection("holidays", relationshipId, yearMonth, () -> fillHolidays(dayMap, startDate, endDate));
         }
         if (enabled(request.getIncludeTodos())) {
-            fillTodos(dayMap, relationshipId, startTime, endTime);
+            fillOptionalSection("todos", relationshipId, yearMonth, () -> fillTodos(dayMap, relationshipId, startTime, endTime));
         }
         if (enabled(request.getIncludeAnniversaries())) {
-            fillAnniversaries(dayMap, relationshipId, startDate, endDate);
+            fillOptionalSection("anniversaries", relationshipId, yearMonth, () -> fillAnniversaries(dayMap, relationshipId, startDate, endDate));
         }
         if (enabled(request.getIncludeDailyPosts())) {
-            fillDailyPosts(dayMap, relationshipId, startTime, endTime);
+            fillOptionalSection("dailyPosts", relationshipId, yearMonth, () -> fillDailyPosts(dayMap, relationshipId, startTime, endTime));
         }
         if (enabled(request.getIncludeTransactions())) {
-            fillTransactions(dayMap, relationshipId, startTime, endTime);
+            fillOptionalSection("transactions", relationshipId, yearMonth, () -> fillTransactions(dayMap, relationshipId, startTime, endTime));
         }
         if (enabled(request.getIncludeCustomEvents())) {
-            fillCustomEvents(dayMap, relationshipId, startTime, endTime);
+            fillOptionalSection("customEvents", relationshipId, yearMonth, () -> fillCustomEvents(dayMap, relationshipId, startTime, endTime));
         }
         if (enabled(request.getIncludeCycleCare())) {
-            fillCycleCareEvents(dayMap, relationshipId, yearMonth, userId);
+            fillOptionalSection("cycleCare", relationshipId, yearMonth, () -> fillCycleCareEvents(dayMap, relationshipId, yearMonth, userId));
         }
         if (enabled(request.getIncludeFocus())) {
-            fillFocusSessions(dayMap, relationshipId, yearMonth);
+            fillOptionalSection("focus", relationshipId, yearMonth, () -> fillFocusSessions(dayMap, relationshipId, yearMonth));
         }
 
         List<CalendarDayResponse> days = new ArrayList<CalendarDayResponse>(dayMap.values());
@@ -125,9 +127,17 @@ public class CalendarServiceImpl implements CalendarService {
             day.getItems().sort(Comparator
                     .comparing((CalendarDayItemResponse item) -> item.getAllDay() != null && item.getAllDay() ? 0 : 1)
                     .thenComparing(item -> item.getStartTime() == null ? LocalDateTime.MIN : item.getStartTime())
-                    .thenComparing(CalendarDayItemResponse::getType));
+                    .thenComparing(CalendarDayItemResponse::getType, Comparator.nullsLast(String::compareTo)));
         }
         return new CalendarMonthResponse(yearMonth.getYear(), yearMonth.getMonthValue(), relationshipId, days);
+    }
+
+    private void fillOptionalSection(String section, Long relationshipId, YearMonth yearMonth, Runnable action) {
+        try {
+            action.run();
+        } catch (Exception ex) {
+            log.warn("Skip calendar section {} for relationship {} month {}", section, relationshipId, yearMonth, ex);
+        }
     }
 
     @Override

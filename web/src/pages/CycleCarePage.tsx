@@ -62,7 +62,6 @@ import {
   parseCycleLog,
 } from '../api/cycleCare';
 import { getRelationships, type RelationshipSummary } from '../api/relationship';
-import { RelationshipSubNav } from '../components/navigation/RelationshipSubNav';
 import { formatDate } from '../utils/date';
 
 type ProfileFormValues = {
@@ -481,7 +480,6 @@ export function CycleCarePage() {
     return (
       <div className="page-wide cycle-page">
         {contextHolder}
-        {routeRelationshipId && <RelationshipSubNav relationshipId={routeRelationshipId} />}
         <Card className="cycle-locked-card">
           <Empty
             image={Empty.PRESENTED_IMAGE_SIMPLE}
@@ -499,7 +497,6 @@ export function CycleCarePage() {
   return (
     <Space direction="vertical" size={16} className="page-wide cycle-page">
       {contextHolder}
-      {routeRelationshipId && <RelationshipSubNav relationshipId={routeRelationshipId} />}
       <div className="page-heading">
         <div>
           <Typography.Title level={2}>{t('cycle.title')}</Typography.Title>
