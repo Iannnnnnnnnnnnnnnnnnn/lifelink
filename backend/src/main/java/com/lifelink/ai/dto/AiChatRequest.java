@@ -34,4 +34,10 @@ public class AiChatRequest {
         this.maxTokens = maxTokens;
         this.responseFormatJson = responseFormatJson;
     }
+
+    public AiChatRequest(String systemPrompt, String userPrompt, Double temperature, Integer maxTokens,
+                         Boolean responseFormatJson, List<AiChatMessage> messages) {
+        this(systemPrompt, userPrompt, temperature, maxTokens, responseFormatJson);
+        this.messages = messages;
+    }
 }
