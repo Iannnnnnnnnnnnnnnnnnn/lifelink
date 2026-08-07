@@ -32,6 +32,7 @@ import { MemoryAiAssistant } from './pages/MemoryAiAssistant';
 import { Register } from './pages/Register';
 import { SearchPage } from './pages/SearchPage';
 import { SpaceTodoList } from './pages/SpaceTodoList';
+import { OfferQuestionBankPage } from './pages/OfferQuestionBankPage';
 import { ForbiddenPage } from './pages/error/ForbiddenPage';
 import { NotFoundPage } from './pages/error/NotFoundPage';
 
@@ -94,6 +95,10 @@ export const router = createBrowserRouter([
           {
             path: 'relationships/:relationshipId/memory-ai',
             element: <MemoryAiAssistant />,
+          },
+          {
+            path: 'relationships/:relationshipId/offer',
+            element: <OfferQuestionBankPage />,
           },
           {
             path: 'relationships/:relationshipId/calendar',

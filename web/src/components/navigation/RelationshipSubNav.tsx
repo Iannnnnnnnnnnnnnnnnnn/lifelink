@@ -1,5 +1,6 @@
 import {
   CalendarOutlined,
+  BookOutlined,
   CheckSquareOutlined,
   ClockCircleOutlined,
   DollarOutlined,
@@ -41,6 +42,7 @@ function getActiveKey(pathname: string, search: string, relationshipId: number) 
   if (pathname === `${base}/activities`) return 'activities';
   if (pathname === `${base}/timeline`) return 'timeline';
   if (pathname === `${base}/memory-ai`) return 'memoryAi';
+  if (pathname === `${base}/offer`) return 'offer';
   if (pathname === `${base}/calendar`) return 'calendar';
   if (pathname === `${base}/anniversaries`) return 'anniversaries';
   if (pathname === `${base}/finance`) return 'finance';
@@ -77,6 +79,7 @@ export function RelationshipSubNav({ relationshipId, relationshipName, relations
       { key: 'activities', label: t('menu.spaceActivities'), icon: <ThunderboltOutlined />, to: `${base}/activities` },
       { key: 'timeline', label: t('menu.spaceTimeline'), icon: <ClockCircleOutlined />, to: `${base}/timeline` },
       { key: 'memoryAi', label: '\u8bb0\u5fc6 AI \u52a9\u624b', icon: <RobotOutlined />, to: `${base}/memory-ai` },
+      ...(relationshipId === 1 ? [{ key: 'offer', label: 'Easy Offer 题库', icon: <BookOutlined />, to: `${base}/offer` }] : []),
       { key: 'calendar', label: t('menu.spaceCalendar'), icon: <CalendarOutlined />, to: `${base}/calendar` },
       { key: 'anniversaries', label: t('menu.spaceAnniversaries'), icon: <CalendarOutlined />, to: `${base}/anniversaries` },
       { key: 'finance', label: t('menu.spaceFinance'), icon: <DollarOutlined />, to: `/finance?scope=space&spaceId=${relationshipId}` },

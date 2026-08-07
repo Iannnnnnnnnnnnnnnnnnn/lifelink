@@ -1,5 +1,6 @@
 import {
   BellOutlined,
+  BookOutlined,
   BulbOutlined,
   CalendarOutlined,
   CheckSquareOutlined,
@@ -155,6 +156,15 @@ export function buildPrimaryNavSections({
       active: isRelationshipChild(pathname, 'memory-ai'),
       disabled: !currentRelationshipId,
     },
+    ...(currentRelationshipId === 1
+      ? [{
+        key: 'space-offer',
+        label: 'Easy Offer 题库',
+        icon: <BookOutlined />,
+        to: `${relationshipBase}/offer`,
+        active: isRelationshipChild(pathname, 'offer'),
+      }]
+      : []),
     {
       key: 'space-calendar',
       label: t('menu.spaceCalendar'),
@@ -264,6 +274,7 @@ export function getPageContext(t: TFunction, location: Location) {
   if (isRelationshipChild(pathname, 'activities')) return { title: t('activity.title'), crumbs: [t('menu.groupRelationships'), t('menu.spaceActivities')] };
   if (isRelationshipChild(pathname, 'timeline')) return { title: t('timeline.title'), crumbs: [t('menu.groupRelationships'), t('menu.spaceTimeline')] };
   if (isRelationshipChild(pathname, 'memory-ai')) return { title: '\u8bb0\u5fc6 AI \u52a9\u624b', crumbs: [t('menu.groupRelationships'), '\u8bb0\u5fc6 AI \u52a9\u624b'] };
+  if (isRelationshipChild(pathname, 'offer')) return { title: 'Easy Offer 题库', crumbs: [t('menu.groupRelationships'), 'Easy Offer 题库'] };
   if (isRelationshipChild(pathname, 'calendar')) return { title: t('calendar.title'), crumbs: [t('menu.groupRelationships'), t('menu.spaceCalendar')] };
   if (isRelationshipChild(pathname, 'anniversaries')) return { title: t('anniversary.title'), crumbs: [t('menu.groupRelationships'), t('menu.spaceAnniversaries')] };
   if (isRelationshipChild(pathname, 'dating-records')) return { title: t('datingRecord.title'), crumbs: [t('menu.groupRelationships'), t('menu.spaceDatingRecords')] };
