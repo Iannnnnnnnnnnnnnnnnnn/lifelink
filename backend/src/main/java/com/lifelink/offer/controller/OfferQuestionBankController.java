@@ -3,6 +3,8 @@ package com.lifelink.offer.controller;
 import com.lifelink.common.Result;
 import com.lifelink.offer.dto.OfferAccessResponse;
 import com.lifelink.offer.dto.OfferCategoryRequest;
+import com.lifelink.offer.dto.OfferImportRequest;
+import com.lifelink.offer.dto.OfferImportResultResponse;
 import com.lifelink.offer.dto.OfferQuestionBankRequest;
 import com.lifelink.offer.dto.OfferQuestionPageResponse;
 import com.lifelink.offer.dto.OfferQuestionRequest;
@@ -80,6 +82,20 @@ public class OfferQuestionBankController {
     public Result<OfferStatisticsResponse> statistics(@AuthenticationPrincipal LoginUser loginUser) {
         accessService.requireMember(loginUser.getId());
         return Result.success(offerService.statistics());
+    }
+
+    @PostMapping("/questions/import/preview")
+    public Result<OfferImportResultResponse> previewImport(@Valid @RequestBody OfferImportRequest request,
+                                                           @AuthenticationPrincipal LoginUser loginUser) {
+        accessService.requireManager(loginUser.getId());
+        return Result.success(offerService.previewImport(request));
+    }
+
+    @PostMapping("/questions/import")
+    public Result<OfferImportResultResponse> importQuestions(@Valid @RequestBody OfferImportRequest request,
+                                                             @AuthenticationPrincipal LoginUser loginUser) {
+        accessService.requireManager(loginUser.getId());
+        return Result.success(offerService.importQuestions(request));
     }
 
     @PostMapping("/question-banks")

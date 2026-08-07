@@ -4,6 +4,9 @@ import com.baomidou.mybatisplus.core.conditions.query.LambdaQueryWrapper;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.lifelink.common.BusinessException;
 import com.lifelink.offer.dto.OfferCategoryRequest;
+import com.lifelink.offer.dto.OfferImportQuestionResponse;
+import com.lifelink.offer.dto.OfferImportResultResponse;
+import com.lifelink.offer.dto.OfferImportRequest;
 import com.lifelink.offer.dto.OfferQuestionBankRequest;
 import com.lifelink.offer.dto.OfferQuestionPageResponse;
 import com.lifelink.offer.dto.OfferQuestionRequest;
@@ -16,13 +19,20 @@ import com.lifelink.offer.enums.OfferQuestionType;
 import com.lifelink.offer.mapper.OfferCategoryMapper;
 import com.lifelink.offer.mapper.OfferQuestionBankMapper;
 import com.lifelink.offer.mapper.OfferQuestionMapper;
+import com.lifelink.offer.parser.OfferQuestionImportParser;
+import com.lifelink.offer.parser.ParsedOfferQuestion;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.StringUtils;
 
 import java.time.LocalDateTime;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -31,6 +41,7 @@ public class OfferQuestionBankService {
     private final OfferQuestionBankMapper questionBankMapper;
     private final OfferCategoryMapper categoryMapper;
     private final OfferQuestionMapper questionMapper;
+    private final OfferQuestionImportParser importParser;
 
     public List<OfferQuestionBank> listQuestionBanks() {
         return questionBankMapper.selectList(new LambdaQueryWrapper<OfferQuestionBank>()
@@ -79,6 +90,15 @@ public class OfferQuestionBankService {
                 questionMapper.selectCount(new LambdaQueryWrapper<OfferQuestion>().eq(OfferQuestion::getType, OfferQuestionType.THEORY)),
                 questionMapper.selectCount(new LambdaQueryWrapper<OfferQuestion>().eq(OfferQuestion::getType, OfferQuestionType.ALGORITHM)),
                 categoryMapper.selectCount(null));
+    }
+
+    public OfferImportResultResponse previewImport(OfferImportRequest request) {
+        return buildImportResult(importParser.parse(request.getContent()), false);
+    }
+
+    @Transactional
+    public OfferImportResultResponse importQuestions(OfferImportRequest request) {
+        return buildImportResult(importParser.parse(request.getContent()), true);
     }
 
     @Transactional
@@ -175,6 +195,136 @@ public class OfferQuestionBankService {
         if (questionMapper.deleteById(id) == 0) {
             throw new BusinessException(404, "Question not found");
         }
+    }
+
+    private OfferImportResultResponse buildImportResult(List<ParsedOfferQuestion> parsedQuestions, boolean save) {
+        OfferImportResultResponse result = new OfferImportResultResponse();
+        List<OfferImportQuestionResponse> rows = new ArrayList<>();
+        Map<String, OfferCategory> categoryCache = new HashMap<>();
+        Set<String> seenQuestionKeys = new HashSet<>();
+        result.setTotal(parsedQuestions.size());
+
+        for (ParsedOfferQuestion parsedQuestion : parsedQuestions) {
+            OfferImportQuestionResponse row = toImportRow(parsedQuestion);
+            rows.add(row);
+            if (!parsedQuestion.isValid()) {
+                row.setStatus("INVALID");
+                result.setInvalid(result.getInvalid() + 1);
+                continue;
+            }
+
+            OfferQuestionBank bank = findQuestionBank(parsedQuestion.getBank());
+            if (bank == null) {
+                row.setStatus("INVALID");
+                row.setErrors(List.of("题库不存在：" + parsedQuestion.getBank()));
+                result.setInvalid(result.getInvalid() + 1);
+                continue;
+            }
+
+            String questionKey = bank.getId() + "|" + parsedQuestion.getType() + "|" + parsedQuestion.getTitle().trim();
+            if (!seenQuestionKeys.add(questionKey) || questionExists(bank.getId(), parsedQuestion.getType(), parsedQuestion.getTitle())) {
+                row.setStatus("DUPLICATE");
+                result.setDuplicate(result.getDuplicate() + 1);
+                continue;
+            }
+
+            row.setStatus("VALID");
+            result.setValid(result.getValid() + 1);
+            if (!save) {
+                continue;
+            }
+
+            try {
+                OfferCategory category = resolveImportCategory(bank.getId(), parsedQuestion.getType(), parsedQuestion.getCategory(), categoryCache);
+                OfferQuestion question = new OfferQuestion();
+                question.setTitle(parsedQuestion.getTitle().trim());
+                question.setType(parsedQuestion.getType());
+                question.setBankId(bank.getId());
+                question.setCategoryId(category.getId());
+                question.setDifficulty(parsedQuestion.getDifficulty());
+                question.setContent(parsedQuestion.getContent());
+                question.setAnswer(parsedQuestion.getAnswer());
+                question.setSource(trimToNull(parsedQuestion.getSource()));
+                question.setCreatedAt(LocalDateTime.now());
+                question.setUpdatedAt(LocalDateTime.now());
+                questionMapper.insert(question);
+                row.setStatus("IMPORTED");
+                result.setImported(result.getImported() + 1);
+            } catch (RuntimeException ex) {
+                row.setStatus("INVALID");
+                row.setErrors(List.of("保存失败：" + safeMessage(ex)));
+                result.setValid(result.getValid() - 1);
+                result.setInvalid(result.getInvalid() + 1);
+            }
+        }
+        result.setQuestions(rows);
+        return result;
+    }
+
+    private OfferQuestionBank findQuestionBank(String nameOrCode) {
+        String value = nameOrCode.trim();
+        return questionBankMapper.selectOne(new LambdaQueryWrapper<OfferQuestionBank>()
+                .eq(OfferQuestionBank::getName, value)
+                .or().eq(OfferQuestionBank::getCode, value.toUpperCase()));
+    }
+
+    private OfferCategory resolveImportCategory(Long bankId, OfferQuestionType type, String name,
+                                                Map<String, OfferCategory> cache) {
+        String cleanName = name.trim();
+        String key = bankId + "|" + type + "|" + cleanName;
+        if (cache.containsKey(key)) {
+            return cache.get(key);
+        }
+        OfferCategory category = categoryMapper.selectOne(new LambdaQueryWrapper<OfferCategory>()
+                .eq(OfferCategory::getBankId, bankId)
+                .eq(OfferCategory::getType, type)
+                .eq(OfferCategory::getName, cleanName));
+        if (category == null) {
+            category = new OfferCategory();
+            category.setBankId(bankId);
+            category.setType(type);
+            category.setName(cleanName);
+            category.setSort(nextCategorySort(bankId, type));
+            category.setCreatedAt(LocalDateTime.now());
+            category.setUpdatedAt(LocalDateTime.now());
+            categoryMapper.insert(category);
+        }
+        cache.put(key, category);
+        return category;
+    }
+
+    private int nextCategorySort(Long bankId, OfferQuestionType type) {
+        OfferCategory last = categoryMapper.selectOne(new LambdaQueryWrapper<OfferCategory>()
+                .eq(OfferCategory::getBankId, bankId)
+                .eq(OfferCategory::getType, type)
+                .orderByDesc(OfferCategory::getSort)
+                .last("LIMIT 1"));
+        return last == null ? 1 : last.getSort() + 1;
+    }
+
+    private boolean questionExists(Long bankId, OfferQuestionType type, String title) {
+        return questionMapper.selectCount(new LambdaQueryWrapper<OfferQuestion>()
+                .eq(OfferQuestion::getBankId, bankId)
+                .eq(OfferQuestion::getType, type)
+                .eq(OfferQuestion::getTitle, title.trim())) > 0;
+    }
+
+    private OfferImportQuestionResponse toImportRow(ParsedOfferQuestion parsedQuestion) {
+        OfferImportQuestionResponse response = new OfferImportQuestionResponse();
+        response.setIndex(parsedQuestion.getIndex());
+        response.setType(parsedQuestion.getType());
+        response.setBank(parsedQuestion.getBank());
+        response.setCategory(parsedQuestion.getCategory());
+        response.setDifficulty(parsedQuestion.getDifficulty());
+        response.setTitle(parsedQuestion.getTitle());
+        response.setSource(parsedQuestion.getSource());
+        response.setErrors(parsedQuestion.getErrors());
+        return response;
+    }
+
+    private String safeMessage(Exception exception) {
+        String message = exception.getMessage();
+        return message == null ? "未知错误" : message.replaceAll("[\\r\\n]", " ");
     }
 
     private OfferQuestionBank getQuestionBank(Long id) {

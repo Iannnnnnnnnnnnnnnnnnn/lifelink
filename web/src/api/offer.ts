@@ -63,6 +63,27 @@ export interface OfferQuestionRequest {
   remark?: string;
 }
 
+export interface OfferImportQuestion {
+  index: number;
+  type?: OfferQuestionType;
+  bank?: string;
+  category?: string;
+  difficulty?: OfferDifficulty;
+  title?: string;
+  source?: string;
+  status: 'VALID' | 'DUPLICATE' | 'INVALID' | 'IMPORTED';
+  errors?: string[];
+}
+
+export interface OfferImportResult {
+  total: number;
+  valid: number;
+  invalid: number;
+  duplicate: number;
+  imported: number;
+  questions: OfferImportQuestion[];
+}
+
 export function getOfferAccess() {
   return request.get<ApiResult<OfferAccess>>('/api/offer/access');
 }
@@ -101,4 +122,12 @@ export function updateOfferQuestion(id: number, data: OfferQuestionRequest) {
 
 export function deleteOfferQuestion(id: number) {
   return request.delete<ApiResult<void>>(`/api/offer/questions/${id}`);
+}
+
+export function previewOfferImport(content: string) {
+  return request.post<ApiResult<OfferImportResult>>('/api/offer/questions/import/preview', { content });
+}
+
+export function importOfferQuestions(content: string) {
+  return request.post<ApiResult<OfferImportResult>>('/api/offer/questions/import', { content });
 }

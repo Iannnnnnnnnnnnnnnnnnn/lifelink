@@ -1,5 +1,5 @@
-import { DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
-import { Button, Card, Col, Descriptions, Drawer, Empty, Form, Input, Modal, Pagination, Popconfirm, Row, Select, Space, Spin, Statistic, Tag, Typography, message } from 'antd';
+import { CloudUploadOutlined, DeleteOutlined, EditOutlined, PlusOutlined, SearchOutlined } from '@ant-design/icons';
+import { Alert, Button, Card, Col, Descriptions, Drawer, Empty, Form, Input, Modal, Pagination, Popconfirm, Row, Select, Space, Spin, Statistic, Table, Tag, Typography, message } from 'antd';
 import { useEffect, useMemo, useState } from 'react';
 import { Navigate, useParams } from 'react-router-dom';
 import {
@@ -10,18 +10,43 @@ import {
   getOfferQuestionBanks,
   getOfferQuestions,
   getOfferStatistics,
+  importOfferQuestions,
+  OfferImportResult,
   OfferCategory,
   OfferDifficulty,
   OfferQuestion,
   OfferQuestionRequest,
   OfferQuestionType,
   OfferStatistics,
+  previewOfferImport,
   updateOfferQuestion,
 } from '../api/offer';
 import { ErrorState } from '../components/common/ErrorState';
 import { getPageErrorType, PageErrorType } from '../utils/error';
 
 const DEFAULT_PAGE_SIZE = 20;
+const IMPORT_EXAMPLE = `===QUESTION===
+
+type: THEORY
+bank: Java
+category: Java集合
+difficulty: MEDIUM
+title: HashMap 为什么线程不安全？
+source: GPT
+
+===CONTENT===
+
+HashMap 为什么线程不安全？
+
+===ANSWER===
+
+HashMap 本身没有提供线程同步机制。
+
+\`\`\`java
+ConcurrentHashMap<String, Object> map = new ConcurrentHashMap<>();
+\`\`\`
+
+===END===`;
 
 const typeOptions: { value: OfferQuestionType; label: string }[] = [
   { value: 'THEORY', label: '理论题' },
@@ -56,6 +81,10 @@ export function OfferQuestionBankPage() {
   const [total, setTotal] = useState(0);
   const [editorOpen, setEditorOpen] = useState(false);
   const [editingQuestion, setEditingQuestion] = useState<OfferQuestion>();
+  const [importOpen, setImportOpen] = useState(false);
+  const [importContent, setImportContent] = useState('');
+  const [importResult, setImportResult] = useState<OfferImportResult>();
+  const [importing, setImporting] = useState(false);
 
   const filteredCategories = useMemo(
     () => categories.filter((item) => item.bankId === bankId && item.type === type),
@@ -154,6 +183,35 @@ export function OfferQuestionBankPage() {
     }
   };
 
+  const previewImport = async () => {
+    if (!importContent.trim()) {
+      message.warning('请先粘贴导入文本');
+      return;
+    }
+    setImporting(true);
+    try {
+      const response = await previewOfferImport(importContent);
+      setImportResult(response.data.data);
+    } finally {
+      setImporting(false);
+    }
+  };
+
+  const executeImport = async () => {
+    if (!importContent.trim()) {
+      return;
+    }
+    setImporting(true);
+    try {
+      const response = await importOfferQuestions(importContent);
+      setImportResult(response.data.data);
+      message.success(`导入完成：成功 ${response.data.data.imported} 道`);
+      await loadData();
+    } finally {
+      setImporting(false);
+    }
+  };
+
   return (
     <Space direction="vertical" size={16} className="page-wide">
       <div className="page-heading">
@@ -161,7 +219,10 @@ export function OfferQuestionBankPage() {
           <Typography.Title level={2}>Easy Offer 题库</Typography.Title>
           <Typography.Text type="secondary">空间 1 的专属学习题库，仅该空间的有效成员可访问。</Typography.Text>
         </div>
-        {canManage && <Button type="primary" icon={<PlusOutlined />} onClick={() => openEditor()}>新增题目</Button>}
+        {canManage && <Space>
+          <Button icon={<CloudUploadOutlined />} onClick={() => setImportOpen(true)}>批量导入</Button>
+          <Button type="primary" icon={<PlusOutlined />} onClick={() => openEditor()}>新增题目</Button>
+        </Space>}
       </div>
 
       {pageError ? <ErrorState type={pageError} onRetry={loadData} /> : (
@@ -244,6 +305,53 @@ export function OfferQuestionBankPage() {
           <Form.Item label="来源" name="source"><Input maxLength={100} /></Form.Item>
           <Form.Item label="备注" name="remark"><Input.TextArea rows={2} maxLength={500} /></Form.Item>
         </Form>
+      </Modal>
+
+      <Modal
+        title="批量导入题目"
+        open={importOpen}
+        width={960}
+        footer={null}
+        onCancel={() => setImportOpen(false)}
+      >
+        <Space direction="vertical" size={16} className="full-width">
+          <Alert
+            type="info"
+            showIcon
+            message="导入规则"
+            description="使用明确的题目块格式。bank 可填 Java、Python、前端，省略时默认 Java；不存在的分类会自动创建。预览不会写库，同一题库、同一题型下的同标题题目会跳过。"
+          />
+          <Card size="small" title="导入文本" extra={<Button type="link" onClick={() => { setImportContent(IMPORT_EXAMPLE); setImportResult(undefined); }}>填入示例</Button>}>
+            <Input.TextArea rows={16} value={importContent} placeholder="粘贴题目文本" onChange={(event) => { setImportContent(event.target.value); setImportResult(undefined); }} />
+            <Space style={{ marginTop: 12 }}>
+              <Button type="primary" loading={importing} onClick={previewImport}>预览并校验</Button>
+              <Button icon={<CloudUploadOutlined />} loading={importing} disabled={!importResult || importResult.valid === 0} onClick={executeImport}>确认导入有效题目</Button>
+            </Space>
+          </Card>
+          {importResult && <Card size="small" title="导入预览">
+            <Space wrap style={{ marginBottom: 12 }}>
+              <Tag>总计 {importResult.total}</Tag>
+              <Tag color="blue">有效 {importResult.valid}</Tag>
+              <Tag color="orange">重复 {importResult.duplicate}</Tag>
+              <Tag color="red">失败 {importResult.invalid}</Tag>
+              {importResult.imported > 0 && <Tag color="green">已写入 {importResult.imported}</Tag>}
+            </Space>
+            <Table
+              rowKey="index"
+              size="small"
+              pagination={false}
+              dataSource={importResult.questions}
+              columns={[
+                { title: '#', dataIndex: 'index', width: 56 },
+                { title: '标题', dataIndex: 'title', render: (value) => value || '—' },
+                { title: '题库', dataIndex: 'bank', width: 100 },
+                { title: '分类', dataIndex: 'category', width: 130 },
+                { title: '状态', dataIndex: 'status', width: 120, render: (status) => <Tag color={status === 'INVALID' ? 'red' : status === 'DUPLICATE' ? 'orange' : status === 'IMPORTED' ? 'green' : 'blue'}>{status === 'INVALID' ? '失败' : status === 'DUPLICATE' ? '已存在，跳过' : status === 'IMPORTED' ? '已导入' : '有效'}</Tag> },
+                { title: '原因', dataIndex: 'errors', render: (errors?: string[]) => errors?.join('；') || '—' },
+              ]}
+            />
+          </Card>}
+        </Space>
       </Modal>
     </Space>
   );
